@@ -1,0 +1,37 @@
+:root {
+  --icon-size: 44px;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.name {
+  font-weight: 500;
+}
+
+.role {
+  display: block;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+.profiles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
