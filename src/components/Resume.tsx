@@ -9,12 +9,15 @@ const ResumeHeader = styled('header', {
     marginBottom: '60px',
   },
 });
+
 const PreviousRole = styled('h2', {
   fontSize: '1.25rem',
 });
 
 const SectionHeading = styled('h3', {
   fontSize: '1.25rem',
+  fontWeight: '300',
+  textTransform: 'uppercase',
 });
 
 const Company = styled('section', {});
@@ -27,7 +30,7 @@ const Role = styled('h5', {
   margin: '0 0 8px',
 });
 
-const ThinkificYear = styled('h6', {
+const YearHeading = styled('h6', {
   margin: 0,
 });
 
@@ -43,22 +46,6 @@ const StyledUnorderedList = styled('ul', {
   listStyle: 'none',
 });
 
-const StyledListHeader = styled('li', {
-  marginBottom: '16px',
-  fontSize: '1.2rem',
-  fontWeight: 'bold',
-  textTransform: 'uppercase',
-  letterSpacing: '.3px',
-});
-
-interface ListHeaderInterface {
-  header: string;
-}
-
-const ListHeader: React.VFC<ListHeaderInterface> = ({ header }) => (
-  <StyledListHeader aria-hidden="true">{header}</StyledListHeader>
-);
-
 const StyledListItem = styled('li', {
   marginBottom: '8px',
   paddingLeft: '16px',
@@ -72,16 +59,13 @@ export const Resume: React.VFC = () => (
       </PreviousRole>
       <P>
         Looking forward to the next opportunity that allows me to continue
-        helping make the web more accessible &amp; usable for everyone.
-      </P>
-      <P>
+        helping make the web more accessible &amp; usable for everyone.&nbsp;
         <strong>This project is a work in progress.</strong>
       </P>
     </ResumeHeader>
     <SectionHeading>Letters of recommendation</SectionHeading>
     <P>Coming soon!</P>
     <StyledUnorderedList>
-      <ListHeader header="Thinkific" />
       <StyledListItem>
         <DisabledLink aria-disabled="true">
           Greg Smith, Co-Founder &amp; CEO
@@ -107,23 +91,23 @@ export const Resume: React.VFC = () => (
         <RoleTimeframe dateTime="2021-06-01/2022-03-30">
           June 2021 &ndash; March 2022 · 10 mos
         </RoleTimeframe>
-        <ThinkificYear>Year Five</ThinkificYear>
+        <YearHeading>Year Five</YearHeading>
         <P>
-          Actualizing my goals to work more directly with design I opted to move
-          over to the design system team. Pairing with Nathan Shubert-Harbison,
-          he and I were able to prioritize and address the overwhelming backlog
-          of accessibility/usability concerns found across the product umbrella.
-          Along-side our dedicated designer, Oliver Browne and the original
-          creator of the TOGA design library, Leonardo Faria, we were able to
-          craft a more strategic roadmap that focused on education and alignment
-          of the wider engineering department.
+          Actualizing my goals to work more directly with Design I opted to move
+          over to the design system team ("TOGA"). Pairing with Nathan
+          Shubert-Harbison, he and I were able to prioritize and address the
+          overwhelming backlog of accessibility/usability concerns found across
+          the product. With lead from our Designer, Oliver Browne, and the
+          original creator of the TOGA design library, Leonardo Faria, we
+          crafted a more strategic roadmap that focused on education and
+          alignment of Engineering with design guidelines &amp; needs.
         </P>
         <P>
           We then sought to implement a tool called React Scanner to collect
-          data from 6 of our major properties. Using our CI/CD pipeline, we were
-          able to analyze packages through Semaphore, store the JSONL output to
-          AWS S3 bucket, port it into BigQuery Datawarehouse and build reports
-          on Mode Analytics.
+          data from across 6 of our major properties. Using the CI/CD pipeline,
+          we were able to analyze packages via Semaphore, store the JSONL output
+          to an AWS S3 bucket, ingest with BigQuery and build visualization
+          reports on Mode Analytics.
         </P>
       </RoleDetails>
 
@@ -132,7 +116,7 @@ export const Resume: React.VFC = () => (
         <RoleTimeframe dateTime="2020-10-01/2021-06-30">
           October 2020 &ndash; June 2021 · 9 mos
         </RoleTimeframe>
-        <ThinkificYear>Year Four</ThinkificYear>
+        <YearHeading>Year Four</YearHeading>
         <P>
           Seeing the benefit in experimentation, we aimed to bring the growth
           mentality to all other departments. It was adopted heavily by
@@ -155,7 +139,7 @@ export const Resume: React.VFC = () => (
         <RoleTimeframe dateTime="2017-04-17/2020-10-01">
           April 2017 &ndash; October 2020 · 3 yr 7 mos
         </RoleTimeframe>
-        <ThinkificYear>Year Three</ThinkificYear>
+        <YearHeading>Year Three</YearHeading>
         <P>
           2019 was a big year. Our Marketing team was flourishing with projects
           that reached beyond just supporting our customers. It was about
@@ -163,14 +147,14 @@ export const Resume: React.VFC = () => (
           starting a Growth team. Ziming Yang was brought on as Director of
           Product Growth and Experimentation and Chuiee Yang as our dedicated
           Senior Product Designer. We formed a small team that facilitated a
-          number of experiments throughout both our core app and marketing
-          tools. We implemented a system of Test Champions, acting as our own
-          Project Management for the individual experiments, while still
-          collaborating with each other and the broader organization. We made
-          impacts and gathered information from all over the app, focusing on
+          number of experiments in both our core app and marketing tools. We
+          implemented a system of Test Champions, acting as our own Project
+          Management for the individual experiments, while still collaborating
+          with each other and the broader organization. We made impacts and
+          gathered information that benefited everyone, with a strong focus on
           the main levers of revenue &amp; retention.
         </P>
-        <ThinkificYear>Year Two</ThinkificYear>
+        <YearHeading>Year Two</YearHeading>
         <P>
           With the release of Site Builder, there was a need to surface our
           offerings and value. Marketing began a new branding campaign strategy
@@ -192,7 +176,7 @@ export const Resume: React.VFC = () => (
           but ultimately wanted me for something bigger. That's when he told me
           about "The Flywheel".
         </P>
-        <ThinkificYear>Year One</ThinkificYear>
+        <YearHeading>Year One</YearHeading>
         <P>
           The initial expectations of my role was centric to helping build upon
           the existing website marketing feature, "Themes". The intent was to

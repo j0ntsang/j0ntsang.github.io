@@ -55,6 +55,9 @@ export const globalCss = createGlobalCss({
   '*, *::before, *::after': {
     boxSizing: 'border-box',
   },
+  html: {
+    fontSize: '18px',
+  },
   // set base styles for the app
   body: {
     padding: 0,
@@ -62,12 +65,11 @@ export const globalCss = createGlobalCss({
     lineHeight: '1.8rem',
     letterSpacing: '.3px',
     color: '$highContrast',
-    fontFamily: 'system-ui, Helvetica Neue, sans-serif',
+    fontFamily: 'Barlow, sans-serif',
     // use word-break instead of "overflow-wrap: anywhere" because of Safari support
     wordBreak: 'break-word',
     WebkitFontSmoothing: 'antialiased',
     MozOsxFontSmoothing: 'grayscale',
-    fontSize: '18px',
     textSizeAdjust: 'none',
   },
   code: {
