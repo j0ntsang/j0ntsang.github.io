@@ -59,7 +59,7 @@ export const Resume: React.VFC = () => (
       </PreviousRole>
       <P>
         Looking forward to the next opportunity that allows me to continue
-        helping make the web more accessible &amp; usable for everyone.&nbsp;
+        helping make the web more accessible &amp; usable for everyone.{' '}
         <strong>This project is a work in progress.</strong>
       </P>
     </ResumeHeader>
@@ -94,20 +94,49 @@ export const Resume: React.VFC = () => (
         <YearHeading>Year Five</YearHeading>
         <P>
           Actualizing my goals to work more directly with Design I opted to move
-          over to the design system team ("TOGA"). Pairing with Nathan
-          Shubert-Harbison, he and I were able to prioritize and address the
-          overwhelming backlog of accessibility/usability concerns found across
-          the product. With lead from our Designer, Oliver Browne, and the
-          original creator of the TOGA design library, Leonardo Faria, we
-          crafted a more strategic roadmap that focused on education and
-          alignment of Engineering with design guidelines &amp; needs.
+          over to the design system team ("TOGA"). Pairing with{' '}
+          <a
+            href="https://www.linkedin.com/in/nathanshubertharbison/"
+            target="_blank"
+            aria-label="Opens a new tab to Nathan's LinkedIn profile"
+          >
+            Nathan Shubert-Harbison
+          </a>
+          , he and I were able to prioritize and address the overwhelming
+          backlog of accessibility/usability concerns found across the product.
+          With lead from our Designer,{' '}
+          <a
+            href="https://www.linkedin.com/in/oliverbrowne91/"
+            target="_blank"
+            aria-label="Opens a new tab to Oliver's LinkedIn profile"
+          >
+            Oliver Browne
+          </a>
+          , and the original creator of the TOGA design library,{' '}
+          <a
+            href="https://www.linkedin.com/in/leonardofariacoelho/"
+            target="_blank"
+            aria-label="Opens a new tab to Leo's LinkedIn profile"
+          >
+            Leonardo Faria
+          </a>
+          , we crafted a more strategic roadmap that focused on education and
+          alignment of Engineering to Design guidelines &amp; needs.
         </P>
         <P>
-          We then sought to implement a tool called React Scanner to collect
-          data from across 6 of our major properties. Using the CI/CD pipeline,
-          we were able to analyze packages via Semaphore, store the JSONL output
-          to an AWS S3 bucket, ingest with BigQuery and build visualization
-          reports on Mode Analytics.
+          We then sought to implement a tool called{' '}
+          <a
+            href="https://github.com/moroshko/react-scanner"
+            target="_blank"
+            aria-label="Opens a new tab to React Scanner on GitHub"
+          >
+            React Scanner
+          </a>{' '}
+          to collect data from across 6 of our major properties to better
+          understand our frontend technologies. Using the CI/CD pipeline, we
+          analyzed packages via Semaphore, stored the JSONL output to an AWS S3
+          bucket, ingested them with BigQuery and built visualization reports on
+          Mode Analytics...
         </P>
       </RoleDetails>
 
@@ -120,17 +149,26 @@ export const Resume: React.VFC = () => (
         <P>
           Seeing the benefit in experimentation, we aimed to bring the growth
           mentality to all other departments. It was adopted heavily by
-          Marketing ICs and new technologies were implemented to facilitate
+          Marketing ICs and new technologies were added to pave the way for
           experimentation within Product &amp; Engineering. After another great
-          Black Friday campaign, I sought to focus on being a more well-rounded
-          developer; honing my backend skills and addressing a wide-range of
-          bugs and quick wins that never found scope on other teams. One task in
-          particular being a complete audit and resolve for the main
-          application, Course Player. It was a legacy build that required lots
-          of flexbox upgrades &amp; TLC for cross-browser compatibility. The
-          team was also the entry point for onboarding developers, so pairing
-          with new-hires was an ongoing responsibility and opportunity for
-          better understanding mentorship.
+          Black Friday campaign, I leaned focus on being a more well-rounded
+          developer; honing my backend skills and helping to address a
+          wide-range of bugs and quick wins that never found scope on other
+          teams. One task in particular being a complete audit and resolve for
+          the main application, Course Player. It was a legacy build that
+          required lots of flexbox upgrades &amp; TLC for cross-browser
+          compatibility. The team was also the entry point for onboarding
+          developers, so pairing with new-hires was an ongoing responsibility
+          and opportunity for better understanding mentorship, with guidance
+          from my own mentor{' '}
+          <a
+            href="https://www.linkedin.com/in/evelynmah/"
+            target="_blank"
+            aria-label="Opens a new tab to Evelyn's LinkedIn profile"
+          >
+            Evelyn Mah
+          </a>
+          .
         </P>
       </RoleDetails>
 
@@ -144,55 +182,120 @@ export const Resume: React.VFC = () => (
           2019 was a big year. Our Marketing team was flourishing with projects
           that reached beyond just supporting our customers. It was about
           telling their stories. The engineering team cabled to that momentum by
-          starting a Growth team. Ziming Yang was brought on as Director of
-          Product Growth and Experimentation and Chuiee Yang as our dedicated
-          Senior Product Designer. We formed a small team that facilitated a
-          number of experiments in both our core app and marketing tools. We
-          implemented a system of Test Champions, acting as our own Project
-          Management for the individual experiments, while still collaborating
-          with each other and the broader organization. We made impacts and
-          gathered information that benefited everyone, with a strong focus on
-          the main levers of revenue &amp; retention.
+          starting a Growth team.{' '}
+          <a
+            href="https://www.linkedin.com/in/zimingyang/"
+            target="_blank"
+            aria-label="Opens a new tab to Ziming's LinkedIn profile"
+          >
+            Ziming Yang
+          </a>{' '}
+          was brought on as Director of Product Growth and Experimentation. We
+          were gifted some of the best design talent available,{' '}
+          <a
+            href="https://www.linkedin.com/in/yangchungwon/"
+            target="_blank"
+            aria-label="Opens a new tab to Chuiee's LinkedIn profile"
+          >
+            Chuiee Yang
+          </a>
+          , as our dedicated Senior Product Designer. We formed a small team
+          that facilitated a number of experiments in both our core app and
+          marketing tools. We implemented a system of Test Champions, acting as
+          our own Project Management for the individual experiments, while still
+          collaborating with each other and the broader team. We made
+          long-standing impacts and gathered information to the benefit of
+          everyone, with a strong focus on the main levers of revenue &amp;
+          retention.
         </P>
         <YearHeading>Year Two</YearHeading>
         <P>
-          With the release of Site Builder, there was a need to surface our
-          offerings and value. Marketing began a new branding campaign strategy
-          and with that a new website was needed. I worked closely with both
-          Andrea Merson (Creative Director) and Alex Harris (Sr. Marketing
-          Designer) from ideation to deployment. To be more efficient, I merged
-          the existing GitHub pages (Jekyll) and the blog instance on WPEngine
-          (Wordpress), into one property using the developer-friendly service,
-          Kinsta. Additional responsibilities included: Device/browser
-          compatibility testing, design &amp; code QA, deployment strategy,
-          domain &amp; path forwarding (smart redirects!), and flagging content
-          audits.
+          With the eventual release of Site Builder, there was a clear need to
+          surface our offerings and value. Marketing began a new branding
+          campaign strategy and with that came the need for a new website. I
+          worked closely with both{' '}
+          <a
+            href="https://www.linkedin.com/in/andreamerson/"
+            target="_blank"
+            aria-label="Opens a new tab to Andrea's LinkedIn profile"
+          >
+            Andrea Merson (Creative Director)
+          </a>{' '}
+          and{' '}
+          <a
+            href="https://www.linkedin.com/in/alexharrisdesign/"
+            target="_blank"
+            aria-label="Opens a new tab to Alex's LinkedIn profile"
+          >
+            Alex Harris (Sr. Marketing Designer)
+          </a>{' '}
+          from ideation to deployment. To be more efficient, I merged the
+          existing GitHub pages and WordPress blog, into one site, and moved it
+          over to the developer-friendly service, Kinsta. Additional
+          responsibilities included:{' '}
+          <strong>
+            <em>
+              Device/browser compatibility testing, design &amp; code QA,
+              deployment strategy, domain &amp; path forwarding (smart
+              redirects!), content audits.
+            </em>
+          </strong>
         </P>
         <P>
-          After all the cross-collaboration with engineering, core, marketing
-          &amp; support surrounding the WWW project, it seemed there was a need
-          for a company-wide resource in development. I reached out to Greg
-          Smith (CEO/Co-Founder) about creating a new role for myself. He agreed
-          but ultimately wanted me for something bigger. That's when he told me
-          about "The Flywheel".
+          After all the cross-collaboration with Engineering, CORE, Marketing
+          &amp; Customer Support, while on the WWW project, I detected a lack of
+          company-wide resources in development. I reached out to{' '}
+          <a
+            href="https://www.linkedin.com/in/gregsmith-thinkificceo/"
+            target="_blank"
+            aria-label="Opens a new tab to Greg's LinkedIn profile"
+          >
+            Greg Smith (CEO/Co-Founder)
+          </a>{' '}
+          about creating a new role for myself. He agreed but ultimately wanted
+          me for something bigger.
+          <br />
+          <br />
+          That's when he told me about "The Flywheel".
         </P>
         <YearHeading>Year One</YearHeading>
         <P>
           The initial expectations of my role was centric to helping build upon
           the existing website marketing feature, "Themes". The intent was to
           extend the existing liquid-based templating engine with more advanced
-          &amp; dynamic customization options. Admittly, I spent a great deal of
-          time referencing shopify documentation. Working closely with Nick
-          Foster (Creative Director), we aimed to provide the customer a
-          user-friendly experience in the newly minted react-based Site Builder
-          product, which later transitioned to the guidance of Mike Clay
-          (Product Manager).
+          &amp; dynamic customization options. Admittedly, I spent a great deal
+          of time referencing shopify documentation. Working closely with{' '}
+          <a
+            href="https://www.linkedin.com/in/nickfostr/"
+            target="_blank"
+            aria-label="Opens a new tab to Nick's LinkedIn profile"
+          >
+            Nick Foster (Creative Director)
+          </a>
+          , we aimed to provide the customer with a more modern user-friendly
+          experience with what became Thinkific's first react-based product,
+          Site Builder. Leadership was later transitioned to{' '}
+          <a
+            href="https://www.linkedin.com/in/michael-clay-3a90a310/"
+            target="_blank"
+            aria-label="Opens a new tab to Mike's LinkedIn profile"
+          >
+            Mike Clay (Product Manager)
+          </a>
+          .
         </P>
         <P>
-          With the architecture of Themes &amp; Site Builder ground-work laid,
-          and team growth thriving, development slowed. While a unified design
-          was being built, I was resourced to our marketing team to work on our
-          WWW for some updates to the Home &amp; Feature pages.
+          Although the ground-work architecture of Themes &amp; Site Builder was
+          laid and team growth was thriving, development slowed. I was resourced
+          to our Marketing team to work on our{' '}
+          <a
+            href="https://www.thinkific.com/"
+            target="_blank"
+            aria-label="Opens a new tab to Thinkific.com"
+          >
+            WWW
+          </a>{' '}
+          for some much needed updates on the Home &amp; Feature pages.
         </P>
       </RoleDetails>
     </Company>

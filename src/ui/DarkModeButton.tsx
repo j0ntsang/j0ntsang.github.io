@@ -43,6 +43,7 @@ export const DarkModeButton: React.VFC<DarkModeButtonProps> = ({
       onClick={darkMode.toggle}
       focus="boxShadow"
       css={{
+        all: 'unset',
         width: '36px',
         height: '36px',
         padding: '3px',

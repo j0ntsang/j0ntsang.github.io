@@ -47,10 +47,6 @@ export const darkThemeClass = theme({
 });
 
 export const globalCss = createGlobalCss({
-  // unset all styles on interactive elements
-  'button, input, select, textarea, a, area': {
-    all: 'unset',
-  },
   // box-sizing
   '*, *::before, *::after': {
     boxSizing: 'border-box',

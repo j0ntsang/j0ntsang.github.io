@@ -25,6 +25,7 @@ export const GitHubIconLink: React.VFC<GitHubIconLinkProps> = ({
     rel={newWindow ? 'noopener noreferrer' : undefined}
     focus="boxShadow"
     css={{
+      all: 'unset',
       display: 'inline-block',
       width: '36px',
       height: '36px',
