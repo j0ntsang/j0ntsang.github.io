@@ -79,6 +79,7 @@ export const Resume: React.VFC = () => (
       </P>
     </ResumeHeader>
     <SectionHeading>Letters of recommendation</SectionHeading>
+    <P>Coming soon!</P>
     <StyledUnorderedList>
       <ListHeader header="Thinkific" />
       <StyledListItem>
@@ -108,7 +109,7 @@ export const Resume: React.VFC = () => (
         </RoleTimeframe>
         <ThinkificYear>Year Five</ThinkificYear>
         <P>
-          Actualizing my goals to work more directly with design i opted to move
+          Actualizing my goals to work more directly with design I opted to move
           over to the design system team. Pairing with Nathan Shubert-Harbison,
           he and I were able to prioritize and address the overwhelming backlog
           of accessibility/usability concerns found across the product umbrella.
@@ -133,10 +134,19 @@ export const Resume: React.VFC = () => (
         </RoleTimeframe>
         <ThinkificYear>Year Four</ThinkificYear>
         <P>
-          OUTLINE: Ramping up back-end skills. Bugs &amp; tasks. Course Player
-          flexbox upgrades &amp; cross-browser compatibility. Stripe
-          alias/package improvements. Dedicated onboarding buddy. I want to be a
-          designer.
+          Seeing the benefit in experimentation, we aimed to bring the growth
+          mentality to all other departments. It was adopted heavily by
+          Marketing ICs and new technologies were implemented to facilitate
+          experimentation within Product &amp; Engineering. After another great
+          Black Friday campaign, I sought to focus on being a more well-rounded
+          developer; honing my backend skills and addressing a wide-range of
+          bugs and quick wins that never found scope on other teams. One task in
+          particular being a complete audit and resolve for the main
+          application, Course Player. It was a legacy build that required lots
+          of flexbox upgrades &amp; TLC for cross-browser compatibility. The
+          team was also the entry point for onboarding developers, so pairing
+          with new-hires was an ongoing responsibility and opportunity for
+          better understanding mentorship.
         </P>
       </RoleDetails>
 
@@ -147,46 +157,58 @@ export const Resume: React.VFC = () => (
         </RoleTimeframe>
         <ThinkificYear>Year Three</ThinkificYear>
         <P>
-          OUTLINE: Growth. Test Champions. Ziming, Director of Product Growth
-          and Experiment. Chuiee, Senior Product Designer. Primary Levers:
-          Revenue & Retention
+          2019 was a big year. Our Marketing team was flourishing with projects
+          that reached beyond just supporting our customers. It was about
+          telling their stories. The engineering team cabled to that momentum by
+          starting a Growth team. Ziming Yang was brought on as Director of
+          Product Growth and Experimentation and Chuiee Yang as our dedicated
+          Senior Product Designer. We formed a small team that facilitated a
+          number of experiments throughout both our core app and marketing
+          tools. We implemented a system of Test Champions, acting as our own
+          Project Management for the individual experiments, while still
+          collaborating with each other and the broader organization. We made
+          impacts and gathered information from all over the app, focusing on
+          the main levers of revenue &amp; retention.
         </P>
         <ThinkificYear>Year Two</ThinkificYear>
         <P>
-          With the release of site builder, it was clear the new focus was to
-          help surface our offerings and value. Marketing began a new branding
-          campaign strategy and with that a new website was needed. I worked
-          very closely with both Andrea Merson (Creative Director) and Alex
-          Harris (Sr. Marketing Designer) from ideation to deployment. To be
-          more efficient, i merged the existing github pages (jekyll) and the
-          blog instance on wpengine (wordpress), to one property using a
-          developer-friendly service called Kinsta. Additional responsibilities
-          included: device/browser compatibility testing, design &amp; code qa,
-          deployment strategy, domain &amp; path forwarding, content audits.
+          With the release of Site Builder, there was a need to surface our
+          offerings and value. Marketing began a new branding campaign strategy
+          and with that a new website was needed. I worked closely with both
+          Andrea Merson (Creative Director) and Alex Harris (Sr. Marketing
+          Designer) from ideation to deployment. To be more efficient, I merged
+          the existing GitHub pages (Jekyll) and the blog instance on WPEngine
+          (Wordpress), into one property using the developer-friendly service,
+          Kinsta. Additional responsibilities included: Device/browser
+          compatibility testing, design &amp; code QA, deployment strategy,
+          domain &amp; path forwarding (smart redirects!), and flagging content
+          audits.
+        </P>
+        <P>
           After all the cross-collaboration with engineering, core, marketing
-          &amp; support surrounding the www project, it seemed there was a need
+          &amp; support surrounding the WWW project, it seemed there was a need
           for a company-wide resource in development. I reached out to Greg
-          Smith (CEO/Co-Founder) about a new role for myself, "Internal Tools
-          &amp; Support". He agreed but ultimately wanted me for the new Growth
-          team.
+          Smith (CEO/Co-Founder) about creating a new role for myself. He agreed
+          but ultimately wanted me for something bigger. That's when he told me
+          about "The Flywheel".
         </P>
         <ThinkificYear>Year One</ThinkificYear>
         <P>
           The initial expectations of my role was centric to helping build upon
-          the existing marketing website feature, "themes". The intent was to
+          the existing website marketing feature, "Themes". The intent was to
           extend the existing liquid-based templating engine with more advanced
-          &amp; dynamic customization options. Admittly, i spent a great deal of
+          &amp; dynamic customization options. Admittly, I spent a great deal of
           time referencing shopify documentation. Working closely with Nick
-          Foster (Creative Director), we aimed to allow the customer to have a
-          more user-friendly experience with the newly minted react-based site
-          builder product, which later transitioned to the guidance of Mike Clay
+          Foster (Creative Director), we aimed to provide the customer a
+          user-friendly experience in the newly minted react-based Site Builder
+          product, which later transitioned to the guidance of Mike Clay
           (Product Manager).
         </P>
         <P>
-          The architecture of themes and site builder had it's ground-work and
-          the team was growing; which unified design system, development slowed.
-          I was then, happily, resourced to our marketing team to work on our
-          www for some updates to the home &amp; feature pages.
+          With the architecture of Themes &amp; Site Builder ground-work laid,
+          and team growth thriving, development slowed. While a unified design
+          was being built, I was resourced to our marketing team to work on our
+          WWW for some updates to the Home &amp; Feature pages.
         </P>
       </RoleDetails>
     </Company>
