@@ -59,9 +59,8 @@ export const globalCss = createGlobalCss({
     padding: 0,
     margin: 0,
     lineHeight: '1.8rem',
-    letterSpacing: '.3px',
     color: '$highContrast',
-    fontFamily: 'Barlow, sans-serif',
+    fontFamily: 'Rajdhani, sans-serif',
     // use word-break instead of "overflow-wrap: anywhere" because of Safari support
     wordBreak: 'break-word',
     WebkitFontSmoothing: 'antialiased',
