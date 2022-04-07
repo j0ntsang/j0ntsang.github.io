@@ -1,7 +1,7 @@
 {
   "name": "j0ntsang.github.io",
   "version": "0.0.1",
-  "homepage": "https://jontsang.ca",
+  "homepage": "https://j0ntsang.github.io",
   "private": true,
   "scripts": {
     "predeploy": "npm run build",
