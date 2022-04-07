@@ -1,6 +1,27 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+const AppContainer = styled.div`
+  width: 100%;
+  padding: 24px 16px 40px;
+  margin: 0 auto;
+  @media (min-width: 768px) {
+    max-width: 768px;
+  }
+`;
+
+const HeaderContainer = styled.header`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+`;
+
+const H1 = styled.h1`
+  font-size: 32px;
+`;
+
 const ResumeHeader = styled.header`
   marginBottom: '32px',
   '@media (min-width: 768px)': {
@@ -15,27 +36,27 @@ const P = styled.p`
 `;
 
 const PreviousRole = styled.h2`
-  fontSize: '1.25rem',
+  font-size: 1.25rem;
 `;
 
 const SectionHeading = styled.h3`
-  fontSize: '1.25rem',
-  fontWeight: '300',
-  textTransform: 'uppercase',
+  font-size: 1.25rem;
+  font-weight: 300;
+  text-transform: uppercase,
 `;
 
 const Company = styled.section``;
 
 const CompanyName = styled.h4`
-  margin: 0,
+  margin: 0;
 `;
 
 const Role = styled.h5`
-  margin: '0 0 8px',
+  margin: 0 0 8px;
 `;
 
 const YearHeading = styled.h6`
-  margin: 0,
+  margin: 0;
 `;
 
 const RoleTimeframe = styled.time``;
@@ -44,19 +65,11 @@ const City = styled.address``;
 
 const RoleDetails = styled.section``;
 
-const StyledUnorderedList = styled.ul`
-  marginBottom: '40px',
-  padding: '0 0 0 16px',
-  listStyle: 'none',
-`;
-
-const StyledListItem = styled.li`
-  marginBottom: '8px',
-  paddingLeft: '16px',
-`;
-
 export const Resume: React.VFC = () => (
-  <>
+  <AppContainer>
+    <HeaderContainer>
+      <H1>Jonathan Tsang</H1>
+    </HeaderContainer>
     <ResumeHeader>
       <PreviousRole>
         Former Senior Design System Engineer at Thinkific
@@ -338,5 +351,5 @@ export const Resume: React.VFC = () => (
         best-practice &amp; process standards innovation and new-hires support.
       </P>
     </Company>
-  </>
+  </AppContainer>
 );
