@@ -126,7 +126,7 @@ export const Resume: React.VFC = () => (
     <SectionHeading>Recent Experience</SectionHeading>
     <Company>
       <CompanyName>Thinkific Labs Inc.</CompanyName>
-      <CompanyDetails>Educational Technology · Vancouver, BC · 5 years</CompanyDetails>
+      <CompanyDetails>Education Technology · Vancouver, BC · 5 years</CompanyDetails>
       <Role>Senior Design System Engineer</Role>
       <RoleDetails>
         <RoleTimeframe dateTime="2021-06-01/2022-03-30">
