@@ -5,14 +5,30 @@ const AppContainer = styled.div`
   width: 100%;
   padding: 24px 16px 40px;
   margin: 0 auto;
+
   @media (min-width: 768px) {
     max-width: 768px;
   }
 `;
 
 const H1 = styled.h1`
+  display: flex;
+  flex-direction: column;
   margin: 0 0 24px;
   font-size: 2.75rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: baseline;
+  }
+`;
+
+const Tagline = styled.span`
+  font-size: 20px;
+
+  @media (min-width: 768px) {
+    margin: 0 0 0 16px;
+  }
 `;
 
 const ResumeHeader = styled.header`
@@ -24,25 +40,9 @@ const ResumeHeader = styled.header`
   }
 `;
 
-const MissionStatement = styled.p`
-  margin: 0 0 40px;
-  fontSize: 1rem;
-  lineHeight: 1.6rem;
-`;
-
-const P = styled.p`
-  margin: 0 0 1rem;
-  fontSize: 1rem;
-  lineHeight: 1.6rem;
-
-  @media (min-width: 768px) {
-    padding-left: 24px;
-  }
-`;
-
 const PreviousRole = styled.h2`
   margin: 0 0 8px;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   line-height: normal;
 `;
 
@@ -50,12 +50,6 @@ const SectionHeading = styled.h3`
   margin: 32px 0;
   font-size: 1.75rem;
   font-weight: 300;
-`;
-
-const Company = styled.section`
-  position: relative;
-  margin: 32px 0 32px;
-  padding-left: 16px;
 `;
 
 const CompanyName = styled.h4`
@@ -79,6 +73,27 @@ const YearHeading = styled.h6`
   }
 `;
 
+const MissionStatement = styled.p`
+  margin: 0 0 40px;
+  font-size: 1.1rem;
+`;
+
+const P = styled.p`
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  line-height: 1.6rem;
+
+  @media (min-width: 768px) {
+    padding-left: 24px;
+  }
+`;
+
+const Company = styled.section`
+  position: relative;
+  margin: 32px 0 32px;
+  padding-left: 16px;
+`;
+
 const RoleTimeframe = styled.time`
   display: block;
   margin: 0 0 16px;
@@ -95,7 +110,10 @@ const RoleDetails = styled.section``;
 export const Resume: React.VFC = () => (
   <AppContainer>
     <ResumeHeader>
-    <H1>Jonathan Tsang</H1>
+      <H1>
+        Jonathan Tsang
+        <Tagline>A11y Advocate & CSS Connoisseur</Tagline>
+      </H1>
       <PreviousRole>
         Former Senior Design System Engineer at Thinkific
       </PreviousRole>
