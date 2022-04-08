@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/j0ntsang.github.io/static/css/main.e8885bb5.css",
-    "main.js": "/j0ntsang.github.io/static/js/main.0ff8ee2f.js",
-    "index.html": "/j0ntsang.github.io/index.html",
-    "main.e8885bb5.css.map": "/j0ntsang.github.io/static/css/main.e8885bb5.css.map",
-    "main.0ff8ee2f.js.map": "/j0ntsang.github.io/static/js/main.0ff8ee2f.js.map"
+    "main.css": "https://jontsang.ca/static/css/main.e8885bb5.css",
+    "main.js": "https://jontsang.ca/static/js/main.04189f3e.js",
+    "index.html": "https://jontsang.ca/index.html",
+    "main.e8885bb5.css.map": "https://jontsang.ca/static/css/main.e8885bb5.css.map",
+    "main.04189f3e.js.map": "https://jontsang.ca/static/js/main.04189f3e.js.map"
   },
   "entrypoints": [
     "static/css/main.e8885bb5.css",
-    "static/js/main.0ff8ee2f.js"
+    "static/js/main.04189f3e.js"
   ]
 }
