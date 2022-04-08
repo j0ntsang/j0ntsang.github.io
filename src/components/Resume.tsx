@@ -10,86 +10,109 @@ const AppContainer = styled.div`
   }
 `;
 
-const HeaderContainer = styled.header`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-`;
-
 const H1 = styled.h1`
-  font-size: 32px;
+  margin: 0 0 24px;
+  font-size: 2.75rem;
 `;
 
 const ResumeHeader = styled.header`
-  marginBottom: '32px',
-  '@media (min-width: 768px)': {
-    marginBottom: '60px',
-  },
+  margin: 0 0 32px;
+  padding: 32px 0 0;
+
+  @media (min-width: 768px) {
+    margin: 0 0 60px;
+  }
+`;
+
+const MissionStatement = styled.p`
+  margin: 0 0 40px;
+  fontSize: 1rem;
+  lineHeight: 1.6rem;
 `;
 
 const P = styled.p`
-  margin: '1rem 0',
-  fontSize: '1rem',
-  lineHeight: '1.6rem',
+  margin: 0 0 1rem;
+  fontSize: 1rem;
+  lineHeight: 1.6rem;
+
+  @media (min-width: 768px) {
+    padding-left: 24px;
+  }
 `;
 
 const PreviousRole = styled.h2`
-  font-size: 1.25rem;
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+  line-height: normal;
 `;
 
 const SectionHeading = styled.h3`
-  font-size: 1.25rem;
+  margin: 32px 0;
+  font-size: 1.75rem;
   font-weight: 300;
-  text-transform: uppercase,
 `;
 
-const Company = styled.section``;
+const Company = styled.section`
+  position: relative;
+  margin: 32px 0 32px;
+  padding-left: 16px;
+`;
 
 const CompanyName = styled.h4`
   margin: 0;
+  font-size: 1.5rem;
+  text-transform: uppercase;
 `;
 
 const Role = styled.h5`
-  margin: 0 0 8px;
+  margin: 32px 0 0;
+  font-size: 1.25rem;
 `;
 
 const YearHeading = styled.h6`
-  margin: 0;
+  position: relative;
+  margin: 16px 0 0;
+  font-size: 1rem;
+
+  @media (min-width: 768px) {
+    padding-left: 24px;
+  }
 `;
 
-const RoleTimeframe = styled.time``;
+const RoleTimeframe = styled.time`
+  display: block;
+  margin: 0 0 16px;
+`;
 
-const City = styled.address``;
+const CompanyDetails = styled.section`
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 600;
+`;
 
 const RoleDetails = styled.section``;
 
 export const Resume: React.VFC = () => (
   <AppContainer>
-    <HeaderContainer>
-      <H1>Jonathan Tsang</H1>
-    </HeaderContainer>
     <ResumeHeader>
+    <H1>Jonathan Tsang</H1>
       <PreviousRole>
         Former Senior Design System Engineer at Thinkific
       </PreviousRole>
-      <P>
+      <MissionStatement>
         Looking forward to the next opportunity that allows me to continue
         helping make the web more accessible &amp; usable for everyone.{' '}
         <strong>This project is a work in progress.</strong>
-      </P>
+      </MissionStatement>
     </ResumeHeader>
-    <SectionHeading>Letters of recommendation</SectionHeading>
-    <P>Coming soon!</P>
-    <SectionHeading>Experience</SectionHeading>
+    <SectionHeading>Recent Experience</SectionHeading>
     <Company>
-      <CompanyName>Thinkific</CompanyName>
-      <City>Vancouver, BC</City>
+      <CompanyName>Thinkific Labs Inc.</CompanyName>
+      <CompanyDetails>Educational Technology · Vancouver, BC · 5 years</CompanyDetails>
       <Role>Senior Design System Engineer</Role>
       <RoleDetails>
         <RoleTimeframe dateTime="2021-06-01/2022-03-30">
-          June 2021 &ndash; March 2022 · 10 mos
+          June 2021 &ndash; March 2022
         </RoleTimeframe>
         <YearHeading>Year Five</YearHeading>
         <P>
@@ -147,7 +170,7 @@ export const Resume: React.VFC = () => (
       <Role>Senior Front End Engineer</Role>
       <RoleDetails>
         <RoleTimeframe dateTime="2020-10-01/2021-06-30">
-          October 2020 &ndash; June 2021 · 9 mos
+          October 2020 &ndash; June 2021
         </RoleTimeframe>
         <YearHeading>Year Four</YearHeading>
         <P>
@@ -180,7 +203,7 @@ export const Resume: React.VFC = () => (
       <Role>Intermediate Front End Engineer</Role>
       <RoleDetails>
         <RoleTimeframe dateTime="2017-04-17/2020-10-01">
-          April 2017 &ndash; October 2020 · 3 yr 7 mos
+          April 2017 &ndash; October 2020
         </RoleTimeframe>
         <YearHeading>Year Three</YearHeading>
         <P>
@@ -263,10 +286,7 @@ export const Resume: React.VFC = () => (
             Greg Smith (CEO/Co-Founder)
           </a>{' '}
           about creating a new role for myself. He agreed but ultimately wanted
-          me for something bigger.
-          <br />
-          <br />
-          That's when he told me about "The Flywheel".
+          me for something bigger. That's when he told me about "The Flywheel".
         </P>
         <YearHeading>Year One</YearHeading>
         <P>
@@ -312,12 +332,15 @@ export const Resume: React.VFC = () => (
         </P>
       </RoleDetails>
     </Company>
+    <SectionHeading>Letters of Recommendation</SectionHeading>
+    <P>Coming soon!</P>
+    <SectionHeading>Previous Experience</SectionHeading>
     <Company>
       <CompanyName>Kellett Communications</CompanyName>
       <Role>Full Stack Developer</Role>
-      <City>Yellowknife, Northwest Territories</City>
+      <CompanyDetails>Marketing Agency · Yellowknife, NWT · 6 months</CompanyDetails>
       <RoleTimeframe dateTime="2016-10-01/2017-03-31">
-        October 2016 &ndash; March 2017 · 6 mos
+        October 2016 &ndash; March 2017
       </RoleTimeframe>
       <P>
         Responsible for determining and planning architecture, layout, scoping
@@ -334,9 +357,9 @@ export const Resume: React.VFC = () => (
     <Company>
       <CompanyName>Outcrop Communications Ltd.</CompanyName>
       <Role>Web Developer</Role>
-      <City>Yellowknife, Northwest Territories</City>
+      <CompanyDetails>Marketing Agency · Yellowknife, NWT · 1 yr 4 months</CompanyDetails>
       <RoleTimeframe dateTime="2015-06-01/2011-09-30">
-        June 2015 &ndash; Sept 2016 · 1 yr 4 mos
+        June 2015 &ndash; Sept 2016
       </RoleTimeframe>
       <P>
         Originally signed to task for front-end development of theming and
