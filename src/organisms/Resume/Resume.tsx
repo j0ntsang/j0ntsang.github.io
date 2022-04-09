@@ -1,135 +1,28 @@
 import * as React from 'react';
-import styled from 'styled-components';
 
-const AppContainer = styled.main`
-  position: relative;
-  width: 100%;
-  padding: 24px 16px 40px;
-  margin: 0 auto;
-
-  @media (min-width: 768px) {
-    max-width: 768px;
-  }
-`;
-
-const H1 = styled.h1`
-  display: flex;
-  flex-direction: column;
-  margin: 0 0 24px;
-  font-size: 2.75rem;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: baseline;
-  }
-`;
-
-const Tagline = styled.span`
-  font-size: 20px;
-
-  @media (min-width: 768px) {
-    margin: 0 0 0 16px;
-  }
-`;
-
-const ResumeHeader = styled.header`
-  margin: 0 0 32px;
-  padding: 32px 0 0;
-
-  @media (min-width: 768px) {
-    margin: 0 0 60px;
-  }
-`;
-
-const PreviousRole = styled.h2`
-  margin: 0 0 8px;
-  font-size: 1.6rem;
-  line-height: normal;
-`;
-
-const SectionHeading = styled.h3`
-  margin: 32px 0 24px;
-  font-size: 1.5rem;
-  font-weight: 300;
-  letter-spacing: .3px;
-  text-transform: uppercase;
-`;
-
-const CompanyName = styled.h4`
-  position: sticky;
-  top: 0;
-  margin: 0;
-  padding: 8px 0;
-  background: #ffffff;
-  font-size: 1.5rem;
-  font-weight: 400;
-  z-index: 1;
-`;
-
-const Role = styled.h5`
-  margin: 32px 0 0;
-  padding-bottom: 8px;
-  position: sticky;
-  top: 2.25rem;
-  background: #ffffff;
-  font-size: 1.25rem;
-  font-weight: 400;
-  z-index: 2;
-`;
-
-const YearHeading = styled.h6`
-  position: relative;
-  margin: 16px 0 0;
-  font-size: .889rem;
-  text-transform: uppercase;
-
-  @media (min-width: 768px) {
-    padding-left: 24px;
-  }
-`;
-
-const MissionStatement = styled.p`
-  margin: 0 0 40px;
-  font-size: 1.1rem;
-`;
-
-const P = styled.p`
-  margin: 0 0 1rem;
-  font-size: 1rem;
-  line-height: 1.6rem;
-
-  @media (min-width: 768px) {
-    padding-left: 24px;
-  }
-`;
-
-const Company = styled.section`
-  position: relative;
-  margin: 32px 0 32px;
-  padding-left: 16px;
-`;
-
-const RoleTimeframe = styled.time`
-  display: block;
-  margin: 0 0 16px;
-  font-weight: 300;
-  line-height: 1;
-`;
-
-const CompanyDetails = styled.section`
-  margin: 0;
-  font-weight: 300;
-`;
-
-const RoleDetails = styled.section``;
+import AppContainer from '../../templates/AppContainer';
+import ResumeHeader from './components/ResumeHeader';
+import YourName from './components/YourName';
+import Tagline from './components/Tagline';
+import PreviousRole from './components/PreviousRole';
+import MissionStatement from './components/MissionStatement';
+import SectionHeading from './components/SectionHeading';
+import Company from './components/Company';
+import CompanyName from './components/CompanyName';
+import CompanyDetails from './components/CompanyDetails';
+import Role from './components/Role';
+import RoleDetails from './components/RoleDetails';
+import RoleDescription from './components/RoleDescription';
+import RoleTimeframe from './components/RoleTimeframe';
+import YearHeading from './components/YearHeading';
 
 export const Resume: React.VFC = () => (
   <AppContainer>
     <ResumeHeader>
-      <H1>
+      <YourName>
         Jonathan Tsang
         <Tagline>A11y Advocate & CSS Connoisseur</Tagline>
-      </H1>
+      </YourName>
       <PreviousRole>
         Former Senior Design System Engineer at Thinkific
       </PreviousRole>
@@ -149,7 +42,7 @@ export const Resume: React.VFC = () => (
           June 2021 &ndash; March 2022
         </RoleTimeframe>
         <YearHeading>Year Five</YearHeading>
-        <P>
+        <RoleDescription>
           Actualizing my goals to work more directly with Design I opted to move
           over to the design system team ("TOGA"). Pairing with{' '}
           <a
@@ -182,8 +75,8 @@ export const Resume: React.VFC = () => (
           </a>
           , we crafted a more strategic roadmap that focused on education and
           alignment of Engineering to Design guidelines &amp; needs.
-        </P>
-        <P>
+        </RoleDescription>
+        <RoleDescription>
           We then sought to implement a tool called{' '}
           <a
             href="https://github.com/moroshko/react-scanner"
@@ -198,7 +91,7 @@ export const Resume: React.VFC = () => (
           analyzed packages via Semaphore, stored the JSONL output to an AWS S3
           bucket, ingested them with BigQuery and built visualization reports on
           Mode Analytics...
-        </P>
+        </RoleDescription>
       </RoleDetails>
 
       <Role>Senior Front End Engineer</Role>
@@ -207,7 +100,7 @@ export const Resume: React.VFC = () => (
           October 2020 &ndash; June 2021
         </RoleTimeframe>
         <YearHeading>Year Four</YearHeading>
-        <P>
+        <RoleDescription>
           Seeing the benefit in experimentation, we aimed to bring the growth
           mentality to all other departments. It was adopted heavily by
           Marketing ICs and new technologies were added to pave the way for
@@ -231,7 +124,7 @@ export const Resume: React.VFC = () => (
             Evelyn Mah
           </a>
           .
-        </P>
+        </RoleDescription>
       </RoleDetails>
 
       <Role>Intermediate Front End Engineer</Role>
@@ -240,7 +133,7 @@ export const Resume: React.VFC = () => (
           April 2017 &ndash; October 2020
         </RoleTimeframe>
         <YearHeading>Year Three</YearHeading>
-        <P>
+        <RoleDescription>
           2019 was a big year. Our Marketing team was flourishing with projects
           that reached beyond just supporting our customers. It was about
           telling their stories. The engineering team cabled to that momentum by
@@ -271,9 +164,9 @@ export const Resume: React.VFC = () => (
           long-standing impacts and gathered information to the benefit of
           everyone, with a strong focus on the main levers of revenue &amp;
           retention.
-        </P>
+        </RoleDescription>
         <YearHeading>Year Two</YearHeading>
-        <P>
+        <RoleDescription>
           With the eventual release of Site Builder, there was a clear need to
           surface our offerings and value. Marketing began a new branding
           campaign strategy and with that came the need for a new website. I
@@ -306,8 +199,8 @@ export const Resume: React.VFC = () => (
               redirects!), content audits.
             </em>
           </strong>
-        </P>
-        <P>
+        </RoleDescription>
+        <RoleDescription>
           After all the cross-collaboration with Engineering, CORE, Marketing
           &amp; Customer Support, while on the WWW project, I detected a lack of
           company-wide resources in development. I reached out to{' '}
@@ -321,9 +214,9 @@ export const Resume: React.VFC = () => (
           </a>{' '}
           about creating a new role for myself. He agreed but ultimately wanted
           me for something bigger. That's when he told me about "The Flywheel".
-        </P>
+        </RoleDescription>
         <YearHeading>Year One</YearHeading>
-        <P>
+        <RoleDescription>
           The initial expectations of my role was centric to helping build upon
           the existing website marketing feature, "Themes". The intent was to
           extend the existing liquid-based templating engine with more advanced
@@ -349,8 +242,8 @@ export const Resume: React.VFC = () => (
             Mike Clay (Product Manager)
           </a>
           .
-        </P>
-        <P>
+        </RoleDescription>
+        <RoleDescription>
           Although the ground-work architecture of Themes &amp; Site Builder was
           laid and team growth was thriving, development slowed. I was resourced
           to our Marketing team to work on our{' '}
@@ -363,11 +256,11 @@ export const Resume: React.VFC = () => (
             WWW
           </a>{' '}
           for some much needed updates on the Home &amp; Feature pages.
-        </P>
+        </RoleDescription>
       </RoleDetails>
     </Company>
     <SectionHeading>Letters of Recommendation</SectionHeading>
-    <P>Coming soon!</P>
+    <RoleDescription>Coming soon!</RoleDescription>
     <SectionHeading>Previous Experience</SectionHeading>
     <Company>
       <CompanyName>Kellett Communications</CompanyName>
@@ -376,7 +269,7 @@ export const Resume: React.VFC = () => (
       <RoleTimeframe dateTime="2016-10-01/2017-03-31">
         October 2016 &ndash; March 2017
       </RoleTimeframe>
-      <P>
+      <RoleDescription>
         Responsible for determining and planning architecture, layout, scoping
         projects, estimating hours, reviewing all materials, including checking
         estimates and specifications. Other duties include technical leadership
@@ -386,16 +279,16 @@ export const Resume: React.VFC = () => (
         maintain creative process and vision. Maintenance contracts or
         engagements. Working with account managers to successfully manage client
         relationships.
-      </P>
+      </RoleDescription>
     </Company>
     <Company>
       <CompanyName>Outcrop Communications Ltd.</CompanyName>
-      <CompanyDetails>Marketing Agency · Yellowknife, NWT · 1 yr 4 months</CompanyDetails>
+      <CompanyDetails>Marketing Agency · Yellowknife, NWT · 1 year 4 months</CompanyDetails>
       <Role>Web Developer</Role>
       <RoleTimeframe dateTime="2015-06-01/2011-09-30">
         June 2015 &ndash; Sept 2016
       </RoleTimeframe>
-      <P>
+      <RoleDescription>
         Originally signed to task for front-end development of theming and
         functionality; expanding needs lead to cover any and all areas that
         required immediate action or to close up the divide. Responsibilities
@@ -406,7 +299,9 @@ export const Resume: React.VFC = () => (
         of the larger clients site portfolio (WSCC). Other duties include
         detailing technical documentation, site planning/wireframing,
         best-practice &amp; process standards innovation and new-hires support.
-      </P>
+      </RoleDescription>
     </Company>
   </AppContainer>
 );
+
+export default Resume;
