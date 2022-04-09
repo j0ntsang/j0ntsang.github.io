@@ -1,7 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-const AppContainer = styled.div`
+const AppContainer = styled.main`
+  position: relative;
   width: 100%;
   padding: 24px 16px 40px;
   margin: 0 auto;
@@ -47,26 +48,40 @@ const PreviousRole = styled.h2`
 `;
 
 const SectionHeading = styled.h3`
-  margin: 32px 0;
-  font-size: 1.75rem;
+  margin: 32px 0 24px;
+  font-size: 1.5rem;
   font-weight: 300;
+  letter-spacing: .3px;
+  text-transform: uppercase;
 `;
 
 const CompanyName = styled.h4`
+  position: sticky;
+  top: 0;
   margin: 0;
+  padding: 8px 0;
+  background: #ffffff;
   font-size: 1.5rem;
-  text-transform: uppercase;
+  font-weight: 400;
+  z-index: 1;
 `;
 
 const Role = styled.h5`
   margin: 32px 0 0;
+  padding-bottom: 8px;
+  position: sticky;
+  top: 2.25rem;
+  background: #ffffff;
   font-size: 1.25rem;
+  font-weight: 400;
+  z-index: 2;
 `;
 
 const YearHeading = styled.h6`
   position: relative;
   margin: 16px 0 0;
-  font-size: 1rem;
+  font-size: .889rem;
+  text-transform: uppercase;
 
   @media (min-width: 768px) {
     padding-left: 24px;
@@ -97,12 +112,13 @@ const Company = styled.section`
 const RoleTimeframe = styled.time`
   display: block;
   margin: 0 0 16px;
+  font-weight: 300;
+  line-height: 1;
 `;
 
 const CompanyDetails = styled.section`
   margin: 0;
-  text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 300;
 `;
 
 const RoleDetails = styled.section``;
@@ -355,8 +371,8 @@ export const Resume: React.VFC = () => (
     <SectionHeading>Previous Experience</SectionHeading>
     <Company>
       <CompanyName>Kellett Communications</CompanyName>
-      <Role>Full Stack Developer</Role>
       <CompanyDetails>Marketing Agency · Yellowknife, NWT · 6 months</CompanyDetails>
+      <Role>Full Stack Developer</Role>
       <RoleTimeframe dateTime="2016-10-01/2017-03-31">
         October 2016 &ndash; March 2017
       </RoleTimeframe>
@@ -374,8 +390,8 @@ export const Resume: React.VFC = () => (
     </Company>
     <Company>
       <CompanyName>Outcrop Communications Ltd.</CompanyName>
-      <Role>Web Developer</Role>
       <CompanyDetails>Marketing Agency · Yellowknife, NWT · 1 yr 4 months</CompanyDetails>
+      <Role>Web Developer</Role>
       <RoleTimeframe dateTime="2015-06-01/2011-09-30">
         June 2015 &ndash; Sept 2016
       </RoleTimeframe>
