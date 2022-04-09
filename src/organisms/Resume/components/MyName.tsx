@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
-const YourName = styled.h1`
+const MyName = styled.h1`
   display: flex;
   flex-direction: column;
-  margin: 0 0 24px;
+  margin: 0;
   font-size: 2.75rem;
+  line-height: normal;
 
   @media (min-width: 768px) {
     flex-direction: row;
@@ -12,4 +13,4 @@ const YourName = styled.h1`
   }
 `;
 
-export default YourName;
+export default MyName;
