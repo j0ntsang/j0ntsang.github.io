@@ -7,10 +7,12 @@ import Tagline from "./components/Tagline";
 import PreviousRole from "./components/PreviousRole";
 import MissionStatement from "./components/MissionStatement";
 import SectionHeading from "./components/SectionHeading";
+import SectionDivider from "./components/SectionDivider";
 import Company from "./components/Company";
 import CompanyName from "./components/CompanyName";
 import CompanyDetails from "./components/CompanyDetails";
 import Role from "./components/Role";
+import RoleDivider from "./components/RoleDivider";
 import RoleDetails from "./components/RoleDetails";
 import RoleDescription from "./components/RoleDescription";
 import RoleTimeframe from "./components/RoleTimeframe";
@@ -131,6 +133,8 @@ export const Resume: React.VFC = () => {
           </SkillsFocusWrapper>
         </RoleDetails>
 
+        <RoleDivider />
+
         <Role>Senior Front End Engineer</Role>
         <RoleDetails>
           <RoleTimeframe dateTime="2020-10-01/2021-06-30">
@@ -185,6 +189,8 @@ export const Resume: React.VFC = () => {
             </SkillsFocusList>
           </SkillsFocusWrapper>
         </RoleDetails>
+
+        <RoleDivider />
 
         <Role>Intermediate Front End Engineer</Role>
         <RoleDetails>
@@ -251,6 +257,7 @@ export const Resume: React.VFC = () => {
               <SkillsFocusListItem>WordPress/PHP</SkillsFocusListItem>
             </SkillsFocusList>
           </SkillsFocusWrapper>
+          <SectionDivider />
           <RoleDescriptionHeading>Year Two</RoleDescriptionHeading>
           <RoleDescription>
             With the eventual release of Site Builder, there was a clear need to
@@ -302,6 +309,7 @@ export const Resume: React.VFC = () => {
             wanted me for something bigger. That's when he told me about "The
             Flywheel".
           </RoleDescription>
+          <RoleDescriptionHeading>Skill Focus</RoleDescriptionHeading>
           <SkillsFocusWrapper>
             <SkillsFocusList>
               <SkillsFocusListHeading>Languages</SkillsFocusListHeading>
@@ -318,6 +326,7 @@ export const Resume: React.VFC = () => {
               <SkillsFocusListItem>Zendesk</SkillsFocusListItem>
             </SkillsFocusList>
           </SkillsFocusWrapper>
+          <SectionDivider />
           <RoleDescriptionHeading>Year One</RoleDescriptionHeading>
           <RoleDescription>
             The initial expectations of my role was centric to helping build
@@ -361,6 +370,7 @@ export const Resume: React.VFC = () => {
             </a>{" "}
             for some much needed updates on the Home &amp; Feature pages.
           </RoleDescription>
+          <RoleDescriptionHeading>Skill Focus</RoleDescriptionHeading>
           <SkillsFocusWrapper>
             <SkillsFocusList>
               <SkillsFocusListHeading>Languages</SkillsFocusListHeading>
