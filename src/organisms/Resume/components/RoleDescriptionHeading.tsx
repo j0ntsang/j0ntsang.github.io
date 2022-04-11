@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 
-const YearHeading = styled.h6`
+const RoleDescriptionHeading = styled.h6`
   position: relative;
-  margin: 16px 0 0;
-  font-size: .889rem;
+  margin: 32px 0 0;
+  font-size: 20px;
+  font-weight: 600;
   text-transform: uppercase;
 
   @media (min-width: 768px) {
@@ -11,4 +12,4 @@ const YearHeading = styled.h6`
   }
 `;
 
-export default YearHeading;
+export default RoleDescriptionHeading;

@@ -14,9 +14,15 @@ import Role from "./components/Role";
 import RoleDetails from "./components/RoleDetails";
 import RoleDescription from "./components/RoleDescription";
 import RoleTimeframe from "./components/RoleTimeframe";
-import YearHeading from "./components/YearHeading";
+import RoleDescriptionHeading from "./components/RoleDescriptionHeading";
 import PreviousWorkExperience from "./components/PreviousWorkExperience";
 import TogglePreviousWork from "./components/TogglePreviousWork";
+import {
+  SkillsFocusWrapper,
+  SkillsFocusList,
+  SkillsFocusListHeading,
+  SkillsFocusListItem,
+} from "./components/SkillsFocus";
 
 export const Resume: React.VFC = () => {
   const [showPreviousWork, setShowPreviousWork] = useState(false);
@@ -24,9 +30,7 @@ export const Resume: React.VFC = () => {
   return (
     <AppContainer>
       <ResumeHeader>
-        <MyName>
-          Jonathan Tsang
-        </MyName>
+        <MyName>Jonathan Tsang</MyName>
         <Tagline>A11y Advocate & CSS Connoisseur</Tagline>
         <PreviousRole>
           Former Senior Design System Engineer at Thinkific
@@ -48,7 +52,7 @@ export const Resume: React.VFC = () => {
           <RoleTimeframe dateTime="2021-06-01/2022-03-30">
             June 2021 &ndash; March 2022
           </RoleTimeframe>
-          <YearHeading>Year Five</YearHeading>
+          <RoleDescriptionHeading>Year Five</RoleDescriptionHeading>
           <RoleDescription>
             Actualizing my goals to work more directly with Design I opted to
             move over to the design system team ("TOGA"). Pairing with{" "}
@@ -99,6 +103,32 @@ export const Resume: React.VFC = () => {
             S3 bucket, ingested them with BigQuery and built visualization
             reports on Mode Analytics...
           </RoleDescription>
+          <RoleDescriptionHeading>Skill Focus</RoleDescriptionHeading>
+          <SkillsFocusWrapper>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>Languages</SkillsFocusListHeading>
+              <SkillsFocusListItem>CSS/HTML</SkillsFocusListItem>
+              <SkillsFocusListItem>React</SkillsFocusListItem>
+              <SkillsFocusListItem>TypeScript</SkillsFocusListItem>
+            </SkillsFocusList>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>
+                Build-chain &amp; Frameworks
+              </SkillsFocusListHeading>
+              <SkillsFocusListItem>Gatsby</SkillsFocusListItem>
+              <SkillsFocusListItem>Webpack</SkillsFocusListItem>
+              <SkillsFocusListItem>React Scanner</SkillsFocusListItem>
+            </SkillsFocusList>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>
+                Apps &amp; Services
+              </SkillsFocusListHeading>
+              <SkillsFocusListItem>GitHub</SkillsFocusListItem>
+              <SkillsFocusListItem>Semaphore</SkillsFocusListItem>
+              <SkillsFocusListItem>AWS</SkillsFocusListItem>
+              <SkillsFocusListItem>Mode Analytics</SkillsFocusListItem>
+            </SkillsFocusList>
+          </SkillsFocusWrapper>
         </RoleDetails>
 
         <Role>Senior Front End Engineer</Role>
@@ -106,7 +136,7 @@ export const Resume: React.VFC = () => {
           <RoleTimeframe dateTime="2020-10-01/2021-06-30">
             October 2020 &ndash; June 2021
           </RoleTimeframe>
-          <YearHeading>Year Four</YearHeading>
+          <RoleDescriptionHeading>Year Four</RoleDescriptionHeading>
           <RoleDescription>
             Seeing the benefit in experimentation, we aimed to bring the growth
             mentality to all other departments. It was adopted heavily by
@@ -132,6 +162,28 @@ export const Resume: React.VFC = () => {
             </a>
             .
           </RoleDescription>
+          <RoleDescriptionHeading>Skill Focus</RoleDescriptionHeading>
+          <SkillsFocusWrapper>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>Languages</SkillsFocusListHeading>
+              <SkillsFocusListItem>CSS/HTML</SkillsFocusListItem>
+              <SkillsFocusListItem>React</SkillsFocusListItem>
+              <SkillsFocusListItem>Ember</SkillsFocusListItem>
+              <SkillsFocusListItem>Ruby On Rails</SkillsFocusListItem>
+            </SkillsFocusList>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>
+                Framework &amp; Platform
+              </SkillsFocusListHeading>
+              <SkillsFocusListItem>WordPress/PHP</SkillsFocusListItem>
+              <SkillsFocusListItem>Kinsta</SkillsFocusListItem>
+            </SkillsFocusList>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>Cloud Services</SkillsFocusListHeading>
+              <SkillsFocusListItem>CodeClimate</SkillsFocusListItem>
+              <SkillsFocusListItem>LaunchDarkly</SkillsFocusListItem>
+            </SkillsFocusList>
+          </SkillsFocusWrapper>
         </RoleDetails>
 
         <Role>Intermediate Front End Engineer</Role>
@@ -139,7 +191,7 @@ export const Resume: React.VFC = () => {
           <RoleTimeframe dateTime="2017-04-17/2020-10-01">
             April 2017 &ndash; October 2020
           </RoleTimeframe>
-          <YearHeading>Year Three</YearHeading>
+          <RoleDescriptionHeading>Year Three</RoleDescriptionHeading>
           <RoleDescription>
             2019 was a big year. Our Marketing team was flourishing with
             projects that reached beyond just supporting our customers. It was
@@ -172,7 +224,34 @@ export const Resume: React.VFC = () => {
             everyone, with a strong focus on the main levers of revenue &amp;
             retention.
           </RoleDescription>
-          <YearHeading>Year Two</YearHeading>
+          <RoleDescriptionHeading>Skill Focus</RoleDescriptionHeading>
+          <SkillsFocusWrapper>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>Languages</SkillsFocusListHeading>
+              <SkillsFocusListItem>CSS/HTML</SkillsFocusListItem>
+              <SkillsFocusListItem>React</SkillsFocusListItem>
+              <SkillsFocusListItem>Svelte</SkillsFocusListItem>
+              <SkillsFocusListItem>Ruby On Rails</SkillsFocusListItem>
+              <SkillsFocusListItem>Ember</SkillsFocusListItem>
+            </SkillsFocusList>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>
+                Apps &amp; Services
+              </SkillsFocusListHeading>
+              <SkillsFocusListItem>Reforge: Growth Series</SkillsFocusListItem>
+              <SkillsFocusListItem>AppCues</SkillsFocusListItem>
+              <SkillsFocusListItem>Mixpanel</SkillsFocusListItem>
+            </SkillsFocusList>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>
+                Build-chain &amp; Frameworks
+              </SkillsFocusListHeading>
+              <SkillsFocusListItem>Webpack</SkillsFocusListItem>
+              <SkillsFocusListItem>RollupJS</SkillsFocusListItem>
+              <SkillsFocusListItem>WordPress/PHP</SkillsFocusListItem>
+            </SkillsFocusList>
+          </SkillsFocusWrapper>
+          <RoleDescriptionHeading>Year Two</RoleDescriptionHeading>
           <RoleDescription>
             With the eventual release of Site Builder, there was a clear need to
             surface our offerings and value. Marketing began a new branding
@@ -223,7 +302,23 @@ export const Resume: React.VFC = () => {
             wanted me for something bigger. That's when he told me about "The
             Flywheel".
           </RoleDescription>
-          <YearHeading>Year One</YearHeading>
+          <SkillsFocusWrapper>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>Languages</SkillsFocusListHeading>
+              <SkillsFocusListItem>CSS/HTML</SkillsFocusListItem>
+              <SkillsFocusListItem>VueJS</SkillsFocusListItem>
+              <SkillsFocusListItem>WordPress/PHP</SkillsFocusListItem>
+            </SkillsFocusList>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>
+                Apps &amp; Services
+              </SkillsFocusListHeading>
+              <SkillsFocusListItem>Photoshop</SkillsFocusListItem>
+              <SkillsFocusListItem>Greenhouse</SkillsFocusListItem>
+              <SkillsFocusListItem>Zendesk</SkillsFocusListItem>
+            </SkillsFocusList>
+          </SkillsFocusWrapper>
+          <RoleDescriptionHeading>Year One</RoleDescriptionHeading>
           <RoleDescription>
             The initial expectations of my role was centric to helping build
             upon the existing website marketing feature, "Themes". The intent
@@ -266,6 +361,22 @@ export const Resume: React.VFC = () => {
             </a>{" "}
             for some much needed updates on the Home &amp; Feature pages.
           </RoleDescription>
+          <SkillsFocusWrapper>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>Languages</SkillsFocusListHeading>
+              <SkillsFocusListItem>CSS/HTML</SkillsFocusListItem>
+              <SkillsFocusListItem>Ruby On Rails</SkillsFocusListItem>
+              <SkillsFocusListItem>Ember</SkillsFocusListItem>
+              <SkillsFocusListItem>jQuery</SkillsFocusListItem>
+              <SkillsFocusListItem>CoffeeScript</SkillsFocusListItem>
+            </SkillsFocusList>
+            <SkillsFocusList>
+              <SkillsFocusListHeading>Templating</SkillsFocusListHeading>
+              <SkillsFocusListItem>Liquid</SkillsFocusListItem>
+              <SkillsFocusListItem>HAML</SkillsFocusListItem>
+              <SkillsFocusListItem>Jekyll</SkillsFocusListItem>
+            </SkillsFocusList>
+          </SkillsFocusWrapper>
         </RoleDetails>
       </Company>
       <SectionHeading>Letters of Recommendation</SectionHeading>
