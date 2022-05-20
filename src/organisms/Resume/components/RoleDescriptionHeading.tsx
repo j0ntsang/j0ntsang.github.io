@@ -4,7 +4,7 @@ const RoleDescriptionHeading = styled.h6`
   position: relative;
   margin: 32px 0 0;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
 
   @media (min-width: 768px) {

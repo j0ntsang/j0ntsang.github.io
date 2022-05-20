@@ -26,7 +26,7 @@ const SkillsFocusList = styled.ul`
 
 const SkillsFocusListHeading = styled.li`
   font-size: 19px;
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 8px;
 `;
 
