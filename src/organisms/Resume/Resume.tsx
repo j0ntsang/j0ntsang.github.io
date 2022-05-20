@@ -390,7 +390,13 @@ export const Resume: React.VFC = () => {
         </RoleDetails>
       </Company>
       <SectionHeading>Letters of Recommendation</SectionHeading>
-      <RoleDescription>Coming soon!</RoleDescription>
+      <a
+        href="https://jontsang.ca/letter-of-recommendation-tia-fomenoff.pdf"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Tia Fomenoff - Senior Director, People
+      </a>
       <TogglePreviousWork
         handleClick={() => setShowPreviousWork(!showPreviousWork)}
       >
