@@ -11,6 +11,10 @@ import SectionDivider from "./components/SectionDivider";
 import Company from "./components/Company";
 import CompanyName from "./components/CompanyName";
 import CompanyDetails from "./components/CompanyDetails";
+import CodepenSVG from "./svg/CodepenSVG";
+import GithubSVG from "./svg/GithubSVG";
+import LinkedInSVG from "./svg/LinkedInSVG";
+import SocialLink from "./components/SocialLink";
 import Role from "./components/Role";
 import RoleDivider from "./components/RoleDivider";
 import RoleDetails from "./components/RoleDetails";
@@ -34,13 +38,36 @@ export const Resume: React.VFC = () => {
       <ResumeHeader>
         <MyName>Jonathan Tsang</MyName>
         <Tagline>A11y Advocate & CSS Connoisseur</Tagline>
+        <SocialLink
+          href="https://codepen.io/tsang"
+          aria-label="Opens Jonathan's CodePen profile in a new tab"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <CodepenSVG />
+        </SocialLink>
+        <SocialLink
+          href="https://www.github.com/j0ntsang"
+          aria-label="Opens Jonathan's GitHub profile in a new tab"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <GithubSVG />
+        </SocialLink>
+        <SocialLink
+          href="https://www.linkedin.com/in/j0ntsang"
+          aria-label="Opens Jonathan's LinkedIn profile in a new tab"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <LinkedInSVG />
+        </SocialLink>
         <PreviousRole>
           Former Senior Design System Engineer at Thinkific
         </PreviousRole>
         <MissionStatement>
           Looking forward to the next opportunity that allows me to continue
           helping make the web more accessible &amp; usable for everyone.{" "}
-          <strong>This project is a work in progress.</strong>
         </MissionStatement>
       </ResumeHeader>
       <SectionHeading>Recent Experience</SectionHeading>
