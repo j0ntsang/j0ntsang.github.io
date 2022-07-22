@@ -1,34 +1,35 @@
 import React, { useState } from "react";
 
-import AppContainer from "../../templates/AppContainer";
-import ResumeHeader from "./components/ResumeHeader";
-import MyName from "./components/MyName";
-import Tagline from "./components/Tagline";
-import PreviousRole from "./components/PreviousRole";
-import MissionStatement from "./components/MissionStatement";
-import SectionHeading from "./components/SectionHeading";
-import SectionDivider from "./components/SectionDivider";
-import Company from "./components/Company";
-import CompanyName from "./components/CompanyName";
-import CompanyDetails from "./components/CompanyDetails";
+import H1 from "atoms/H1";
+import AppContainer from "templates/AppContainer";
+
+import ResumeHeader from "./atoms/ResumeHeader";
+import Tagline from "./atoms/Tagline";
+import PreviousRole from "./atoms/PreviousRole";
+import MissionStatement from "./atoms/MissionStatement";
+import SectionHeading from "./atoms/SectionHeading";
+import SectionDivider from "./atoms/SectionDivider";
+import Company from "./atoms/Company";
+import CompanyName from "./atoms/CompanyName";
+import CompanyDetails from "./atoms/CompanyDetails";
 import CodepenSVG from "./svg/CodepenSVG";
 import GithubSVG from "./svg/GithubSVG";
 import LinkedInSVG from "./svg/LinkedInSVG";
-import SocialLink from "./components/SocialLink";
-import Role from "./components/Role";
-import RoleDivider from "./components/RoleDivider";
-import RoleDetails from "./components/RoleDetails";
-import RoleDescription from "./components/RoleDescription";
-import RoleTimeframe from "./components/RoleTimeframe";
-import RoleDescriptionHeading from "./components/RoleDescriptionHeading";
-import PreviousWorkExperience from "./components/PreviousWorkExperience";
-import TogglePreviousWork from "./components/TogglePreviousWork";
+import SocialLink from "./atoms/SocialLink";
+import Role from "./atoms/Role";
+import RoleDivider from "./atoms/RoleDivider";
+import RoleDetails from "./atoms/RoleDetails";
+import RoleDescription from "./atoms/RoleDescription";
+import RoleTimeframe from "./atoms/RoleTimeframe";
+import RoleDescriptionHeading from "./atoms/RoleDescriptionHeading";
+import PreviousWorkExperience from "./atoms/PreviousWorkExperience";
+import TogglePreviousWork from "./atoms/TogglePreviousWork";
 import {
   SkillsFocusWrapper,
   SkillsFocusList,
   SkillsFocusListHeading,
   SkillsFocusListItem,
-} from "./components/SkillsFocus";
+} from "./atoms/SkillsFocus";
 
 export const Resume: React.VFC = () => {
   const [showPreviousWork, setShowPreviousWork] = useState(false);
@@ -36,7 +37,7 @@ export const Resume: React.VFC = () => {
   return (
     <AppContainer>
       <ResumeHeader>
-        <MyName>Jonathan Tsang</MyName>
+        <H1>Jonathan Tsang</H1>
         <Tagline>A11y Advocate & CSS Connoisseur</Tagline>
         <SocialLink
           href="https://codepen.io/tsang"
