@@ -1,5 +1,4 @@
 import { FarmerTableHeader } from './FarmerTableHeader';
-import { FarmerListResults } from '../atoms/FarmerListResults';
 
 interface Props {
   farmers: Object;
@@ -14,13 +13,11 @@ interface FarmersJSON {
 };
 
 export const FarmerListTable = ({ farmers }: Props) => {
-  const resultsCount = Object.values(farmers).length;
 
   return (
     <>
-      <FarmerListResults count={resultsCount} />
-        <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <FarmerTableHeader />
           <tbody className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
             {Object.values(farmers).map((farmer: FarmersJSON, index: number) => {

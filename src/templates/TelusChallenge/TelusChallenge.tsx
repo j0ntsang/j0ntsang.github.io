@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import AppContainer from "../../templates/AppContainer";
 import H1 from "atoms/H1";
-import { FarmerListTable } from "./molecules/FarmerListTable";
+import { FarmerSearch } from "./organisms/FarmerSearch";
 
 export const TelusChallenge: React.VFC = () => {
   const [farmers, setFarmers] = useState({});
@@ -18,7 +18,7 @@ export const TelusChallenge: React.VFC = () => {
   return (
     <AppContainer>
       <H1 className="mb-4">Hello, TELUS</H1>
-      <FarmerListTable farmers={farmers} />
+      <FarmerSearch farmers={farmers} />
     </AppContainer>
   );
 };
