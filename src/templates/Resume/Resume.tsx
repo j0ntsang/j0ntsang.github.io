@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import styled from 'styled-components';
 
 import H1 from "atoms/H1";
 import AppContainer from "templates/AppContainer";
@@ -31,11 +32,18 @@ import {
   SkillsFocusListItem,
 } from "./atoms/SkillsFocus";
 
+const ResumeContainer = styled(AppContainer)`
+  @media (min-width: 768px) {
+    max-width: 768px;
+  }
+`;
+
+
 export const Resume: React.VFC = () => {
   const [showPreviousWork, setShowPreviousWork] = useState(false);
 
   return (
-    <AppContainer>
+    <ResumeContainer>
       <ResumeHeader>
         <H1>Jonathan Tsang</H1>
         <Tagline>A11y Advocate & CSS Connoisseur</Tagline>
@@ -477,7 +485,7 @@ export const Resume: React.VFC = () => {
           </RoleDescription>
         </Company>
       </PreviousWorkExperience>
-    </AppContainer>
+    </ResumeContainer>
   );
 };
 
