@@ -23,7 +23,7 @@ export const FarmerListTable = ({ farmers }: Props) => {
               }: FarmersJSONType = farmer;
 
               return (
-                <tr key={index} className="hover:bg-gray-700">
+                <tr key={index} className="border-b border-gray-700 hover:bg-gray-700">
                   <td className="py-3 px-3 font-medium text-white whitespace-nowrap">{name}</td>
                   <td className="py-3 px-3">{city}</td>
                   <td className="py-3 px-3">{state}</td>
