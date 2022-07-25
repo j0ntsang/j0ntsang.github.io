@@ -1,11 +1,15 @@
 import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
+import { Telus } from './pages/Telus';
+
 import './App.css';
 
-function App() {
+export const App: React.VFC = () => {
   return (
-    <Home />
+    <Switch>
+      <Route exact path="/" component={Home} />
+      <Route exact path="/telus" component={Telus} />
+    </Switch>
   );
-}
-
-export default App;
+};
