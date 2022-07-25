@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from 'styled-components';
 
 import Divider from 'atoms/Divider';
@@ -13,24 +13,60 @@ const SearchOptionGroup = styled.div`
   flex-direction: row;
 `;
 
-interface Props {
-  farmers: Object;
-};
-
-export const FarmerSearch = ({ farmers }: Props) => {
-  const resultsCount = Object.values(farmers).length;
-
-  const [hasCropProtection, setHasCropProtection] = useState(false);
+export const FarmerSearch: React.VFC = () => {
+  const [allFarmers, setAllFarmers] = useState({});
+  const [farmerStates, setFarmerStates] = useState([]) as any;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hasCropProtection, setHasCropProtection] = useState(true);
   const [hasSeedPurchases, setHasSeedPurchases] = useState(false);
+  const [resultsCount, setResultsCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
 
+  useEffect(() => {
+    fetch("https://assets.codepen.io/70720/farmers.json")
+      .then(response => response.json())
+      .then(json => {
+        setAllFarmers(json.data);
+      });
+  }, [])
+
+  useEffect(() => {
+    const stateOptions = Array.from(
+      new Set(
+        Object.values(allFarmers).map((farmer: any, index: number, self: any) => farmer.state)
+      )
+    );
+    setTotalCount(Object.values(allFarmers).length);
+    setFarmerStates(Array.from(new Set(stateOptions)));
+  }, [allFarmers]);
+
+  const filteredFarmers = useMemo(() => {
+    let filtered = Object.values(allFarmers).filter((farmer: any, index: number, self: any) => {
+      const crops = (hasCropProtection && farmer.cp_spend > 0) ? true : (!hasCropProtection);
+      const seeds = (hasSeedPurchases && farmer.seed_purchases > 0) ? true : (!hasSeedPurchases);
+      if (!crops || !seeds) return false;
+      if (searchQuery !== "") {
+        const name = farmer.farmer_name.toLowerCase();
+        const city = farmer.city.toLowerCase();
+        return name.includes(searchQuery.toLowerCase()) || city.includes(searchQuery.toLowerCase());
+      }
+      return true;
+    });
+
+    return filtered;
+  }, [allFarmers, hasCropProtection, hasSeedPurchases, searchQuery]);
+
+  useEffect(() => {
+    setResultsCount(Object.values(filteredFarmers).length);
+  }, [filteredFarmers]);
 
   return (
     <>
-      <SearchOptionGroup className="mb-3">
-        <FarmerStateDropdown handleChange={() => {}} />
+      <SearchOptionGroup className="mb-6">
+        <FarmerStateDropdown states={farmerStates} />
         <Divider />
-        <FarmerSearchBar handleChange={() => {}} />
+        <FarmerSearchBar handleChange={setSearchQuery} />
         <Divider />
         <FarmerPropertyToggle
           handleChange={() => setHasCropProtection(!hasCropProtection)}
@@ -43,8 +79,8 @@ export const FarmerSearch = ({ farmers }: Props) => {
           label={"Has Seed Purchases"}
         />
       </SearchOptionGroup>
-      <FarmerListResults count={resultsCount} />
-      <FarmerListTable farmers={farmers} />
+      <FarmerListResults totalCount={totalCount} resultsCount={resultsCount} />
+      <FarmerListTable farmers={filteredFarmers} />
     </>
   )
 };

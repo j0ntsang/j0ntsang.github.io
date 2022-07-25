@@ -1,31 +1,42 @@
+import { nanoid } from 'nanoid';
 import styled from 'styled-components';
 
 const FarmerStateDropdownWrapper = styled.div`
   min-width: 200px;
 `;
 
+const FarmerStateDropdownSelect = styled.select`
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(50%),
+    calc(100% - 15px) calc(50%);
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+`;
+
 interface Props {
-  handleChange(): any;
+  states: any;
 };
 
-export const FarmerStateDropdown = ({ handleChange }: Props) => {
+export const FarmerStateDropdown = ({ states }: Props) => {
 
   return (
     <FarmerStateDropdownWrapper className="relative flex items-center">
-      <button type="button" className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
-        Options
-        <svg className="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
-
-      <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
-        <div className="py-1" role="none">
-          <button className="text-gray-700 block px-4 py-2 text-sm" role="menuitem">
-
-          </button>
-        </div>
-      </div>
+      <FarmerStateDropdownSelect className="cursor-not-allowed bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-4" defaultValue="State" disabled>
+        <option disabled>State</option>
+        {states.map((state: string) => {
+          return (
+            <option key={nanoid()} value={state}>
+              {state}
+            </option>
+          )
+        })}
+      </FarmerStateDropdownSelect>
     </FarmerStateDropdownWrapper>
   );
 };

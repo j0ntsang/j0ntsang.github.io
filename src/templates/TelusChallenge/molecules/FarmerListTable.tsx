@@ -1,37 +1,30 @@
 import { FarmerTableHeader } from './FarmerTableHeader';
+import { FarmersJSONType } from 'types/TelusChallenge';
 
 interface Props {
   farmers: Object;
-};
-
-interface FarmersJSON {
-  city: String;
-  cp_spend: number;
-  farmer_name: String;
-  seed_purchases: number;
-  state: String;
 };
 
 export const FarmerListTable = ({ farmers }: Props) => {
 
   return (
     <>
-      <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <div className="overflow-x-auto relative shadow-md sm:rounded-lg border border-gray-600">
+        <table className="w-full text-sm text-left text-gray-300">
           <FarmerTableHeader />
-          <tbody className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-            {Object.values(farmers).map((farmer: FarmersJSON, index: number) => {
+          <tbody className="border-b bg-gray-800 border-gray-700">
+            {Object.values(farmers).map((farmer: FarmersJSONType, index: number) => {
               const {
                 city,
                 cp_spend: crop_spend,
                 farmer_name: name,
                 seed_purchases: seed,
                 state
-              }: FarmersJSON = farmer;
+              }: FarmersJSONType = farmer;
 
               return (
-                <tr key={index}>
-                  <td className="py-3 px-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{name}</td>
+                <tr key={index} className="hover:bg-gray-700">
+                  <td className="py-3 px-3 font-medium text-white whitespace-nowrap">{name}</td>
                   <td className="py-3 px-3">{city}</td>
                   <td className="py-3 px-3">{state}</td>
                   <td className="py-3 px-3 text-right">
