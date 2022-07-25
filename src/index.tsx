@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 
 import './index.css';
@@ -11,9 +11,9 @@ const root = createRoot(appRoot);
 const AppWithRouter = () => {
   return (
     <React.StrictMode>
-      <BrowserRouter>
+      <HashRouter>
         <App />
-      </BrowserRouter>
+      </HashRouter>
     </React.StrictMode>
   );
 }

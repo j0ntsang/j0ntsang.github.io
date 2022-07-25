@@ -9,7 +9,7 @@ export const App: React.VFC = () => {
   return (
     <Switch>
       <Route exact path="/" component={Home} />
-      <Route path="/telus" component={Telus} />
+      <Route exact path="/telus" component={Telus} />
     </Switch>
   );
 };
