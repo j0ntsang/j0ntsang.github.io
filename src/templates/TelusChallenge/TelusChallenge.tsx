@@ -12,7 +12,9 @@ export const TelusChallenge: React.VFC = () => {
   return (
     <AppContainer>
       <H1 className="mb-4 text-white">Hello, TELUS</H1>
-      <p className="mb-4 text-white">The file changeset can be viewed on the P/R: <a className="font-semibold" href="https://github.com/j0ntsang/j0ntsang.github.io/pull/1/files">telus-agriculture-technical-challenge</a></p>
+      <p className="mb-4 text-white">
+        The original file changeset can be viewed on the P/R: <a className="font-semibold" href="https://github.com/j0ntsang/j0ntsang.github.io/pull/1/files" target="_blank" rel="noopener noreferrer">telus-agriculture-technical-challenge</a>
+      </p>
       <FarmerSearch />
     </AppContainer>
   );
