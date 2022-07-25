@@ -13,8 +13,9 @@ const Divider = styled.span`
     width: 1px;
     height: 100%;
     transform: translateX(-50%);
-    background: #dadcde;
+    background: #ffffff;
     content: "";
+    opacity: .2;
   }
 `;
 
