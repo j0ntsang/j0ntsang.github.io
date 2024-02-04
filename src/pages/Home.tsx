@@ -1,4 +1,5 @@
-import * as React from 'react';
-import { Resume } from 'templates/Resume/Resume';
+import * as React from "react";
 
-export const Home: React.VFC = () => <Resume />;
+import WorkInProgress from "../templates/WorkInProgress/WorkInProgress";
+
+export const Home: React.VFC = () => <WorkInProgress />;
