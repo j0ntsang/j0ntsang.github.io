@@ -1,36 +1,35 @@
 import React, { useState } from "react";
-import styled from 'styled-components';
-
-import H1 from "atoms/H1";
-import AppContainer from "templates/AppContainer";
-
-import ResumeHeader from "./atoms/ResumeHeader";
-import Tagline from "./atoms/Tagline";
-import PreviousRole from "./atoms/PreviousRole";
-import MissionStatement from "./atoms/MissionStatement";
-import SectionHeading from "./atoms/SectionHeading";
-import SectionDivider from "./atoms/SectionDivider";
-import Company from "./atoms/Company";
-import CompanyName from "./atoms/CompanyName";
-import CompanyDetails from "./atoms/CompanyDetails";
-import CodepenSVG from "./svg/CodepenSVG";
-import GithubSVG from "./svg/GithubSVG";
-import LinkedInSVG from "./svg/LinkedInSVG";
-import SocialLink from "./atoms/SocialLink";
-import Role from "./atoms/Role";
-import RoleDivider from "./atoms/RoleDivider";
-import RoleDetails from "./atoms/RoleDetails";
-import RoleDescription from "./atoms/RoleDescription";
-import RoleTimeframe from "./atoms/RoleTimeframe";
-import RoleDescriptionHeading from "./atoms/RoleDescriptionHeading";
-import PreviousWorkExperience from "./atoms/PreviousWorkExperience";
-import TogglePreviousWork from "./atoms/TogglePreviousWork";
 import {
-  SkillsFocusWrapper,
   SkillsFocusList,
   SkillsFocusListHeading,
   SkillsFocusListItem,
+  SkillsFocusWrapper,
 } from "./atoms/SkillsFocus";
+
+import AppContainer from "templates/AppContainer";
+import CodepenSVG from "./svg/CodepenSVG";
+import Company from "./atoms/Company";
+import CompanyDetails from "./atoms/CompanyDetails";
+import CompanyName from "./atoms/CompanyName";
+import GithubSVG from "./svg/GithubSVG";
+import H1 from "atoms/H1";
+import LinkedInSVG from "./svg/LinkedInSVG";
+import MissionStatement from "./atoms/MissionStatement";
+import PreviousRole from "./atoms/PreviousRole";
+import PreviousWorkExperience from "./atoms/PreviousWorkExperience";
+import ResumeHeader from "./atoms/ResumeHeader";
+import Role from "./atoms/Role";
+import RoleDescription from "./atoms/RoleDescription";
+import RoleDescriptionHeading from "./atoms/RoleDescriptionHeading";
+import RoleDetails from "./atoms/RoleDetails";
+import RoleDivider from "./atoms/RoleDivider";
+import RoleTimeframe from "./atoms/RoleTimeframe";
+import SectionDivider from "./atoms/SectionDivider";
+import SectionHeading from "./atoms/SectionHeading";
+import SocialLink from "./atoms/SocialLink";
+import Tagline from "./atoms/Tagline";
+import TogglePreviousWork from "./atoms/TogglePreviousWork";
+import styled from "styled-components";
 
 const ResumeContainer = styled(AppContainer)`
   @media (min-width: 768px) {
@@ -38,8 +37,7 @@ const ResumeContainer = styled(AppContainer)`
   }
 `;
 
-
-export const Resume: React.VFC = () => {
+const Resume: React.VFC = () => {
   const [showPreviousWork, setShowPreviousWork] = useState(false);
 
   return (
@@ -51,24 +49,21 @@ export const Resume: React.VFC = () => {
           href="https://codepen.io/tsang"
           aria-label="Opens Jonathan's CodePen profile in a new tab"
           rel="noreferrer"
-          target="_blank"
-        >
+          target="_blank">
           <CodepenSVG />
         </SocialLink>
         <SocialLink
           href="https://www.github.com/j0ntsang"
           aria-label="Opens Jonathan's GitHub profile in a new tab"
           rel="noreferrer"
-          target="_blank"
-        >
+          target="_blank">
           <GithubSVG />
         </SocialLink>
         <SocialLink
           href="https://www.linkedin.com/in/j0ntsang"
           aria-label="Opens Jonathan's LinkedIn profile in a new tab"
           rel="noreferrer"
-          target="_blank"
-        >
+          target="_blank">
           <LinkedInSVG />
         </SocialLink>
         <PreviousRole>
@@ -98,8 +93,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/nathanshubertharbison/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Nathan's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Nathan's LinkedIn profile">
               Nathan Shubert-Harbison
             </a>
             , he and I were able to prioritize and address the overwhelming
@@ -109,8 +103,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/oliverbrowne91/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Oliver's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Oliver's LinkedIn profile">
               Oliver Browne
             </a>
             , and the original creator of the TOGA design library,{" "}
@@ -118,8 +111,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/leonardofariacoelho/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Leo's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Leo's LinkedIn profile">
               Leonardo Faria
             </a>
             , we crafted a more strategic roadmap that focused on education and
@@ -131,8 +123,7 @@ export const Resume: React.VFC = () => {
               href="https://github.com/moroshko/react-scanner"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to React Scanner on GitHub"
-            >
+              aria-label="Opens a new tab to React Scanner on GitHub">
               React Scanner
             </a>{" "}
             to collect data from across 6 of our major properties to better
@@ -196,8 +187,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/evelynmah/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Evelyn's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Evelyn's LinkedIn profile">
               Evelyn Mah
             </a>
             .
@@ -243,8 +233,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/zimingyang/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Ziming's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Ziming's LinkedIn profile">
               Ziming Yang
             </a>{" "}
             was brought on as Director of Product Growth and Experimentation. We
@@ -253,8 +242,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/yangchungwon/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Chuiee's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Chuiee's LinkedIn profile">
               Chuiee Yang
             </a>
             , as our dedicated Senior Product Designer. We formed a small team
@@ -304,8 +292,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/andreamerson/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Andrea's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Andrea's LinkedIn profile">
               Andrea Merson (Creative Director)
             </a>{" "}
             and{" "}
@@ -313,8 +300,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/alexharrisdesign/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Alex's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Alex's LinkedIn profile">
               Alex Harris (Sr. Marketing Designer)
             </a>{" "}
             from ideation to deployment. To be more efficient, I merged the
@@ -337,8 +323,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/gregsmith-thinkificceo/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Greg's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Greg's LinkedIn profile">
               Greg Smith (CEO/Co-Founder)
             </a>{" "}
             about creating a new role for myself. He agreed but ultimately
@@ -375,8 +360,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/nickfostr/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Nick's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Nick's LinkedIn profile">
               Nick Foster (Creative Director)
             </a>
             , we aimed to provide the customer with a more modern user-friendly
@@ -386,8 +370,7 @@ export const Resume: React.VFC = () => {
               href="https://www.linkedin.com/in/michael-clay-3a90a310/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Mike's LinkedIn profile"
-            >
+              aria-label="Opens a new tab to Mike's LinkedIn profile">
               Mike Clay (Product Manager)
             </a>
             .
@@ -400,8 +383,7 @@ export const Resume: React.VFC = () => {
               href="https://www.thinkific.com/"
               target="_blank"
               rel="noreferrer"
-              aria-label="Opens a new tab to Thinkific.com"
-            >
+              aria-label="Opens a new tab to Thinkific.com">
               WWW
             </a>{" "}
             for some much needed updates on the Home &amp; Feature pages.
@@ -429,13 +411,11 @@ export const Resume: React.VFC = () => {
       <a
         href="https://jontsang.ca/letter-of-recommendation-tia-fomenoff.pdf"
         target="_blank"
-        rel="noreferrer"
-      >
+        rel="noreferrer">
         Tia Fomenoff - Senior Director, People
       </a>
       <TogglePreviousWork
-        handleClick={() => setShowPreviousWork(!showPreviousWork)}
-      >
+        handleClick={() => setShowPreviousWork(!showPreviousWork)}>
         Show more work experience
       </TogglePreviousWork>
       <PreviousWorkExperience isVisible={showPreviousWork}>
