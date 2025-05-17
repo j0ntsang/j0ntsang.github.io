@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "https://jontsang.ca/static/css/main.422ee927.css",
-    "main.js": "https://jontsang.ca/static/js/main.4c709610.js",
+    "main.js": "https://jontsang.ca/static/js/main.de104312.js",
     "index.html": "https://jontsang.ca/index.html",
     "main.422ee927.css.map": "https://jontsang.ca/static/css/main.422ee927.css.map",
-    "main.4c709610.js.map": "https://jontsang.ca/static/js/main.4c709610.js.map"
+    "main.de104312.js.map": "https://jontsang.ca/static/js/main.de104312.js.map"
   },
   "entrypoints": [
     "static/css/main.422ee927.css",
-    "static/js/main.4c709610.js"
+    "static/js/main.de104312.js"
   ]
 }
