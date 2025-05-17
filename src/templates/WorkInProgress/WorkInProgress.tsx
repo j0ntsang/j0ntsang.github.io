@@ -54,11 +54,11 @@ const WorkInProgress: React.VFC = () => {
       <p>
         For current updates please refer to{" "}
         <a
-          aria-label="Click here to open Jonathan Tsang's 2024 resume in a new window"
+          aria-label="Click here to open Jonathan Tsang's 2025 resume in a new window"
           href="https://jontsang.ca/resume.pdf"
           rel="noreferrer"
           target="_blank">
-          my updated resume for 2024
+          my updated resume for 2025
         </a>
         .
       </p>
