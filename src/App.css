@@ -15,7 +15,9 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.8rem;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: "Fira Code", "Consolas", "Menlo", "Monaco", "Ubuntu Mono",
+    "Liberation Mono", "Lucida Console", "Courier New", "DejaVu Sans Mono",
+    monospace;
   word-break: break-word;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
