@@ -1,14 +1,11 @@
 import "./App.css";
 
-import React, { useState } from "react";
-
 import { Home } from "./pages/Home";
+import React from "react";
 import useTitleAnimation from "./hooks/useTitleAnimation";
 
 export const App: React.VFC = () => {
-  const [animationType] = useState("hash_dot");
-
-  useTitleAnimation(animationType);
+  useTitleAnimation("hash_dot");
 
   return <Home />;
 };
