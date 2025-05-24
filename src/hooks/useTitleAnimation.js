@@ -1,129 +1,67 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-const originalTitle = document.title;
+const totalPercent = 100;
+const totalWidth = 15;
+const checkmarkChar = "\u2713";
 
-const useTitleAnimation = (animationType) => {
-  useEffect(() => {
-    let spin = ["|", "/", "-", "\\"];
-    let i = 0;
-    let titleInterval;
-
-    const spinTitle = () => {
-      document.title = `${originalTitle} ${spin[i]}`;
-      i = (i + 1) % spin.length;
-      requestAnimationFrame(spinTitle);
-    };
-
-    const bounceTitle = () => {
-      let progress = " ".repeat(i) + "=" + " ".repeat(10 - i);
-      document.title = `${originalTitle} | [${progress}]`;
-      i = (i + 1) % 11;
-      requestAnimationFrame(bounceTitle);
-    };
-
-    const typeTitle = () => {
-      let message = `${originalTitle}`;
-      let index = 0;
-
-      function type() {
-        document.title = message.substring(0, index + 1);
-        index++;
-
-        if (index < message.length) {
-          requestAnimationFrame(type);
-        }
-      }
-
-      requestAnimationFrame(type);
-    };
-
-    const loadDots = () => {
-      let loadingMessage = "Loading";
-      let dotCount = 0;
-
-      function dots() {
-        let dots = ".".repeat(dotCount);
-        document.title = `${originalTitle} | ${loadingMessage}${dots}`;
-        dotCount = (dotCount + 1) % 4;
-        requestAnimationFrame(dots);
-      }
-
-      requestAnimationFrame(dots);
-    };
-
-    const flashTitle = () => {
-      let originalTitle = document.title;
-      let flashMessage = "New Notification!";
-      let isFlashing = false;
-
-      function flash() {
-        document.title = isFlashing ? flashMessage : originalTitle;
-        isFlashing = !isFlashing;
-        requestAnimationFrame(flash);
-      }
-
-      requestAnimationFrame(flash);
-    };
-
-    const progressBarTitle = () => {
-      let progress = 0;
-      let total = 100;
-
-      function progressAnimation() {
-        if (progress <= total) {
-          let percentage = Math.min(progress, 100);
-          let totalWidth = 10;
-
-          let completed = Math.floor((percentage / 100) * totalWidth);
-          let remaining = percentage < total ? totalWidth - completed : 0;
-
-          let progressChar = "\u2591";
-          let remainingChar = "\u2592";
-          let percentageChar = percentage < total ? `${percentage}%` : "\u2713";
-          let progressLoaded = progressChar.repeat(completed);
-          let remainingSpace = remainingChar.repeat(remaining);
-          let progressBar = `${progressLoaded}${remainingSpace} ${percentageChar}`;
-          document.title = `${progressBar}`;
-          progress++;
-
-          requestAnimationFrame(progressAnimation);
-        } else {
-          setTimeout(() => {
-            document.title = originalTitle;
-          }, 500);
-        }
-      }
-
-      requestAnimationFrame(progressAnimation);
-    };
-
-    switch (animationType) {
-      case "spin":
-        spinTitle();
-        break;
-      case "bounce":
-        bounceTitle();
-        break;
-      case "typing":
-        typeTitle();
-        break;
-      case "dots":
-        loadDots();
-        break;
-      case "flash":
-        flashTitle();
-        break;
-      case "progress":
-        progressBarTitle();
-        break;
-      default:
-        break;
-    }
-
-    return () => {
-      cancelAnimationFrame(titleInterval);
-    };
-  }, [animationType]);
+const framesMap = {
+  spinner_line: ["|", "/", "-", "\\"],
+  spinner_circle: ["◐", "◓", "◑", "◒"],
+  ellipsis: [".", "..", "..."],
 };
 
-export default useTitleAnimation;
+const renderAnimation = (type, progress) => {
+  const frames = framesMap[type];
+  return frames[progress % frames.length];
+};
+
+function useTitleProgress(animationType = "spinner_circle") {
+  const originalTitleRef = useRef(document.title);
+  const rafIdRef = useRef(null);
+  const progressRef = useRef(0);
+
+  useEffect(() => {
+    const savedTitle = originalTitleRef.current;
+    progressRef.current = 0;
+
+    const getTitle = () => {
+      const progress = progressRef.current;
+
+      if (framesMap[animationType]) {
+        return renderAnimation(animationType, progress);
+      }
+
+      if (animationType === "hash_dot") {
+        const completed = Math.floor((progress / 100) * totalWidth);
+        const remaining = totalWidth - completed;
+        const dotChar = "∙";
+        return `[${"#".repeat(completed)}${dotChar.repeat(remaining)}] ${
+          progress < 100 ? `${progress}%` : checkmarkChar
+        }`;
+      }
+
+      return `${progress}% Loaded`;
+    };
+
+    const animate = () => {
+      if (progressRef.current <= totalPercent) {
+        document.title = getTitle();
+        progressRef.current += 1;
+        rafIdRef.current = requestAnimationFrame(animate);
+      } else {
+        setTimeout(() => {
+          document.title = savedTitle;
+        }, 150);
+      }
+    };
+
+    rafIdRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(rafIdRef.current);
+      document.title = savedTitle;
+    };
+  }, [animationType]);
+}
+
+export default useTitleProgress;
