@@ -73,5 +73,6 @@ export const Home: React.VFC = () => (
       </a>
       .
     </p>
+    <br />
   </>
 );
