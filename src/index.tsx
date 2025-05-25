@@ -5,19 +5,31 @@ import { TemplateManager } from "./util/templateManager.ts";
 import { createRoot } from "react-dom/client";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await TemplateManager.loadTemplate("/templates/terminal.html");
+  await TemplateManager.loadTemplatesBatch([
+    "/templates/terminal.html",
+    "/templates/settings-menu.html",
+  ]);
 
-  const terminalTemplate = document.getElementById(
-    "terminal"
-  ) as HTMLTemplateElement | null;
   const contentNode = document.getElementById("content");
+  const settingsNode = document.getElementById("settings");
 
-  if (terminalTemplate && contentNode) {
-    const term = document.importNode(terminalTemplate.content, true);
-    contentNode.appendChild(term);
-  } else {
-    console.error("Missing #terminal template or #content container");
+  if (!contentNode || !settingsNode) {
+    console.error(
+      "Missing container elements: #content or #settings-menu not found."
+    );
+    return;
   }
+
+  const terminalClone = TemplateManager.create("terminal");
+  const settingsMenuClone = TemplateManager.create("settings-menu");
+
+  if (!terminalClone || !settingsMenuClone) {
+    console.error("One or more templates not found.");
+    return;
+  }
+
+  TemplateManager.mount(settingsMenuClone, settingsNode);
+  TemplateManager.mount(terminalClone, contentNode);
 });
 
 const appRoot = document.getElementById("react")!;

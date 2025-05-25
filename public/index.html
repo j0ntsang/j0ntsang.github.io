@@ -25,48 +25,132 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
   <title>Senior Frontend Developer with Fullstack Experience - Jonathan Tsang</title>
+
+  <style>
+    :root {
+      --background-dark: #1e1e1e;
+    }
+
+    html,
+    body {
+      background-color: var(--background-dark);
+      overflow: hidden;
+    }
+
+    .screen {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: var(--background-dark);
+      animation: crtExpand 800ms cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+      transform-origin: center;
+      animation-fill-mode: forwards;
+      will-change: opacity, clip-path;
+      overflow: auto;
+    }
+
+    .page {
+      position: relative;
+      opacity: 0;
+      animation: fadeIn 400ms ease-out 700ms forwards, flicker 1.2s infinite steps(2, start);
+    }
+
+    .scanlines {
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background-image: repeating-linear-gradient(to bottom,
+          rgba(0, 0, 0, 0) 0px,
+          rgba(0, 0, 0, 0.2) 2px,
+          rgba(0, 0, 0, 0.2) 3px,
+          rgba(0, 0, 0, 0) 4px);
+      animation: scanFadeIn 900ms ease-in 600ms forwards, scanFlicker 0.25s infinite;
+      opacity: 0;
+    }
+
+    @keyframes crtExpand {
+      0% {
+        transform: scaleX(0.02) scaleY(0.01);
+        opacity: 1;
+        background: white;
+      }
+
+      20% {
+        transform: scaleX(1.1) scaleY(0.02);
+        background: #FFBF0022;
+      }
+
+      40% {
+        transform: scaleX(1.15) scaleY(1.05);
+      }
+
+      70% {
+        transform: scaleX(0.98) scaleY(0.98);
+        background: var(--background-dark);
+      }
+
+      100% {
+        transform: scaleX(1) scaleY(1);
+        background: var(--background-dark);
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes scanFadeIn {
+      to {
+        opacity: 0.4;
+      }
+    }
+
+    @keyframes scanFlicker {
+
+      0%,
+      100% {
+        opacity: 0.38;
+      }
+
+      50% {
+        opacity: 0.42;
+      }
+    }
+
+    @keyframes flicker {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.95;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
-  <main id="react"></main>
-  <div id="content"></div>
-  <details class="settings">
-    <summary class="settings-button">&#x2699;</summary>
-    <nav class="settings-menu">
-      <ul class="settings-list">
-        <li class="setting">
-          <label>
-            <input type="checkbox" name="animation" class="setting-input" checked disabled />Animation
-          </label>
-        </li>
-        <li class="setting">
-          <label>
-            <input type="checkbox" name="dark_mode" class="setting-input" disabled />Dark Mode
-          </label>
-        </li>
-        <li class="setting">
-          <label>
-            <input type="checkbox" name="performance_mode" class="setting-input" disabled />Performance Mode
-          </label>
-        </li>
-        <li class="setting">
-          <label>
-            <input type="checkbox" name="disable_javascript" class="setting-input" disabled />Disable JavaScript
-          </label>
-        </li>
-        <li class="setting">
-          <div role="radiogroup" aria-label="Select layout">
-            <span aria-hidden="true">Layout:</span>
-            <input type="radio" id="layout-full" name="layout" value="full" checked disabled>
-            <label for="layout-full" title="Full layout" tabindex="0">&#x26F6;</label>
-            <input type="radio" id="layout-compact" name="layout" value="compact" disabled>
-            <label for="layout-compact" title="Compact layout" tabindex="0">&#x229F;</label>
-          </div>
-        </li>
-      </ul>
-    </nav>
-  </details>
+  <div class="screen">
+    <span class="scalines"></span>
+    <div class="page">
+      <div id="content" class="content">
+        <div id="react">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="settings"></div>
 </body>
 
 </html>

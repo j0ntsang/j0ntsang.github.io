@@ -1,0 +1,39 @@
+<template id="settings-menu">
+    <details class="settings">
+        <summary class="settings-button">&#x2699;</summary>
+        <nav class="settings-menu">
+            <ul class="settings-list">
+                <li class="setting">
+                    <label>
+                        <input type="checkbox" name="animation" class="setting-input" checked disabled />Animation
+                    </label>
+                </li>
+                <li class="setting">
+                    <label>
+                        <input type="checkbox" name="dark_mode" class="setting-input" disabled />Dark Mode
+                    </label>
+                </li>
+                <li class="setting">
+                    <label>
+                        <input type="checkbox" name="performance_mode" class="setting-input" disabled />Performance Mode
+                    </label>
+                </li>
+                <li class="setting">
+                    <label>
+                        <input type="checkbox" name="disable_javascript" class="setting-input" disabled />Disable
+                        JavaScript
+                    </label>
+                </li>
+                <li class="setting">
+                    <div role="radiogroup" aria-label="Select layout">
+                        <span aria-hidden="true">Layout:</span>
+                        <input type="radio" id="layout-full" name="layout" value="full" checked disabled>
+                        <label for="layout-full" title="Full layout" tabindex="0">&#x26F6;</label>
+                        <input type="radio" id="layout-compact" name="layout" value="compact" disabled>
+                        <label for="layout-compact" title="Compact layout" tabindex="0">&#x229F;</label>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </details>
+</template>
