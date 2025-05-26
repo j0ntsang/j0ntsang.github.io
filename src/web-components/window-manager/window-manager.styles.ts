@@ -19,11 +19,17 @@ export const styles = `
 
   .master {
     grid-area: master;
-    padding: 24px;
+    padding-top: 24px;
     border-width: 0;
     border-color: currentColor;
     border-style: solid;
     border-top-width: 1px;
+  }
+
+  @media screen and (min-width: 320px) {
+    .master {
+      padding: 24px;
+    }
   }
 
   .slaves {
