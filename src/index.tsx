@@ -1,4 +1,5 @@
 import "./index.css";
+import "./web-components/window-manager/window-manager.js";
 
 import { App } from "./App";
 import { TemplateManager } from "./util/templateManager.ts";
