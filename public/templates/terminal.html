@@ -1,15 +1,18 @@
-<style>
-    .terminal {
-        background-color: inherit;
-        border-radius: 4px;
-        overflow: hidden;
-        backdrop-filter: blur(4px);
-    }
-</style>
 <template id="terminal">
-    <section class="terminal" role="region" aria-label="Styled terminal with Git prompt">
+    <style>
+        .terminal {
+            display: flex;
+            width: 100%;
+            background-color: inherit;
+            border-radius: 4px;
+            overflow: hidden;
+            backdrop-filter: blur(4px);
+        }
+    </style>
+
+    <section class="terminal" role="region">
         <pre>
-        > Hello, World
+> Hello, World
         </pre>
     </section>
 </template>

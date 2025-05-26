@@ -1,64 +1,64 @@
-<style>
-    .settings {
-        --button-size: 44px;
-
-        position: fixed;
-        top: calc(100% - var(--button-size));
-        left: calc(100% - var(--button-size));
-        display: inline-flex;
-        flex-direction: column;
-        z-index: 999;
-    }
-
-    .settings-button {
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        width: var(--button-size);
-        height: var(--button-size);
-        margin: 0;
-        padding: 0;
-        font-size: var(--button-size);
-        line-height: 0;
-        cursor: pointer;
-        user-select: none;
-        z-index: 2;
-    }
-
-    .settings-menu {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        display: inline-flex;
-        margin: 0;
-        padding: calc(var(--button-size) / 2) var(--button-size) calc(var(--button-size) / 2) calc(var(--button-size) / 2);
-        border: 1px solid currentColor;
-        white-space: nowrap;
-        background-color: var(--background-light);
-        color: var(--text-light);
-        z-index: 1;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .settings-menu {
-            background-color: var(--background-dark);
-            color: var(--text-dark);
-        }
-    }
-
-    .settings-list {
-        position: initial;
-        display: block;
-        list-style: none;
-    }
-
-    .setting-input {
-        display: inline-block;
-        margin: 0 8px 0 0;
-    }
-</style>
-
 <template id="settings-menu">
+    <style>
+        .settings {
+            --button-size: 44px;
+
+            position: fixed;
+            top: calc(100% - var(--button-size));
+            left: calc(100% - var(--button-size));
+            display: inline-flex;
+            flex-direction: column;
+            z-index: 999;
+        }
+
+        .settings-button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: var(--button-size);
+            height: var(--button-size);
+            margin: 0;
+            padding: 0;
+            font-size: var(--button-size);
+            line-height: 0;
+            cursor: pointer;
+            user-select: none;
+            z-index: 2;
+        }
+
+        .settings-menu {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            display: inline-flex;
+            margin: 0;
+            padding: calc(var(--button-size) / 2) var(--button-size) calc(var(--button-size) / 2) calc(var(--button-size) / 2);
+            border: 1px solid currentColor;
+            white-space: nowrap;
+            background-color: var(--background-light);
+            color: var(--text-light);
+            z-index: 1;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .settings-menu {
+                background-color: var(--background-dark);
+                color: var(--text-dark);
+            }
+        }
+
+        .settings-list {
+            position: initial;
+            display: block;
+            list-style: none;
+        }
+
+        .setting-input {
+            display: inline-block;
+            margin: 0 8px 0 0;
+        }
+    </style>
+
     <details class="settings">
         <summary class="settings-button">&#x2699;</summary>
         <nav class="settings-menu">
