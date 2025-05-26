@@ -57,6 +57,14 @@ body.light {
   color: var(--text-light, #000);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  body.animation {
+    transition-duration: 150ms;
+    transition-property: background-color, color;
+    transition-timing-function: ease-in-out;
+  }
+}
+
 a {
   text-decoration: underline;
 }

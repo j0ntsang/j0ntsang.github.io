@@ -8,7 +8,7 @@
             left: calc(100% - var(--button-size));
             display: inline-flex;
             flex-direction: column;
-            z-index: 999;
+            z-index: 9999;
         }
 
         .settings-button {
@@ -27,23 +27,26 @@
         }
 
         .settings-menu {
+            display: inline-flex;
             position: absolute;
             bottom: 0;
             right: 0;
-            display: inline-flex;
+            width: 100vw;
             margin: 0;
             padding: calc(var(--button-size) / 2) var(--button-size) calc(var(--button-size) / 2) calc(var(--button-size) / 2);
             border: 1px solid currentColor;
-            white-space: nowrap;
-            background-color: var(--background-light);
-            color: var(--text-light);
+            background-color: inherit;
+            color: inherit;
             z-index: 1;
         }
 
-        @media (prefers-color-scheme: dark) {
+        @media (min-width: 320px) {
             .settings-menu {
-                background-color: var(--background-dark);
-                color: var(--text-dark);
+                bottom: 44px;
+                right: 24px;
+                width: initial;
+                min-width: 200px;
+                white-space: nowrap;
             }
         }
 
