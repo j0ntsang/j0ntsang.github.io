@@ -27,13 +27,8 @@
   <title>Senior Frontend Developer with Fullstack Experience - Jonathan Tsang</title>
 
   <style>
-    :root {
-      --background-dark: #1e1e1e;
-    }
-
     html,
     body {
-      background-color: var(--background-dark);
       overflow: hidden;
     }
 
@@ -41,7 +36,7 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      background: var(--background-dark);
+      background-color: inherit;
       animation: crtExpand 800ms cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
       transform-origin: center;
       animation-fill-mode: forwards;
@@ -76,12 +71,11 @@
       0% {
         transform: scaleX(0.02) scaleY(0.01);
         opacity: 1;
-        background: white;
+        background-color: white;
       }
 
       20% {
         transform: scaleX(1.1) scaleY(0.02);
-        background: #FFBF0022;
       }
 
       40% {
@@ -90,12 +84,12 @@
 
       70% {
         transform: scaleX(0.98) scaleY(0.98);
-        background: var(--background-dark);
+        background-color: inherit;
       }
 
       100% {
         transform: scaleX(1) scaleY(1);
-        background: var(--background-dark);
+        background-color: inherit;
       }
     }
 

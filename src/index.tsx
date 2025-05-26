@@ -4,6 +4,7 @@ import "./web-components/window-manager/window-manager.js";
 import { App } from "./App";
 import { TemplateManager } from "./util/templateManager.ts";
 import { createRoot } from "react-dom/client";
+import { initializeSettingsMenu } from "./util/settingsMenu.ts";
 
 document.addEventListener("DOMContentLoaded", async () => {
   await TemplateManager.loadTemplatesBatch([
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   TemplateManager.mount(settingsMenuClone, settingsNode);
+  initializeSettingsMenu();
   TemplateManager.mount(terminalClone, contentNode);
 });
 

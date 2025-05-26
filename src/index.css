@@ -41,10 +41,20 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
-  body {
-    background-color: var(--background-dark);
-    color: var(--text-dark);
+  body:not(.light):not(.dark) {
+    background-color: var(--background-dark, #111);
+    color: var(--text-dark, #eee);
   }
+}
+
+body.dark {
+  background-color: var(--background-dark, #111);
+  color: var(--text-dark, #eee);
+}
+
+body.light {
+  background-color: var(--background-light, #fff);
+  color: var(--text-light, #000);
 }
 
 a {
