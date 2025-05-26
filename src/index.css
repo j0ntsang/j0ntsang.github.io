@@ -8,6 +8,8 @@
 
   --text-dark: #ffa500;
   --text-light: #1e1e1e;
+  --console-font: Consolas, "Courier New", Menlo, Monaco, "Liberation Mono",
+    "Lucida Console", monospace;
 }
 
 *,
@@ -27,9 +29,8 @@ body {
 body {
   position: relative;
   line-height: 1.8rem;
-  font-family: "Fira Code", "Consolas", "Menlo", "Monaco", "Ubuntu Mono",
-    "Liberation Mono", "Lucida Console", "Courier New", "DejaVu Sans Mono",
-    monospace;
+  font-family: var(--console-font);
+  font-size: 18px;
   word-break: break-word;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
