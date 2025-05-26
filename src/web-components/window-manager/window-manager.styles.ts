@@ -20,10 +20,6 @@ export const styles = `
   .master {
     grid-area: master;
     padding-top: 24px;
-    border-width: 0;
-    border-color: currentColor;
-    border-style: solid;
-    border-top-width: 1px;
   }
 
   @media screen and (min-width: 320px) {
@@ -34,5 +30,17 @@ export const styles = `
 
   .slaves {
     grid-area: slaves;
+  }
+
+  .window {
+    border-width: 1px;
+    border-color: transparent;
+    border-style: solid;
+    border-radius: 0;
+  }
+
+  .window:focus-within {
+    border-color: currentColor;
+    border-radius: 4px;
   }
 `;

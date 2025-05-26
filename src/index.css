@@ -60,7 +60,7 @@ body.light {
 @media (prefers-reduced-motion: no-preference) {
   body.animation {
     transition-duration: 150ms;
-    transition-property: background-color, color;
+    transition-property: background-color, border-radius, border-color, color;
     transition-timing-function: ease-in-out;
   }
 }

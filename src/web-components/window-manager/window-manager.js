@@ -10,7 +10,7 @@ class WindowManager extends HTMLElement {
         <div class="container">
             <nav class="waybar">
             </nav>
-            <main class="master">
+            <main class="master window">
                 <slot></slot>
             </main>
             <sidebar class="slaves"></sidebar>
