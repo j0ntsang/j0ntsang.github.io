@@ -1,0 +1,27 @@
+<template id="fullscreen-toggle">
+    <style>
+        .fullscreen-toggle {
+
+            --button-size: 44px;
+
+            position: fixed;
+            top: calc(100% - var(--button-size));
+            left: calc(100% - var(--button-size) * 2);
+            display: inline-flex;
+            flex-direction: column;
+            z-index: 9999;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: var(--button-size);
+            height: var(--button-size);
+            margin: 0;
+            padding: 0;
+            font-size: var(--button-size);
+            line-height: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+    <button id="fullscreenToggle" class="fullscreen-toggle">&#x26F6;</button>
+</template>
