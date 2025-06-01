@@ -32,6 +32,33 @@
       overflow: hidden;
     }
 
+    body {
+      font-family: Consolas, "Courier New", Menlo, Monaco, "Liberation Mono",
+        "Lucida Console", monospace;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      line-height: 1.5;
+      font-kerning: normal;
+      font-variant-ligatures: none;
+
+      text-shadow: 0 0 1px rgba(255, 255, 255, 0.1);
+      text-wrap: pretty;
+      word-spacing: 0.05em;
+      word-break: break-word;
+      text-rendering: optimizeLegibility;
+
+      transform: translateZ(0);
+
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -moz-font-smoothing: antialiased;
+      font-feature-settings: "kern" 1, "liga" 0;
+      -webkit-font-feature-settings: "kern" 1, "liga" 0;
+      -moz-font-feature-settings: "kern" 1, "liga" 0;
+      font-smooth: always;
+    }
+
     .screen {
       position: relative;
       width: 100vw;
