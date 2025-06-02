@@ -7,11 +7,12 @@ export async function loadAndMountTemplates() {
     "/templates/settings-menu.html",
   ]);
 
-  const contentNode = document.getElementById("content");
+  const windowManager = document.querySelector("window-manager");
+
   const fullscreenNode = document.getElementById("fullscreen");
   const settingsNode = document.getElementById("settings");
 
-  if (!contentNode || !settingsNode || !fullscreenNode) {
+  if (!windowManager || !settingsNode || !fullscreenNode) {
     throw new Error("Template Manager failed to find container nodes.");
   }
 
@@ -25,5 +26,5 @@ export async function loadAndMountTemplates() {
 
   TemplateManager.mount(fullscreenClone, fullscreenNode);
   TemplateManager.mount(settingsMenuClone, settingsNode);
-  TemplateManager.mount(terminalClone, contentNode);
+  TemplateManager.mount(terminalClone, windowManager);
 }

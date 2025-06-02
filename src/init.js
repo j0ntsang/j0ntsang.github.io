@@ -1,3 +1,5 @@
+import "./web-components/window-manager/window-manager.js";
+
 import { loadAndMountTemplates } from "./util/templateLoader.js";
 import { startTerminal } from "./terminal/index.js";
 
