@@ -1,6 +1,6 @@
 import "./index.css";
 
-import { App } from "./App";
+import { App } from "./react/App";
 import { createRoot } from "react-dom/client";
 
 document.addEventListener("DOMContentLoaded", async () => {
