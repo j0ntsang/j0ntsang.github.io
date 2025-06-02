@@ -1,0 +1,5 @@
+{
+  "welcomeMessage": "/motd.html",
+  "lineWidth": 80,
+  "historySize": 1000
+}
