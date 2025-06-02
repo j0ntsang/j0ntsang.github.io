@@ -1,4 +1,6 @@
 import { TemplateManager } from "./templateManager.js";
+import { initializeFullscreenToggle } from "./fullscreenToggle.js";
+import { initializeSettingsMenu } from "./settingsMenu.js";
 
 export async function loadAndMountTemplates() {
   await TemplateManager.loadTemplatesBatch([
@@ -25,6 +27,8 @@ export async function loadAndMountTemplates() {
   }
 
   TemplateManager.mount(fullscreenClone, fullscreenNode);
+  initializeFullscreenToggle();
   TemplateManager.mount(settingsMenuClone, settingsNode);
+  initializeSettingsMenu();
   TemplateManager.mount(terminalClone, windowManager);
 }

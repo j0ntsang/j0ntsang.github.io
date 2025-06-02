@@ -9,6 +9,7 @@ export const styles = `
     grid-template-areas:
     "waybar waybar"
     "master slaves";
+    height: 100%;
   }
 
   .waybar {
@@ -20,6 +21,7 @@ export const styles = `
   .master {
     grid-area: master;
     padding-top: 24px;
+    overflow-y: auto;
   }
 
   @media screen and (min-width: 320px) {
