@@ -3,7 +3,7 @@ export class Shell {
     this.env = {
       cwd: "/",
       files: {
-        "/readme.txt": "Read me file contents",
+        "readme.txt": "Read me file contents",
       },
     };
   }
