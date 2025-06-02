@@ -1,5 +1,5 @@
 {
-  "welcomeMessage": "/motd.html",
+  "welcomeMessage": "/public/readme.txt",
   "lineWidth": 80,
   "historySize": 1000
 }
