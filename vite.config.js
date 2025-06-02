@@ -11,10 +11,10 @@ export default defineConfig({
       output: {
         format: "iife",
         entryFileNames: "[name].js",
-        dir: resolve(__dirname, "public/js"),
+        dir: resolve(__dirname, "public/static/js"),
       },
     },
-    outDir: "public/js",
+    outDir: "public/static/js",
     emptyOutDir: false,
     minify: "esbuild",
   },
