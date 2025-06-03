@@ -16,8 +16,8 @@ export function initializeSettingsMenu() {
   }
 
   function applyTheme(theme: "dark" | "light") {
-    document.body.classList.remove("dark", "light");
-    document.body.classList.add(theme);
+    document.documentElement.classList.remove("dark", "light");
+    document.documentElement.classList.add(theme);
   }
 
   function getStoredAnimation(): boolean {
@@ -25,7 +25,7 @@ export function initializeSettingsMenu() {
   }
 
   function applyAnimation(enabled: boolean) {
-    document.body.classList.toggle("animation", enabled);
+    document.documentElement.classList.toggle("animation", enabled);
   }
 
   const initialTheme = getStoredTheme();
