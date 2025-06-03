@@ -2,11 +2,9 @@
     <style>
         .fullscreen-toggle {
 
-            --button-size: 44px;
+            --button-size: 32px;
 
-            position: fixed;
-            top: calc(100% - var(--button-size));
-            left: calc(100% - var(--button-size) * 2);
+            position: relative;
             display: inline-flex;
             flex-direction: column;
             z-index: 9999;
@@ -21,6 +19,7 @@
             line-height: 0;
             cursor: pointer;
             user-select: none;
+            color: var(--background-color);
         }
     </style>
     <button id="fullscreenToggle" class="fullscreen-toggle">&#x26F6;</button>

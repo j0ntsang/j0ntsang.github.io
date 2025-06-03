@@ -54,9 +54,18 @@ export const styles = `
   }
 
   .waybar {
+    display: flex;
     grid-area: waybar;
     height: 32px;
     background-color: currentColor;
+  }
+
+  .waybar--right {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 0;
+    margin-left: auto;
   }
 
   .master {

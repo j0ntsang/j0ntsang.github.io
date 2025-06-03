@@ -1,11 +1,9 @@
 <template id="settings-menu">
     <style>
         .settings {
-            --button-size: 44px;
+            --button-size: 32px;
 
-            position: fixed;
-            top: calc(100% - var(--button-size));
-            left: calc(100% - var(--button-size));
+            position: relative;
             display: inline-flex;
             flex-direction: column;
             z-index: 9999;
@@ -24,12 +22,13 @@
             cursor: pointer;
             user-select: none;
             z-index: 2;
+            color: var(--background-color);
         }
 
         .settings-menu {
             display: inline-flex;
             position: absolute;
-            bottom: 0;
+            top: 100%;
             right: 0;
             width: 100vw;
             margin: 0;
@@ -42,8 +41,8 @@
 
         @media (min-width: 320px) {
             .settings-menu {
-                bottom: 44px;
-                right: 24px;
+                top: 100%;
+                right: 0;
                 width: initial;
                 min-width: 200px;
                 white-space: nowrap;

@@ -8,7 +8,14 @@ class WindowManager extends HTMLElement {
     template.innerHTML = `
         <style>${styles}</style>
         <div class="container">
-            <nav class="waybar"></nav>
+            <nav class="waybar">
+              <div class="waybar--left">
+                <slot name="waybar-left"></slot>
+              </div>
+              <div class="waybar--right">
+                <slot name="waybar-right"></slot>
+              </div>
+            </nav>
             <main class="master window">
               <slot name="master"></slot>
             </main>
