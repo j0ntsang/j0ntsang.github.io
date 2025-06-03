@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
-
 import { App } from "./App";
+import { render } from "@testing-library/react";
 
-test("renders the talent name", () => {
+test("logs 'React connected' to the console", () => {
+  const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
   render(<App />);
-  const itMe = screen.getByText(/Jonathan Tsang/i);
-  expect(itMe).toBeInTheDocument();
+  expect(logSpy).toHaveBeenCalledWith("React connected");
+  logSpy.mockRestore();
 });
