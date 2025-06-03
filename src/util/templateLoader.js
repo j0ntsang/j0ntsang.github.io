@@ -18,11 +18,12 @@ export async function loadAndMountTemplates() {
     throw new Error("Template Manager failed to find container nodes.");
   }
 
-  const terminalClone = TemplateManager.create("terminal");
+  const terminalRoot = TemplateManager.createRoot("terminal");
+  if (terminalRoot) terminalRoot.setAttribute("slot", "master");
   const fullscreenClone = TemplateManager.create("fullscreen-toggle");
   const settingsMenuClone = TemplateManager.create("settings-menu");
 
-  if (!terminalClone || !settingsMenuClone || !fullscreenClone) {
+  if (!terminalRoot || !settingsMenuClone || !fullscreenClone) {
     throw new Error("Template Manager failed to create a clone");
   }
 
@@ -30,5 +31,5 @@ export async function loadAndMountTemplates() {
   initializeFullscreenToggle();
   TemplateManager.mount(settingsMenuClone, settingsNode);
   initializeSettingsMenu();
-  TemplateManager.mount(terminalClone, windowManager);
+  TemplateManager.mount(terminalRoot, windowManager);
 }

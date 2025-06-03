@@ -49,6 +49,12 @@ export class TemplateManager {
     return clone;
   }
 
+  static createRoot(id: string): HTMLElement | null {
+    const fragment = this.create(id);
+    if (!fragment) return null;
+    return fragment.querySelector("*") as HTMLElement | null;
+  }
+
   static mount(
     fragment: DocumentFragment | Element | null,
     container: HTMLElement | null,
