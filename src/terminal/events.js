@@ -5,7 +5,8 @@ export function setupTerminalEvents(
   inputEl,
   outputEl,
   shell,
-  color
+  color,
+  initialHtml = "<strong>Hello, World</strong>"
 ) {
   function appendLine(html) {
     const line = document.createElement("div");
@@ -14,7 +15,7 @@ export function setupTerminalEvents(
     outputEl.scrollTop = outputEl.scrollHeight;
   }
 
-  appendLine("<strong>Hello, World</strong>");
+  appendLine(initialHtml);
   console.log("Terminal connected");
 
   container.addEventListener("click", () => inputEl.focus());
