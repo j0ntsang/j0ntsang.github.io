@@ -1,5 +1,11 @@
 // window-manager.styles.ts
 export const styles = `
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   @supports not selector(::-webkit-scrollbar) {
     html {
       scrollbar-width: thin;
@@ -25,6 +31,14 @@ export const styles = `
     background-color: var(--scrollbar-thumb-hover);
   }
 
+  :host {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
   .container {
     display: grid;
     grid-template-columns: minmax(50%, auto) auto;
@@ -34,7 +48,9 @@ export const styles = `
     grid-template-areas:
     "waybar waybar"
     "master slaves";
+    width: 100%;
     height: 100%;
+    padding: 24px;
   }
 
   .waybar {

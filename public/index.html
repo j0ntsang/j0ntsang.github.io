@@ -50,27 +50,30 @@
     }
 
     html.dark {
+      --background-color: var(--background-color--dark, #1e1e1e);
       --scrollbar-thumb-color: var(--text-color--dark);
       --scrollbar-thumb-hover: var(--text-color--dark);
 
-      background-color: var(--background-color--dark, #1e1e1e);
+      background-color: var(--background-color);
       color: var(--text-color--dark, #ffa500);
     }
 
     html.light {
+      --background-color: var(--background-color--light, #1e1e1e);
       --scrollbar-thumb-color: var(--text-color--light);
       --scrollbar-thumb-hover: var(--text-color--light);
 
-      background-color: var(--background-color--light, #f5f5f5);
+      background-color: var(--background-color);
       color: var(--text-color--light, #1e1e1e);
     }
 
     @media (prefers-color-scheme: dark) {
       html:not(.light):not(.dark) {
+        --background-color: var(--background-color--dark, #1e1e1e);
         --scrollbar-thumb-color: var(--text-color--dark);
         --scrollbar-thumb-hover: var(--text-color--dark);
 
-        background-color: var(--background-color--dark);
+        background-color: var(--background-color);
         color: var(--text-color--dark);
       }
     }
@@ -145,12 +148,13 @@
     }
 
     .screen {
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
       background-color: inherit;
       transform-origin: center;
-      overflow: auto;
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -174,10 +178,6 @@
       .page {
         animation: fadeIn 400ms ease-out 700ms forwards, flicker 1.2s infinite steps(2, start);
       }
-    }
-
-    .content {
-      height: 100%;
     }
 
     .scanlines {
@@ -273,11 +273,9 @@
   <div class="screen">
     <span class="scanlines"></span>
     <div class="page">
-      <div id="content" class="content">
-        <window-manager>
-          <div id="react" slot="master"></div>
-        </window-manager>
-      </div>
+      <window-manager>
+        <div id="react" slot="master"></div>
+      </window-manager>
     </div>
   </div>
   </div>
