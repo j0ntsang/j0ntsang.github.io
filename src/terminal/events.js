@@ -9,9 +9,7 @@ export function setupTerminalEvents(
   initialHtml = "<strong>Hello, World</strong>"
 ) {
   function appendLine(html) {
-    const line = document.createElement("div");
-    line.innerHTML = html;
-    outputEl.appendChild(line);
+    outputEl.insertAdjacentHTML("beforeend", html + "<br>");
     outputEl.scrollTop = outputEl.scrollHeight;
   }
 
@@ -25,6 +23,7 @@ export function setupTerminalEvents(
     if (e.key === "Enter") {
       e.preventDefault();
       const command = inputEl.textContent.trim();
+
       if (!command) {
         inputEl.textContent = "";
         return;
@@ -33,8 +32,10 @@ export function setupTerminalEvents(
       appendLine(
         `<span style="color: ${color}">$ ${escapeHtml(command)}</span>`
       );
+
       const output = shell.execute(command);
       output.split("\n").forEach((line) => appendLine(escapeHtml(line)));
+
       inputEl.textContent = "";
     }
   });

@@ -71,7 +71,7 @@ export const styles = `
   .master {
     grid-area: master;
     padding-top: 24px;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   @media screen and (min-width: 320px) {
