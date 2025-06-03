@@ -1,7 +1,6 @@
 import { Shell } from "./shell.js";
 
 export async function startTerminal() {
-  console.log("starting terminal...");
   const container = document.getElementById("terminal-container");
   if (!container) {
     console.error("terminal-container element not found");
@@ -74,6 +73,7 @@ export async function startTerminal() {
 
   // Initialize with Hello, World
   appendLine("<strong>Hello, World</strong>");
+  console.log("Terminal connected");
 
   // Focus input on container click
   container.addEventListener("click", () => {
