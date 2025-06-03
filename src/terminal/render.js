@@ -7,9 +7,12 @@ export function renderTerminal(container, styles) {
   });
   container.innerHTML = "";
 
-  const terminalOutput = document.createElement("div");
+  const terminalOutput = document.createElement("pre");
   terminalOutput.id = "terminal-output";
+  terminalOutput.setAttribute("role", "log");
   terminalOutput.setAttribute("aria-live", "polite");
+  terminalOutput.setAttribute("aria-atomic", "false");
+
   Object.assign(terminalOutput.style, {
     color: styles.color,
     backgroundColor: styles.backgroundColor,
@@ -19,6 +22,7 @@ export function renderTerminal(container, styles) {
     userSelect: "text",
     "margin-bottom": "1em",
     "overflow-y": "auto",
+    "white-space": "normal",
   });
 
   const inputWrapper = document.createElement("div");
@@ -32,7 +36,6 @@ export function renderTerminal(container, styles) {
     maxHeight: "1em",
     fontFamily: styles.fontFamily,
     fontSize: styles.fontSize,
-    fontWeight: styles.fontWeight,
     fontStyle: styles.fontStyle,
     color: styles.color,
     marginTop: "4px",
@@ -41,7 +44,12 @@ export function renderTerminal(container, styles) {
   const promptSpan = document.createElement("span");
   promptSpan.setAttribute("aria-hidden", "true");
   promptSpan.style.userSelect = "none";
-  promptSpan.textContent = "$ ";
+  promptSpan.style.fontWeight = "bold";
+  const user = "guest";
+  const host = window.location.hostname || "localhost";
+  const path = `~${window.location.pathname}` || "~";
+  const isAdmin = false;
+  promptSpan.textContent = `${user}@${host}:${path}${isAdmin ? "#" : "$"}`;
 
   const inputContainer = document.createElement("div");
   inputContainer.id = "input-wrapper";
@@ -59,6 +67,8 @@ export function renderTerminal(container, styles) {
     caretColor: styles.color,
     color: styles.color,
     background: "transparent",
+    paddingLeft: "8px",
+    fontWeight: 600,
     userSelect: "text",
     outline: "none",
   });

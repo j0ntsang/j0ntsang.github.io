@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+a {
+  text-decoration: underline;
+}
+
 h1,
 h2,
 h3,
@@ -9,40 +13,40 @@ h4,
 h5,
 h6 {
   font-family: monospace;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.85rem;
 }
 
 h1 {
-  font-size: 2em;
+  font-size: 2rem;
   font-weight: 600;
 }
 
 h2 {
-  font-size: 1.4em;
+  font-size: 1.4rem;
   font-weight: bold;
-  line-height: 1.4em;
 }
 
 h3 {
-  font-size: 1.4em;
+  font-size: 1.4rem;
   font-weight: bold;
 }
 
 h4 {
-  font-size: 1.2em;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 
 h5 {
-  font-size: 1em;
+  font-size: 1rem;
   font-weight: normal;
 }
 
 h6 {
-  font-size: 0.9em;
+  font-size: 0.9rem;
   font-style: italic;
 }
 
 p {
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
+  line-height: 1.8rem;
 }

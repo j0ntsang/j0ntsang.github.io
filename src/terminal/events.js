@@ -8,9 +8,13 @@ export function setupTerminalEvents(
   color,
   initialHtml = "<strong>Hello, World</strong>"
 ) {
-  function appendLine(html) {
-    outputEl.insertAdjacentHTML("beforeend", html + "<br>");
-    outputEl.scrollTop = outputEl.scrollHeight;
+  function appendLine(rawHtml) {
+    const html = rawHtml.trim();
+    if (html) {
+      outputEl.insertAdjacentHTML("beforeend", html);
+      outputEl.insertAdjacentText("beforeend", "\n");
+      outputEl.scrollTop = outputEl.scrollHeight;
+    }
   }
 
   appendLine(initialHtml);
@@ -22,19 +26,20 @@ export function setupTerminalEvents(
   inputEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      const command = inputEl.textContent.trim();
 
+      const command = inputEl.textContent.trim();
       if (!command) {
         inputEl.textContent = "";
         return;
       }
 
-      appendLine(
-        `<span style="color: ${color}">$ ${escapeHtml(command)}</span>`
-      );
+      const escapedCommand = escapeHtml(command).trim();
+      appendLine(`<span style="color: ${color}">$ ${escapedCommand}</span>`);
 
-      const output = shell.execute(command);
-      output.split("\n").forEach((line) => appendLine(escapeHtml(line)));
+      const output = shell.execute(command).trim();
+      output.split("\n").forEach((line) => {
+        appendLine(escapeHtml(line));
+      });
 
       inputEl.textContent = "";
     }
