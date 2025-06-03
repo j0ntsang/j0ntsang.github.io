@@ -3,7 +3,11 @@ export class Shell {
     this.env = {
       cwd: "/",
       files: {
-        "readme.txt": "Read me file contents",
+        "readme.txt": `Welcome to my new portfolio shell!
+
+        This terminal is currently under active development.
+        Type 'help' to see available commands.
+        Enjoy exploring!`,
       },
     };
   }
