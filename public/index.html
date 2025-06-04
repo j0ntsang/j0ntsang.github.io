@@ -152,10 +152,28 @@
     }
 
     @media (prefers-reduced-motion: no-preference) {
+      @keyframes crtTurnOn {
+        0% {
+          transform: scaleX(0) scaleY(0);
+        }
+
+        30% {
+          transform: scaleX(.5) scaleY(0.05);
+        }
+
+        80% {
+          transform: scaleX(.9) scaleY(0.5);
+        }
+
+        100% {
+          transform: scaleX(1) scaleY(1);
+        }
+      }
+
       .screen {
-        animation: crtExpand 800ms cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
-        animation-fill-mode: forwards;
-        will-change: opacity, clip-path;
+        animation: crtTurnOn 250ms ease-in-out forwards;
+        transform: scaleX(0) scaleY(0);
+        will-change: clip-path;
       }
     }
 
@@ -165,98 +183,18 @@
       left: 0;
       width: 100%;
       height: 100%;
-      opacity: 0;
+      opacity: 0.5;
     }
 
     @media (prefers-reduced-motion: no-preference) {
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
       .page {
-        animation: fadeIn 400ms ease-out 700ms forwards, flicker 1.2s infinite steps(2, start);
-      }
-    }
-
-    .scanlines {
-      pointer-events: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      background-image: repeating-linear-gradient(to bottom,
-          rgba(0, 0, 0, 0) 0px,
-          rgba(0, 0, 0, 0.2) 2px,
-          rgba(0, 0, 0, 0.2) 3px,
-          rgba(0, 0, 0, 0) 4px);
-      opacity: 0;
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-      .scanlines {
-        animation: scanFadeIn 900ms ease-in 600ms forwards, scanFlicker 0.25s infinite;
-      }
-    }
-
-    @keyframes crtExpand {
-      0% {
-        transform: scaleX(0.02) scaleY(0.01);
-        opacity: 1;
-        background-color: white;
-      }
-
-      20% {
-        transform: scaleX(1.1) scaleY(0.02);
-      }
-
-      40% {
-        transform: scaleX(1.15) scaleY(1.05);
-      }
-
-      70% {
-        transform: scaleX(0.98) scaleY(0.98);
-        background-color: inherit;
-      }
-
-      100% {
-        transform: scaleX(1) scaleY(1);
-        background-color: inherit;
-      }
-    }
-
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes scanFadeIn {
-      to {
-        opacity: 0.4;
-      }
-    }
-
-    @keyframes scanFlicker {
-
-      0%,
-      100% {
-        opacity: 0.38;
-      }
-
-      50% {
-        opacity: 0.42;
-      }
-    }
-
-    @keyframes flicker {
-      0% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.95;
-      }
-
-      100% {
-        opacity: 1;
+        animation: fadeIn 150ms ease-in-out forwards;
       }
     }
   </style>
@@ -265,7 +203,6 @@
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div class="screen">
-    <span class="scanlines"></span>
     <div class="page">
       <window-manager>
         <div id="fullscreen" slot="waybar-right"></div>
