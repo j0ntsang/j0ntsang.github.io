@@ -25,6 +25,11 @@
             color: var(--background-color);
         }
 
+        .settings-button-icon {
+            position: relative;
+            top: 2px;
+        }
+
         .settings-menu {
             display: inline-flex;
             position: absolute;
@@ -62,7 +67,9 @@
     </style>
 
     <details class="settings">
-        <summary class="settings-button">&#x2699;</summary>
+        <summary class="settings-button">
+            <span class="settings-button-icon">&#x2699;</span>
+        </summary>
         <nav class="settings-menu">
             <ul class="settings-list">
                 <li class="setting">

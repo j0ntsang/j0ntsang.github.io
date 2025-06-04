@@ -1,9 +1,12 @@
 <template id="fullscreen-toggle">
     <style>
+        #fullscreen {
+            display: inline-flex;
+            align-items: center;
+        }
+
         .fullscreen-toggle {
-
             --button-size: 32px;
-
             position: relative;
             display: inline-flex;
             flex-direction: column;
@@ -21,6 +24,13 @@
             user-select: none;
             color: var(--background-color);
         }
+
+        .fullscreen-toggle-icon {
+            position: relative;
+            top: 2px;
+        }
     </style>
-    <button id="fullscreenToggle" class="fullscreen-toggle">&#x26F6;</button>
+    <button id="fullscreenToggle" class="fullscreen-toggle">
+        <span class="fullscreen-toggle-icon">&#x26F6;</span>
+    </button>
 </template>

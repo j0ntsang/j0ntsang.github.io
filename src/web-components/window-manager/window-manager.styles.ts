@@ -70,14 +70,7 @@ export const styles = `
 
   .master {
     grid-area: master;
-    padding-top: 24px;
     overflow: hidden;
-  }
-
-  @media screen and (min-width: 320px) {
-    .master {
-      padding: 24px;
-    }
   }
 
   .slaves {

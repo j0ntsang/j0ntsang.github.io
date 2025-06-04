@@ -14,15 +14,16 @@ export function renderTerminal(container, styles) {
   terminalOutput.setAttribute("aria-atomic", "false");
 
   Object.assign(terminalOutput.style, {
-    color: styles.color,
-    backgroundColor: styles.backgroundColor,
+    color: "var(--text-color)",
+    backgroundColor: "var(--background-color)",
     maxWidth: `${settings.lineWidth}ch`,
     height: "calc(100% - 1.5em)",
     boxSizing: "border-box",
     userSelect: "text",
-    "margin-bottom": "1em",
-    "overflow-y": "auto",
-    "white-space": "normal",
+    marginBottom: "1em",
+    paddingRight: "24px",
+    overflowY: "auto",
+    whiteSpace: "normal",
   });
 
   const inputWrapper = document.createElement("div");
@@ -31,13 +32,14 @@ export function renderTerminal(container, styles) {
     bottom: 0,
     left: 0,
     display: "flex",
+    alignItems: "center",
     width: "100%",
     maxWidth: `${settings.lineWidth}ch`,
-    maxHeight: "1em",
+    Height: "2em",
     fontFamily: styles.fontFamily,
     fontSize: styles.fontSize,
     fontStyle: styles.fontStyle,
-    color: styles.color,
+    color: "var(--text-color)",
     marginTop: "4px",
   });
 
@@ -64,8 +66,8 @@ export function renderTerminal(container, styles) {
   terminalInput.setAttribute("aria-label", "Terminal input");
 
   Object.assign(terminalInput.style, {
-    caretColor: styles.color,
-    color: styles.color,
+    caretColor: "var(--text-color)",
+    color: "var(--text-color)",
     background: "transparent",
     paddingLeft: "8px",
     fontWeight: 600,

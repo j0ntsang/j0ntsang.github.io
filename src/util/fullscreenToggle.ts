@@ -4,36 +4,38 @@ export function initializeFullscreenToggle() {
   ) as HTMLButtonElement | null;
   if (!toggleBtn) return;
 
+  const iconSpan = toggleBtn.querySelector(
+    ".fullscreen-toggle-icon"
+  ) as HTMLSpanElement | null;
+
   toggleBtn.addEventListener("click", () => {
-    console.log("click");
     const el = document.documentElement;
 
     if (!document.fullscreenElement) {
       if (el.requestFullscreen) {
         el.requestFullscreen();
       } else if ((el as any).webkitRequestFullscreen) {
-        (el as any).webkitRequestFullscreen(); // Safari
+        (el as any).webkitRequestFullscreen();
       } else if ((el as any).msRequestFullscreen) {
-        (el as any).msRequestFullscreen(); // IE11
+        (el as any).msRequestFullscreen();
       }
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if ((document as any).webkitExitFullscreen) {
-        (document as any).webkitExitFullscreen(); // Safari
+        (document as any).webkitExitFullscreen();
       } else if ((document as any).msExitFullscreen) {
-        (document as any).msExitFullscreen(); // IE11
+        (document as any).msExitFullscreen();
       }
     }
   });
 
   function updateButtonLabel() {
-    if (!toggleBtn) return;
-    toggleBtn.innerHTML = document.fullscreenElement ? "&#x29C9;" : "&#x26F6;";
+    if (!iconSpan) return;
+    iconSpan.innerHTML = document.fullscreenElement ? "&#x29C9;" : "&#x26F6;";
   }
 
   document.addEventListener("fullscreenchange", updateButtonLabel);
 
-  // Set initial label
   updateButtonLabel();
 }
