@@ -31,12 +31,5 @@ export async function startTerminal(htmlPath) {
     }
   }
 
-  setupTerminalEvents(
-    container,
-    inputEl,
-    outputEl,
-    shell,
-    styles.color,
-    initialHtml
-  );
+  setupTerminalEvents(container, inputEl, outputEl, shell, initialHtml);
 }

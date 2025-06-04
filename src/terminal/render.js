@@ -1,3 +1,4 @@
+import { getPrompt } from "./util";
 import settings from "./config.json";
 
 export function renderTerminal(container, styles) {
@@ -47,11 +48,9 @@ export function renderTerminal(container, styles) {
   promptSpan.setAttribute("aria-hidden", "true");
   promptSpan.style.userSelect = "none";
   promptSpan.style.fontWeight = "bold";
-  const user = "guest";
-  const host = window.location.hostname || "localhost";
-  const path = `~${window.location.pathname}` || "~";
-  const isAdmin = false;
-  promptSpan.textContent = `${user}@${host}:${path}${isAdmin ? "#" : "$"}`;
+
+  const prompt = getPrompt("guest", false);
+  promptSpan.textContent = prompt;
 
   const inputContainer = document.createElement("div");
   inputContainer.id = "input-wrapper";

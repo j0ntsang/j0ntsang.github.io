@@ -1,18 +1,17 @@
-import { escapeHtml } from "./util.js";
+import { escapeHtml, getPrompt } from "./util.js";
 
 export function setupTerminalEvents(
   container,
   inputEl,
   outputEl,
   shell,
-  color,
   initialHtml = "<strong>Hello, World</strong>"
 ) {
   function appendLine(rawHtml) {
     const html = rawHtml.trim();
     if (html) {
       outputEl.insertAdjacentHTML("beforeend", html);
-      outputEl.insertAdjacentText("beforeend", "\n");
+      outputEl.insertAdjacentHTML("beforeend", "<br>");
       outputEl.scrollTop = outputEl.scrollHeight;
     }
   }
@@ -34,7 +33,8 @@ export function setupTerminalEvents(
       }
 
       const escapedCommand = escapeHtml(command).trim();
-      appendLine(`<span style="color: ${color}">$ ${escapedCommand}</span>`);
+      const prompt = getPrompt("guest", false);
+      appendLine(`${prompt} ${escapedCommand}`);
 
       const output = shell.execute(command).trim();
       output.split("\n").forEach((line) => {
