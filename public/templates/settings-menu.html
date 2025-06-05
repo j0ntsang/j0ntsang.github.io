@@ -64,6 +64,14 @@
             display: inline-block;
             margin: 0 8px 0 0;
         }
+
+        .setting-label {
+            cursor: pointer;
+        }
+
+        .setting-label:has(.setting-input:disabled) {
+            cursor: default;
+        }
     </style>
 
     <details class="settings">
@@ -73,22 +81,22 @@
         <nav class="settings-menu">
             <ul class="settings-list">
                 <li class="setting">
-                    <label>
+                    <label class="setting-label">
                         <input type="checkbox" name="animation" class="setting-input" checked disabled />Animation
                     </label>
                 </li>
                 <li class="setting">
-                    <label>
+                    <label class="setting-label">
                         <input type="checkbox" name="dark_mode" class="setting-input" />Dark Mode
                     </label>
                 </li>
                 <li class="setting">
-                    <label>
+                    <label class="setting-label">
                         <input type="checkbox" name="performance_mode" class="setting-input" disabled />Performance Mode
                     </label>
                 </li>
                 <li class="setting">
-                    <label>
+                    <label class="setting-label">
                         <input type="checkbox" name="disable_javascript" class="setting-input" disabled />Disable
                         JavaScript
                     </label>
