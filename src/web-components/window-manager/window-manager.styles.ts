@@ -77,6 +77,7 @@ export const styles = `
 
   .master {
     grid-area: master;
+    padding: 24px 0 8px 24px;
     overflow: hidden;
   }
 

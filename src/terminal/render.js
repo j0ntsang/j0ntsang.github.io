@@ -21,7 +21,7 @@ export function renderTerminal(container, styles) {
     height: "calc(100% - 1.5em)",
     boxSizing: "border-box",
     userSelect: "text",
-    marginBottom: "1em",
+    paddingBottom: "1em",
     paddingRight: "24px",
     overflowY: "auto",
     whiteSpace: "normal",
@@ -34,14 +34,14 @@ export function renderTerminal(container, styles) {
     left: 0,
     display: "flex",
     alignItems: "center",
-    width: "100%",
+    width: "calc(100% - 32px)",
     maxWidth: `${settings.lineWidth}ch`,
-    Height: "2em",
+    height: "2em",
     fontFamily: styles.fontFamily,
     fontSize: styles.fontSize,
     fontStyle: styles.fontStyle,
+    backgroundColor: "var(--background-color)",
     color: "var(--text-color)",
-    marginTop: "4px",
   });
 
   const promptSpan = document.createElement("span");
