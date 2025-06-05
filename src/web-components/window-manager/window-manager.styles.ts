@@ -41,8 +41,8 @@ export const styles = `
 
   .container {
     display: grid;
-    grid-template-columns: minmax(50%, auto) auto;
-    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
     grid-column-gap: 0px;
     grid-row-gap: 16px;
     grid-template-areas:
@@ -51,6 +51,13 @@ export const styles = `
     width: 100%;
     height: 100%;
     padding: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .container {
+      grid-template-columns: minmax(auto, max-content) auto;
+      grid-template-rows: auto 1fr;
+    }
   }
 
   .waybar {
