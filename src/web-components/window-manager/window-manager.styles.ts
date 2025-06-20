@@ -66,6 +66,7 @@ export const styles = `
     height: 32px;
     margin-bottom: 16px;
     background-color: currentColor;
+    border-radius: 4px;
   }
 
   .waybar--right {
