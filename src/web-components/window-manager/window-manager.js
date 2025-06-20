@@ -19,8 +19,8 @@ class WindowManager extends HTMLElement {
             <main class="master window">
               <slot name="master"></slot>
             </main>
-            <sidebar class="slaves">
-              <slot name="slaves"></slot>
+            <sidebar class="sidebar">
+              <slot name="sidebar"></slot>
             </sidebar>
         </div>
       `;

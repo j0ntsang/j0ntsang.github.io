@@ -42,12 +42,12 @@ export const styles = `
   .container {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr;
-    grid-column-gap: 0px;
-    grid-row-gap: 16px;
+    grid-template-rows: auto auto;
+    grid-column-gap: 0;
+    grid-row-gap: 0;
     grid-template-areas:
     "waybar waybar"
-    "master slaves";
+    "master sidebar";
     width: 100%;
     height: 100%;
     padding: 24px;
@@ -64,6 +64,7 @@ export const styles = `
     display: flex;
     grid-area: waybar;
     height: 32px;
+    margin-bottom: 16px;
     background-color: currentColor;
   }
 
@@ -81,8 +82,8 @@ export const styles = `
     overflow: hidden;
   }
 
-  .slaves {
-    grid-area: slaves;
+  .sidebar {
+    grid-area: sidebar;
   }
 
   .window {
