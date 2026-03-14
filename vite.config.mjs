@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
-import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
@@ -17,19 +16,16 @@ function coiDevPlugin() {
       order: "pre",
       handler(html, ctx) {
         if (ctx.server) {
+          // Dev server sets COOP/COEP headers directly, so strip the script tag.
           return html.replace(
             /<script\s+src="[^"]*coi-serviceworker\.js"><\/script>\n?/g,
             ""
           );
         }
-        const content = readFileSync(
-          new URL("node_modules/coi-serviceworker/coi-serviceworker.js", import.meta.url),
-          "utf8"
-        );
-        return html.replace(
-          /<script\s+src="[^"]*coi-serviceworker\.js"><\/script>/g,
-          `<script>${content}</script>`
-        );
+        // Build mode: keep the script tag as-is. Vite replaces %BASE_URL% and
+        // copies coi-serviceworker.js from public/ to dist/, so
+        // window.document.currentScript.src will resolve to the correct URL.
+        return html;
       },
     },
   };
