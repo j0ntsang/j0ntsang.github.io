@@ -100,8 +100,6 @@ Updates are batched with `requestAnimationFrame` and driven by browser events (`
 React 18 is mounted into `#react` alongside the vanilla layer.
 
 - **`App.tsx`** — Currently renders an empty fragment; serves as the React root.
-- **`components/Divider.tsx`** — A Styled Components example component.
-- **`hooks/useTitleAnimation.js`** — Animates the browser tab title with a configurable spinner (`spinner_line`, `spinner_circle`, `ellipsis`) or progress bar (`hash_dot`) using `requestAnimationFrame`.
 
 ### 8. Styling Tools
 
