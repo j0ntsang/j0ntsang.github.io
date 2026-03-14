@@ -39,6 +39,8 @@ class AnsiAwareString {
 // Commands
 // ---------------------------------------------------------------------------
 
+const setTitle = (term, t) => term.write(`\x1b]0;${t}\x07`);
+
 const COMMANDS = {
   help(term) {
     const pad = (s, n) => s + " ".repeat(Math.max(1, n - s.length));
@@ -169,7 +171,9 @@ export async function runPrompt(term, motdPath) {
     const [cmd, ...args] = input.split(/\s+/);
 
     if (cmd in COMMANDS) {
+      setTitle(term, cmd);
       await COMMANDS[cmd](term, motdPath, echo, args);
+      setTitle(term, "dash (wasm)");
     } else {
       term.write(`${C.dim}${cmd}: command not found — type ${C.reset}help${C.dim} for available commands${C.reset}\r\n`);
     }

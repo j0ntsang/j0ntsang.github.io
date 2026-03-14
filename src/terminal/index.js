@@ -78,6 +78,7 @@ export async function startTerminal(htmlPath) {
     fontSize: 16,
     allowTransparency: true,
     theme: getColors(),
+    termName: "xterm-256color",
     linkHandler: {
       activate: (_event, uri) => window.open(uri, "_blank", "noopener,noreferrer"),
     },
@@ -102,6 +103,7 @@ export async function startTerminal(htmlPath) {
   syncTheme();
   term.open(container);
   fitAddon.fit();
+  term.focus();
 
   // Sync title bar element and browser tab title
   const titleEl = document.getElementById("terminal-title");
@@ -118,6 +120,7 @@ export async function startTerminal(htmlPath) {
   // Wait for keypress — nothing loads or runs until the user initiates
   // ---------------------------------------------------------------------------
 
+  term.write("\x1b]0;xterm-256color — wasm:/dev/tty\x07");
   term.write("Press any key to boot...");
 
   await new Promise((resolve) => {
@@ -139,6 +142,7 @@ export async function startTerminal(htmlPath) {
 async function boot(term, motdPath) {
   const ln = (s = "") => term.write(s + "\r\n");
   const barWidth = () => Math.max(20, Math.min(30, term.cols - 30));
+  const setTitle = (t) => term.write(`\x1b]0;${t}\x07`);
 
   // Write a step label, await fn(), overwrite line with status
   async function step(label, fn) {
@@ -190,6 +194,8 @@ async function boot(term, motdPath) {
   }
 
   try {
+    setTitle("Booting...");
+
     // 1. SharedArrayBuffer — required for WASM synchronous I/O
     await step("Checking SharedArrayBuffer support", async () => {
       if (typeof SharedArrayBuffer === "undefined") {
@@ -200,6 +206,7 @@ async function boot(term, motdPath) {
     });
 
     // 2. PTY module
+    setTitle("Loading PTY...");
     await step("Loading PTY module", async () => {
       // TODO: const { openpty } = await import("xterm-pty");
       await delay(200);
@@ -211,21 +218,25 @@ async function boot(term, motdPath) {
     //      "Fetching dash.wasm",
     //      `${import.meta.env.BASE_URL}wasm/dash.wasm`
     //    );
+    setTitle("Fetching dash.wasm...");
     await simulatedFetch("Fetching dash.wasm", 427520); // ~418 KB — real dash WASM size
 
     // 4. Compile WASM module
+    setTitle("Compiling WebAssembly...");
     await step("Compiling WebAssembly module", async () => {
       // TODO: const module = await WebAssembly.compile(wasmBuffer);
       await delay(350);
     });
 
     // 5. Mount virtual filesystem
+    setTitle("Mounting filesystem...");
     await step("Mounting virtual filesystem", async () => {
       // TODO: FS.mkdir("/home/guest"); FS.writeFile("/etc/motd", ...); FS.chdir("/home/guest");
       await delay(120);
     });
 
     // 6. Start dash
+    setTitle("Starting dash...");
     await step("Starting dash", async () => {
       // TODO: instantiate WASM module and connect PTY slave to xterm
       await delay(180);
@@ -254,6 +265,7 @@ async function boot(term, motdPath) {
     }
 
     // TODO: replace runPrompt() with the real PTY shell once WASM is wired up.
+    setTitle("dash (wasm)");
     await runPrompt(term, motdPath);
 
   } catch (err) {
