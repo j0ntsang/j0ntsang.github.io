@@ -42,12 +42,13 @@ export const styles = `
   .container {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto 1fr 1fr;
     grid-column-gap: 0;
-    grid-row-gap: 0;
+    grid-row-gap: 16px;
     grid-template-areas:
-    "waybar waybar"
-    "master sidebar";
+      "waybar"
+      "master"
+      "sidebar";
     width: 100%;
     height: 100%;
     padding: 24px;
@@ -55,8 +56,12 @@ export const styles = `
 
   @media (min-width: 768px) {
     .container {
-      grid-template-columns: minmax(auto, max-content) auto;
+      grid-template-columns: minmax(320px, 1fr) minmax(280px, 320px);
       grid-template-rows: auto 1fr;
+      grid-template-areas:
+        "waybar waybar"
+        "master sidebar";
+      column-gap: 16px;
     }
   }
 
@@ -85,6 +90,21 @@ export const styles = `
 
   .sidebar {
     grid-area: sidebar;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 280px;
+    min-height: 0;
+  }
+
+  /* Ensure slotted content can grow and scroll inside the sidebar */
+  .sidebar ::slotted(*) {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
   }
 
   .window {

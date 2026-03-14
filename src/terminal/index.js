@@ -33,6 +33,7 @@ export async function startTerminal(htmlPath) {
     cursorBlink: true,
     convertEol: true,
     fontFamily: getComputedStyle(document.body).fontFamily,
+    fontSize: 16,
     allowTransparency: true,
     theme: baseTheme,
   });
