@@ -1,5 +1,3 @@
 {
-  "welcomeMessage": "templates/motd.txt",
-  "lineWidth": 80,
-  "historySize": 1000
+  "welcomeMessage": "templates/motd.txt"
 }

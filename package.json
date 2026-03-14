@@ -4,11 +4,15 @@
   "homepage": "https://j0ntsang.github.io/j0ntsang.github.io",
   "private": true,
   "dependencies": {
-    "@xterm/xterm": "^6.0.0"
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "coi-serviceworker": "^0.1.7",
+    "local-echo": "^0.2.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "copy:coi": "cp node_modules/coi-serviceworker/coi-serviceworker.js public/coi-serviceworker.js",
+    "dev": "npm run copy:coi && vite",
+    "build": "npm run copy:coi && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

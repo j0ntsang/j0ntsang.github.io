@@ -1,9 +1,52 @@
 import { Terminal } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 
-import { Shell, CLEAR_SENTINEL } from "./shell.js";
-import { getPrompt } from "./util.js";
 import config from "./config.json";
+import { runPrompt } from "./prompt.js";
+
+// ---------------------------------------------------------------------------
+// ANSI helpers
+// ---------------------------------------------------------------------------
+
+const C = {
+  reset:  "\x1b[0m",
+  green:  "\x1b[32m",
+  red:    "\x1b[31m",
+  yellow: "\x1b[33m",
+  dim:    "\x1b[2m",
+};
+
+const OK   = `${C.green}[  OK  ]${C.reset}`;
+const FAIL = `${C.red}[ FAIL ]${C.reset}`;
+const PAD  = "        "; // 8 chars — aligns with "[  OK  ]"
+
+// ---------------------------------------------------------------------------
+// Progress bar
+// ---------------------------------------------------------------------------
+
+function formatBytes(n) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1048576) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / 1048576).toFixed(1)} MB`;
+}
+
+function progressBar(received, total, width) {
+  if (total === 0) {
+    // Indeterminate — animated spinner position based on time
+    const pos = Math.floor((Date.now() / 80) % width);
+    const bar = " ".repeat(pos) + "=" + " ".repeat(width - pos - 1);
+    return `[${bar}] ${formatBytes(received)}`;
+  }
+  const pct = Math.min(received / total, 1);
+  const filled = Math.floor(pct * width);
+  const bar = "#".repeat(filled) + "-".repeat(width - filled);
+  return `[${bar}] ${Math.floor(pct * 100)}% (${formatBytes(received)} / ${formatBytes(total)})`;
+}
+
+// ---------------------------------------------------------------------------
+// Terminal setup
+// ---------------------------------------------------------------------------
 
 export async function startTerminal(htmlPath) {
   const container = document.getElementById("terminal-container");
@@ -13,224 +56,211 @@ export async function startTerminal(htmlPath) {
   }
 
   container.innerHTML = "";
-  container.style.height = "100%";
-  container.style.width = "100%";
-  container.style.overflow = "hidden";
-  container.style.background = "transparent";
+  Object.assign(container.style, {
+    height: "100%",
+    width: "100%",
+    overflow: "hidden",
+    background: "transparent",
+  });
 
-  function getTerminalColors() {
-    const rootStyles = getComputedStyle(document.documentElement);
-    const foreground =
-      rootStyles.getPropertyValue("--text-color").trim() || rootStyles.color || "#fff";
-    const background =
-      rootStyles.getPropertyValue("--background-color").trim() || "rgba(0,0,0,0)";
-    return { foreground, background };
+  function getColors() {
+    const s = getComputedStyle(document.documentElement);
+    return {
+      foreground: s.getPropertyValue("--text-color").trim() || "#fff",
+      background: s.getPropertyValue("--background-color").trim() || "rgba(0,0,0,0)",
+    };
   }
-
-  const baseTheme = getTerminalColors();
 
   const term = new Terminal({
     cursorBlink: true,
     convertEol: true,
-    wordWrap: false,
     fontFamily: getComputedStyle(document.body).fontFamily,
     fontSize: 16,
     allowTransparency: true,
-    theme: baseTheme,
+    theme: getColors(),
+    linkHandler: {
+      activate: (_event, uri) => window.open(uri, "_blank", "noopener,noreferrer"),
+    },
   });
 
-  function setTerminalScrollBackground(bg) {
-    const scrollEl = container.querySelector(".xterm-scrollable-element");
-    if (scrollEl) {
-      scrollEl.style.background = bg;
-    }
-  }
+  const fitAddon = new FitAddon();
+  term.loadAddon(fitAddon);
 
-
-  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  function updateTerminalTheme() {
-    const { foreground, background } = getTerminalColors();
+  function syncTheme() {
+    const { foreground, background } = getColors();
     term.options.theme = { ...term.options.theme, foreground, background };
-    setTerminalScrollBackground(background);
+    const el = container.querySelector(".xterm-scrollable-element");
+    if (el) el.style.background = background;
   }
 
-  // Update when OS theme changes
-  if (mediaQuery.addEventListener) {
-    mediaQuery.addEventListener("change", updateTerminalTheme);
-  } else if (mediaQuery.addListener) {
-    mediaQuery.addListener(updateTerminalTheme);
-  }
-
-  // Update when the user toggles between `html.dark` / `html.light`.
-  const themeMutationObserver = new MutationObserver((records) => {
-    for (const record of records) {
-      if (record.attributeName === "class") {
-        updateTerminalTheme();
-        return;
-      }
-    }
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", syncTheme);
+  new MutationObserver(syncTheme).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
   });
-  themeMutationObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
-  // Apply immediately
-  updateTerminalTheme();
+  syncTheme();
   term.open(container);
+  fitAddon.fit();
 
+  // Sync title bar element and browser tab title
   const titleEl = document.getElementById("terminal-title");
-  if (titleEl) {
-    titleEl.textContent = "Jonathan Tsang";
-    term.onTitleChange((title) => {
-      titleEl.textContent = title || "Jonathan Tsang";
+  const defaultTitle = titleEl?.textContent || document.title;
+  term.onTitleChange((t) => {
+    const v = t || defaultTitle;
+    if (titleEl) titleEl.textContent = v;
+    document.title = v;
+  });
+
+  new ResizeObserver(() => fitAddon.fit()).observe(container);
+
+  // ---------------------------------------------------------------------------
+  // Wait for keypress — nothing loads or runs until the user initiates
+  // ---------------------------------------------------------------------------
+
+  term.write("Press any key to boot...");
+
+  await new Promise((resolve) => {
+    const d = term.onData((data) => {
+      if (data.startsWith("\x1b")) return; // ignore escape sequences
+      d.dispose();
+      resolve();
     });
-  }
-
-
-  // Ensure the terminal scrollable element matches the current theme background.
-  // xterm may set an inline background on its scrollable element; we keep it in sync.
-  const syncScrollBackground = () => {
-    setTerminalScrollBackground(getTerminalColors().background);
-  };
-
-  syncScrollBackground();
-
-  const observer = new MutationObserver(syncScrollBackground);
-  observer.observe(container, { childList: true, subtree: true });
-  window.addEventListener("beforeunload", () => {
-    observer.disconnect();
-    themeMutationObserver.disconnect();
   });
 
-  // Replicate FitAddon: read cell dimensions from xterm internals and resize.
-  // Deferred via requestAnimationFrame so ResizeObserver doesn't loop.
-  function fitTerminal() {
-    const dims = term._core?._renderService?.dimensions?.css?.cell;
-    if (!dims?.width || !dims?.height) return;
-    const cols = Math.max(2, Math.floor(container.clientWidth / dims.width));
-    const rows = Math.max(1, Math.floor(container.clientHeight / dims.height));
-    if (term.cols !== cols || term.rows !== rows) {
-      term.resize(cols, rows);
-    }
-  }
-  requestAnimationFrame(fitTerminal);
-
-  const shell = new Shell();
-
-  const motdPath = htmlPath || config.welcomeMessage;
-  let initialText = "";
-
-  function resolveUrl(path) {
-    const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
-    return new URL(normalizedPath, document.baseURI).toString();
-  }
-
-  function decodeEscapes(text) {
-    // Allow MOTD files to contain readable \xNN escape sequences that become real bytes.
-    return text.replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
-  }
-
-  if (motdPath) {
-    try {
-      const response = await fetch(resolveUrl(motdPath));
-      if (response.ok) {
-        const raw = await response.text();
-        initialText = decodeEscapes(raw);
-      } else {
-        console.warn(`Failed to load ${motdPath}, using fallback text.`);
-      }
-    } catch (e) {
-      console.error("Error loading MOTD file:", e);
-    }
-  }
-
-  if (!initialText) {
-    initialText = "Welcome to the terminal. Type 'help' for available commands.";
-  }
-
-  const prompt = getPrompt({ user: "guest", isAdmin: false });
-  let buffer = "";
-  const history = [];
-  let historyIndex = -1;
-
-  function rewriteLine(text) {
-    term.write("\x1b[2K\r" + prompt + text);
-  }
-
-  function writePrompt() {
-    term.write("\n" + prompt);
-  }
-
-  function writeOutput(text) {
-    term.write(text + "\n");
-  }
-
-  writeOutput(initialText.trim());
-  writePrompt();
-  term.focus();
-
-  // onData is the xterm standard: receives decoded byte sequences for all input
-  // including paste, IME composition, and special keys as escape sequences.
-  term.onData((data) => {
-    switch (data) {
-      case "\r": { // Enter
-        const command = buffer.trim();
-        buffer = "";
-        term.write("\r\n");
-        if (command) {
-          history.push(command);
-          if (history.length > config.historySize) history.shift();
-          historyIndex = -1;
-
-          const output = shell.execute(command).trim();
-          if (output === CLEAR_SENTINEL) {
-            term.clear();
-          } else {
-            writeOutput(output);
-          }
-        }
-        writePrompt();
-        break;
-      }
-      case "\x7f": // Backspace
-        if (buffer.length > 0) {
-          buffer = buffer.slice(0, -1);
-          term.write("\b \b");
-        }
-        break;
-      case "\x03": // Ctrl+C
-        buffer = "";
-        term.write("^C");
-        writePrompt();
-        break;
-      case "\x1b[A": // Arrow up
-        if (history.length === 0) break;
-        if (historyIndex === -1) {
-          historyIndex = history.length - 1;
-        } else if (historyIndex > 0) {
-          historyIndex -= 1;
-        }
-        buffer = history[historyIndex] || "";
-        rewriteLine(buffer);
-        break;
-      case "\x1b[B": // Arrow down
-        if (history.length === 0 || historyIndex === -1) break;
-        if (historyIndex < history.length - 1) {
-          historyIndex += 1;
-          buffer = history[historyIndex] || "";
-        } else {
-          historyIndex = -1;
-          buffer = "";
-        }
-        rewriteLine(buffer);
-        break;
-      default:
-        // Ignore unhandled escape sequences
-        if (data.startsWith("\x1b")) break;
-        // Printable characters and paste (data may be multiple chars)
-        buffer += data;
-        term.write(data);
-    }
-  });
-
-  const resizeObserver = new ResizeObserver(() => requestAnimationFrame(fitTerminal));
-  resizeObserver.observe(container);
+  term.write("\r\n\r\n");
+  await boot(term, htmlPath || config.welcomeMessage);
 }
+
+// ---------------------------------------------------------------------------
+// Boot sequence
+// ---------------------------------------------------------------------------
+
+async function boot(term, motdPath) {
+  const ln = (s = "") => term.write(s + "\r\n");
+  const barWidth = () => Math.max(20, Math.min(30, term.cols - 30));
+
+  // Write a step label, await fn(), overwrite line with status
+  async function step(label, fn) {
+    term.write(`${PAD}${label}`);
+    try {
+      await fn();
+      term.write(`\r${OK} ${label}\r\n`);
+    } catch (err) {
+      term.write(`\r${FAIL} ${label}\r\n`);
+      ln(`${PAD}  ${C.red}${err.message}${C.reset}`);
+      throw err;
+    }
+  }
+
+  // TODO: uncomment when WASM binary is available at public/wasm/dash.wasm
+  // async function fetchWithProgress(label, url) {
+  //   term.write(`${PAD}${label} ${progressBar(0, 0, barWidth())}`);
+  //   const res = await fetch(url);
+  //   if (!res.ok) throw new Error(`HTTP ${res.status} — ${url}`);
+  //   const total = parseInt(res.headers.get("Content-Length") || "0", 10);
+  //   const reader = res.body.getReader();
+  //   const chunks = [];
+  //   let received = 0;
+  //   while (true) {
+  //     const { done, value } = await reader.read();
+  //     if (done) break;
+  //     chunks.push(value);
+  //     received += value.length;
+  //     term.write(`\r${PAD}${label} ${progressBar(received, total, barWidth())}`);
+  //   }
+  //   term.write(`\r${OK} ${label} ${progressBar(received, total, barWidth())}\r\n`);
+  //   const out = new Uint8Array(received);
+  //   let offset = 0;
+  //   for (const chunk of chunks) { out.set(chunk, offset); offset += chunk.length; }
+  //   return out.buffer;
+  // }
+
+  // Simulated fetch — remove once the real WASM binary is available
+  async function simulatedFetch(label, fakeTotal) {
+    term.write(`${PAD}${label} ${progressBar(0, fakeTotal, barWidth())}`);
+    let received = 0;
+    while (received < fakeTotal) {
+      await delay(40 + Math.random() * 40);
+      const chunk = Math.floor(fakeTotal / 18) + Math.floor(Math.random() * (fakeTotal / 18));
+      received = Math.min(received + chunk, fakeTotal);
+      term.write(`\r${PAD}${label} ${progressBar(received, fakeTotal, barWidth())}`);
+    }
+    term.write(`\r${OK} ${label} ${progressBar(fakeTotal, fakeTotal, barWidth())}\r\n`);
+  }
+
+  try {
+    // 1. SharedArrayBuffer — required for WASM synchronous I/O
+    await step("Checking SharedArrayBuffer support", async () => {
+      if (typeof SharedArrayBuffer === "undefined") {
+        throw new Error(
+          "SharedArrayBuffer unavailable — coi-serviceworker may not be active"
+        );
+      }
+    });
+
+    // 2. PTY module
+    await step("Loading PTY module", async () => {
+      // TODO: const { openpty } = await import("xterm-pty");
+      await delay(200);
+    });
+
+    // 3. Fetch dash WASM binary with progress
+    //    Replace simulatedFetch with fetchWithProgress once binary is compiled:
+    //    const wasmBuffer = await fetchWithProgress(
+    //      "Fetching dash.wasm",
+    //      `${import.meta.env.BASE_URL}wasm/dash.wasm`
+    //    );
+    await simulatedFetch("Fetching dash.wasm", 427520); // ~418 KB — real dash WASM size
+
+    // 4. Compile WASM module
+    await step("Compiling WebAssembly module", async () => {
+      // TODO: const module = await WebAssembly.compile(wasmBuffer);
+      await delay(350);
+    });
+
+    // 5. Mount virtual filesystem
+    await step("Mounting virtual filesystem", async () => {
+      // TODO: FS.mkdir("/home/guest"); FS.writeFile("/etc/motd", ...); FS.chdir("/home/guest");
+      await delay(120);
+    });
+
+    // 6. Start dash
+    await step("Starting dash", async () => {
+      // TODO: instantiate WASM module and connect PTY slave to xterm
+      await delay(180);
+    });
+
+    ln();
+    ln(`${C.green}Boot complete.${C.reset}`);
+    ln();
+
+    // MOTD — fetched here so nothing downloads before the user boots
+    if (motdPath) {
+      try {
+        const url = new URL(motdPath.replace(/^\//, ""), document.baseURI).toString();
+        const res = await fetch(url);
+        if (res.ok) {
+          const raw = await res.text();
+          const text = raw.replace(/\\x([0-9a-fA-F]{2})/g, (_, h) =>
+            String.fromCharCode(parseInt(h, 16))
+          );
+          ln(text.trim());
+          ln();
+        }
+      } catch (e) {
+        console.error("MOTD load failed:", e);
+      }
+    }
+
+    // TODO: replace runPrompt() with the real PTY shell once WASM is wired up.
+    await runPrompt(term, motdPath);
+
+  } catch (err) {
+    console.error("[boot]", err);
+    ln();
+    ln(`${C.red}Boot failed.${C.reset} See console for details.`);
+  }
+}
+
+const delay = (ms) => new Promise((r) => setTimeout(r, ms));

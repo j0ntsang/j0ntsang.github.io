@@ -1,5 +1,5 @@
 > "The Web does not just connect machines, it connects people."
-> \x1b[2m— Tim Berners-Lee\x1b[0m
+> — Tim Berners-Lee
 
 Accomplished frontend specialist with 11+ years of experience building scalable, maintainable, and high-performing web applications. Skilled in developing modular UI systems and frontend architectures that support long-term growth.
 
