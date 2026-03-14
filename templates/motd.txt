@@ -1,0 +1,16 @@
+\x1b[1mJonathan Tsang\x1b[0m
+\x1b[2m---------------\x1b[0m
+
+> "The Web does not just connect machines, it connects people."
+> \x1b[2m— Tim Berners-Lee\x1b[0m
+
+Accomplished frontend specialist with 11+ years of experience building scalable,
+maintainable, and high-performing web applications. Skilled in developing modular
+UI systems and frontend architectures that support long-term growth. Proficient in
+semantic, accessible HTML and an expert in CSS, with deep experience across both
+legacy and modern JavaScript frameworks. Comfortable navigating ambiguity and
+translating complex requirements into practical, production-ready implementations.
+
+\x1b]8;;https://codepen.io/tsang\x07CodePen\x1b]8;;\x07   \x1b]8;;https://www.github.com/j0ntsang\x07GitHub\x1b]8;;\x07   \x1b]8;;https://www.linkedin.com/in/j0ntsang\x07LinkedIn\x1b]8;;\x07
+
+For more details, check out my \x1b]8;;https://jontsang.ca/resume.pdf\x07current resume\x1b]8;;\x07.
