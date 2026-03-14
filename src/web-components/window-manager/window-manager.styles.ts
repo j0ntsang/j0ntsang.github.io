@@ -84,8 +84,16 @@ export const styles = `
 
   .master {
     grid-area: master;
-    padding: 24px 0 8px 24px;
+    padding: 0 24px 8px 24px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .master ::slotted(*) {
+    flex: 1 1 0;
+    min-height: 0;
   }
 
   .sidebar {
@@ -98,7 +106,6 @@ export const styles = `
     min-height: 0;
   }
 
-  /* Ensure slotted content can grow and scroll inside the sidebar */
   .sidebar ::slotted(*) {
     flex: 1 1 0;
     min-height: 0;

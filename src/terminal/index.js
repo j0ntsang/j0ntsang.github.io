@@ -32,6 +32,7 @@ export async function startTerminal(htmlPath) {
   const term = new Terminal({
     cursorBlink: true,
     convertEol: true,
+    wordWrap: false,
     fontFamily: getComputedStyle(document.body).fontFamily,
     fontSize: 16,
     allowTransparency: true,
@@ -44,6 +45,7 @@ export async function startTerminal(htmlPath) {
       scrollEl.style.background = bg;
     }
   }
+
 
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   function updateTerminalTheme() {
@@ -73,6 +75,15 @@ export async function startTerminal(htmlPath) {
   // Apply immediately
   updateTerminalTheme();
   term.open(container);
+
+  const titleEl = document.getElementById("terminal-title");
+  if (titleEl) {
+    titleEl.textContent = "Jonathan Tsang";
+    term.onTitleChange((title) => {
+      titleEl.textContent = title || "Jonathan Tsang";
+    });
+  }
+
 
   // Ensure the terminal scrollable element matches the current theme background.
   // xterm may set an inline background on its scrollable element; we keep it in sync.
