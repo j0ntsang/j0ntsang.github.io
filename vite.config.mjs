@@ -1,23 +1,36 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
+import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // In dev mode the Vite server sets COOP/COEP headers directly, so
 // coi-serviceworker is unnecessary and can interfere with HMR. Strip it.
+// In build mode, inline it as a classic script to avoid Vite's
+// "can't bundle without type=module" warning and save a network round-trip.
 function coiDevPlugin() {
   return {
     name: "coi-dev-exclude",
-    transformIndexHtml(html, ctx) {
-      if (ctx.server) {
-        return html.replace(
-          /<script\s+src="[^"]*coi-serviceworker\.js"><\/script>\n?/g,
-          ""
+    transformIndexHtml: {
+      order: "pre",
+      handler(html, ctx) {
+        if (ctx.server) {
+          return html.replace(
+            /<script\s+src="[^"]*coi-serviceworker\.js"><\/script>\n?/g,
+            ""
+          );
+        }
+        const content = readFileSync(
+          new URL("node_modules/coi-serviceworker/coi-serviceworker.js", import.meta.url),
+          "utf8"
         );
-      }
-      return html;
+        return html.replace(
+          /<script\s+src="[^"]*coi-serviceworker\.js"><\/script>/g,
+          `<script>${content}</script>`
+        );
+      },
     },
   };
 }
@@ -42,6 +55,9 @@ export default defineConfig({
         entryFileNames: "static/js/[name].js",
         chunkFileNames: "static/js/[name]-[hash].js",
         assetFileNames: "static/[ext]/[name]-[hash].[ext]",
+        manualChunks: {
+          xterm: ["@xterm/xterm", "@xterm/addon-fit"],
+        },
       },
     },
   },

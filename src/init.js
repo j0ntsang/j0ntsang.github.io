@@ -2,7 +2,6 @@ import "./web-components/window-manager/window-manager.js";
 
 import { loadAndMountTemplates } from "./util/templateLoader.js";
 import { TemplateManager } from "./util/templateManager.js";
-import { startTerminal } from "./terminal/index.js";
 import { initializeSidebarSystemInfo } from "./terminal/sidebarSystemInfo.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -17,6 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       initializeSidebarSystemInfo(sidebarRoot);
     }
 
+    // Lazy-load xterm and the terminal bootstrap so the heavy xterm chunk
+    // is only fetched after the shell UI is already rendered.
+    const { startTerminal } = await import("./terminal/index.js");
     await startTerminal();
   } catch (err) {
     console.error("Initialization failed", err);
