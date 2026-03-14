@@ -49,3 +49,11 @@ p {
   margin-bottom: 0.5rem;
   line-height: 1.8rem;
 }
+
+/* Force xterm terminal to be transparent even if xterm sets inline backgrounds */
+.xterm,
+.xterm-viewport,
+.xterm-scrollable-element,
+.xterm-rows {
+  background: transparent !important;
+}

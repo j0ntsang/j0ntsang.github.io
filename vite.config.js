@@ -1,21 +1,21 @@
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 
 export default defineConfig({
-  publicDir: false,
+  base: "./",
+  plugins: [react()],
   build: {
+    outDir: "dist",
     rollupOptions: {
       input: {
-        init: resolve(__dirname, "src/init.js"),
+        main: resolve(__dirname, "index.html"),
       },
       output: {
-        format: "iife",
-        entryFileNames: "[name].js",
-        dir: resolve(__dirname, "public/static/js"),
+        entryFileNames: "static/js/[name].js",
+        chunkFileNames: "static/js/[name]-[hash].js",
+        assetFileNames: "static/[ext]/[name]-[hash].[ext]",
       },
     },
-    outDir: "public/static/js",
-    emptyOutDir: false,
-    minify: "esbuild",
   },
 });

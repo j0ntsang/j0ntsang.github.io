@@ -1,8 +1,10 @@
 export class TemplateManager {
   static async loadTemplate(url: string): Promise<void> {
     try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Failed to load template: ${url}`);
+      const base = import.meta.env.BASE_URL || "/";
+      const resolvedUrl = new URL(url, window.location.origin + base).toString();
+      const res = await fetch(resolvedUrl);
+      if (!res.ok) throw new Error(`Failed to load template: ${resolvedUrl}`);
       const html = await res.text();
 
       const tempDiv = document.createElement("div");

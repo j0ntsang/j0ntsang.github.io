@@ -6,7 +6,7 @@ import { startTerminal } from "./terminal/index.js";
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     await loadAndMountTemplates();
-    await startTerminal("/templates/motd.html");
+    await startTerminal();
   } catch (err) {
     console.error("Initialization failed", err);
   }

@@ -4,9 +4,9 @@ import { initializeSettingsMenu } from "./settingsMenu.js";
 
 export async function loadAndMountTemplates() {
   await TemplateManager.loadTemplatesBatch([
-    "/templates/fullscreen-toggle.html",
-    "/templates/terminal.html",
-    "/templates/settings-menu.html",
+    "templates/fullscreen-toggle.html",
+    "templates/terminal.html",
+    "templates/settings-menu.html",
   ]);
 
   const windowManager = document.querySelector("window-manager");
