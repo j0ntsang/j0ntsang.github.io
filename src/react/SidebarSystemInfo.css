@@ -1,0 +1,40 @@
+.sidebar-system-info__wrapper {
+  padding: 12px 10px;
+}
+
+.sidebar-section {
+  margin-bottom: 16px;
+}
+
+.sidebar-section__heading {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+  opacity: 0.75;
+}
+
+.sidebar-section__list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 8px;
+  align-items: flex-start;
+}
+
+.sidebar-row {
+  display: contents;
+}
+
+.sidebar-row__label {
+  opacity: 0.85;
+  font-size: 16px;
+  padding-right: 4px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.sidebar-row__value {
+  font-size: 14px;
+  word-break: break-word;
+  white-space: pre-wrap;
+}

@@ -7,7 +7,6 @@ export async function loadAndMountTemplates() {
     "templates/fullscreen-toggle.html",
     "templates/terminal.html",
     "templates/settings-menu.html",
-    "templates/sidebar-system-info.html",
   ]);
 
   const windowManager = document.querySelector("window-manager");

@@ -13,7 +13,7 @@ index.html
 ├── <window-manager>          ← Web Component (Shadow DOM layout)
 │   ├── waybar-right slot     ← fullscreen toggle + settings menu (HTML Templates)
 │   ├── master slot           ← xterm.js terminal (HTML Template)
-│   └── sidebar slot          ← live system info panel (HTML Template)
+│   └── sidebar slot          ← live system info panel (React portal)
 └── #react                    ← React 18 root (TypeScript)
 ```
 
@@ -64,7 +64,6 @@ Reusable UI pieces are authored as `<template>` elements in standalone HTML file
 | `fullscreen-toggle.html` | Browser fullscreen button (⛶/⧉ icon, cross-browser API) |
 | `settings-menu.html` | Gear icon `<details>` dropdown — dark mode, animation, layout toggles |
 | `terminal.html` | xterm.js container shell with title bar |
-| `sidebar-system-info.html` | Mount point for the live system info panel |
 
 `TemplateManager` fetches each file, extracts the `<template>`, appends it to `<body>`, then clones and mounts instances on demand via `TemplateManager.create()` / `TemplateManager.mount()`.
 
@@ -143,8 +142,7 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 │   │   ├── fullscreen-toggle.html
 │   │   ├── settings-menu.html
 │   │   ├── terminal.html
-│   │   ├── sidebar-system-info.html
-│   │   └── motd.txt                  # Message of the day (plain text, ANSI escape sequences)
+│   │   │   └── motd.txt                  # Message of the day (plain text, ANSI escape sequences)
 │   └── thrive/                       # Embedded sub-project (separate Vite build)
 ├── tailwind.config.js
 └── postcss.config.js
