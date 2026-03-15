@@ -65,9 +65,14 @@ export async function startTerminal(htmlPath) {
 
   function getColors() {
     const s = getComputedStyle(document.documentElement);
+    const foreground = s.getPropertyValue("--text-color").trim() || "#fff";
+    const background = s.getPropertyValue("--background-color").trim() || "rgba(0,0,0,0)";
     return {
-      foreground: s.getPropertyValue("--text-color").trim() || "#fff",
-      background: s.getPropertyValue("--background-color").trim() || "rgba(0,0,0,0)",
+      foreground,
+      background,
+      cursor: foreground,
+      selectionBackground: foreground,
+      selectionForeground: background,
     };
   }
 
@@ -76,7 +81,9 @@ export async function startTerminal(htmlPath) {
     convertEol: true,
     fontFamily: getComputedStyle(document.body).fontFamily,
     fontSize: 16,
+    fontWeight: "500",
     allowTransparency: true,
+    screenReaderMode: true,
     theme: getColors(),
     termName: "xterm-256color",
     linkHandler: {
@@ -88,8 +95,8 @@ export async function startTerminal(htmlPath) {
   term.loadAddon(fitAddon);
 
   function syncTheme() {
-    const { foreground, background } = getColors();
-    term.options.theme = { ...term.options.theme, foreground, background };
+    const { foreground, background, cursor, selectionBackground, selectionForeground } = getColors();
+    term.options.theme = { ...term.options.theme, foreground, background, cursor, selectionBackground, selectionForeground };
     const el = container.querySelector(".xterm-scrollable-element");
     if (el) el.style.background = background;
   }
