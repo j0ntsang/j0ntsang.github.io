@@ -50,10 +50,15 @@ p {
   line-height: 1.8rem;
 }
 
-/* Force xterm terminal to be transparent even if xterm sets inline backgrounds */
 .xterm,
 .xterm-viewport,
 .xterm-scrollable-element,
 .xterm-rows {
-  background: transparent !important;
+  background: transparent;
+}
+
+.xterm .xterm-underline-5 {
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-underline-position: under;
 }

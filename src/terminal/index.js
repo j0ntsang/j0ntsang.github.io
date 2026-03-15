@@ -105,13 +105,20 @@ export async function startTerminal(htmlPath) {
   fitAddon.fit();
   term.focus();
 
-  // Sync title bar element and browser tab title
   const titleEl = document.getElementById("terminal-title");
-  const defaultTitle = titleEl?.textContent || document.title;
-  term.onTitleChange((t) => {
-    const v = t || defaultTitle;
-    if (titleEl) titleEl.textContent = v;
-    document.title = v;
+  const defaultTitle = document.title;
+  const ignoredTitleSet = new Set([
+    "dash (wasm)",
+    "xterm-256color — wasm:/dev/tty",
+  ]);
+
+  function setDocumentTitle(title) {
+    document.title = ignoredTitleSet.has(title) ? defaultTitle : title;
+  }
+
+  term.onTitleChange((title) => {
+    titleEl.textContent = title;
+    setDocumentTitle(title);
   });
 
   new ResizeObserver(() => fitAddon.fit()).observe(container);
