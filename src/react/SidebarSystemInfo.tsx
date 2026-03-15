@@ -298,7 +298,9 @@ function mergeState(
   return result;
 }
 
-export const SidebarSystemInfo: React.VFC = () => {
+export const SidebarSystemInfo: React.VFC<{ usePortal?: boolean }> = ({
+  usePortal = true,
+}) => {
   const [state, setState] = useState<SidebarState>(() => getInitialState());
 
   useEffect(() => {
@@ -354,7 +356,7 @@ export const SidebarSystemInfo: React.VFC = () => {
 
   const content = useMemo(() => {
     return (
-      <div className="sidebar-system-info__wrapper" tabIndex={0}>
+      <div tabIndex={0}>
         {GROUPS.map((group) => (
           <section className="sidebar-section" key={group.id}>
             <div className="sidebar-section__heading">{group.title}</div>
@@ -384,6 +386,8 @@ export const SidebarSystemInfo: React.VFC = () => {
     );
   }, [state]);
 
+  if (!usePortal) return content;
+
   const portalRoot =
     typeof document !== "undefined" ? document.getElementById("sidebar") : null;
   if (!portalRoot) return null;
@@ -398,10 +402,10 @@ function SidebarFieldRow({
   value: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="sidebar-row" tabIndex={0} role="row" aria-label={label}>
       {label ? <div className="sidebar-row__label">{label}</div> : null}
       <div className="sidebar-row__value">{value}</div>
-    </>
+    </div>
   );
 }
 

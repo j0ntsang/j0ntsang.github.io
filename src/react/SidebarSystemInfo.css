@@ -1,15 +1,43 @@
 .sidebar-system-info__wrapper {
-  padding: 16px 0 16px 16px;
+  padding: 0 0 16px 16px;
   font-family:
     Consolas, "Courier New", Menlo, Monaco, "Liberation Mono", "Lucida Console",
     monospace;
   font-size: 14px;
   color: var(--text-color);
   border: 1px solid transparent;
-  box-shadow: 0 0 14px rgba(0, 0, 0, 0.45);
   position: relative;
   max-height: 100%;
   overflow: auto;
+}
+
+.sidebar-tabs {
+  display: flex;
+  position: sticky;
+  top: 0;
+  gap: 24px;
+  margin-bottom: 16px;
+  padding: 8px 0;
+  background-color: var(--background-color);
+  border-bottom: 1px solid var(--text-color);
+}
+
+.sidebar-tab {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.sidebar-tab:hover,
+.sidebar-tab:focus-visible {
+  background-color: rgba(var(--text-color-rgb), 0.08);
+}
+
+.sidebar-tab.active {
+  background-color: rgba(var(--text-color-rgb), 0.05);
 }
 
 .sidebar-section {
@@ -26,14 +54,23 @@
 }
 
 .sidebar-section__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-row {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
   gap: 5px 10px;
   align-items: center;
+  padding: 4px 0;
+  border-radius: 4px;
 }
 
-.sidebar-row {
-  display: contents;
+.sidebar-row:focus-visible {
+  outline: 2px solid var(--focus-ring, #069);
+  outline-offset: 2px;
 }
 
 .sidebar-row__label {
