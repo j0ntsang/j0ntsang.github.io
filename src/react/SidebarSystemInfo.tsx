@@ -73,12 +73,12 @@ type SidebarState = {
 const GROUPS = [
   {
     id: "network",
-    title: "NETWORK",
+    title: "Network",
     fields: [{ key: "network.online", label: "Online" }],
   },
   {
     id: "time",
-    title: "TIME",
+    title: "Time",
     fields: [
       { key: "time.timezone", label: "Timezone" },
       { key: "time.iso", label: "ISO" },
@@ -87,7 +87,7 @@ const GROUPS = [
   },
   {
     id: "navigation",
-    title: "NAVIGATION",
+    title: "Navigation",
     fields: [
       { key: "navigation.referrer", label: "Referrer" },
       { key: "navigation.historyLength", label: "History Length" },
@@ -95,7 +95,7 @@ const GROUPS = [
   },
   {
     id: "system",
-    title: "SYSTEM",
+    title: "System",
     fields: [
       { key: "system.cpuCores", label: "CPU Cores" },
       { key: "system.touchPoints", label: "Touch Points" },
@@ -103,7 +103,7 @@ const GROUPS = [
   },
   {
     id: "display",
-    title: "DISPLAY",
+    title: "Display",
     fields: [
       { key: "display.resolution", label: "Screen" },
       { key: "display.availableResolution", label: "Available" },
@@ -113,7 +113,7 @@ const GROUPS = [
   },
   {
     id: "viewport",
-    title: "VIEWPORT",
+    title: "Viewport",
     fields: [
       { key: "viewport.inner", label: "Inner" },
       { key: "viewport.outer", label: "Outer" },
@@ -121,18 +121,17 @@ const GROUPS = [
   },
   {
     id: "browser",
-    title: "BROWSER",
+    title: "Browser",
     fields: [
-      { key: "browser.vendor", label: "Vendor" },
-      { key: "browser.language", label: "Language" },
-      { key: "browser.userAgent", label: "User Agent" },
       { key: "browser.platform", label: "Platform" },
-      { key: "browser.languages", label: "Languages" },
+      { key: "browser.vendor", label: "Vendor" },
+      { key: "browser.userAgent", label: "User Agent" },
+      { key: "browser.language", label: "Language" },
     ],
   },
   {
     id: "features",
-    title: "FEATURES",
+    title: "Features",
     fields: [
       { key: "features.cookiesEnabled", label: "Cookies" },
       { key: "features.doNotTrack", label: "Do Not Track" },
@@ -140,14 +139,14 @@ const GROUPS = [
   },
   {
     id: "page",
-    title: "PAGE",
+    title: "Page",
     fields: [
+      { key: "page.protocol", label: "Protocol" },
       { key: "page.hostname", label: "Hostname" },
       { key: "page.path", label: "Path" },
       { key: "page.url", label: "URL" },
       { key: "page.query", label: "Query" },
       { key: "page.hash", label: "Hash" },
-      { key: "page.protocol", label: "Protocol" },
     ],
   },
 ];
@@ -162,7 +161,13 @@ function formatValue(value: unknown) {
   if (Array.isArray(value)) {
     return value.join(", ");
   }
-  return String(value);
+
+  const stringValue = String(value);
+  if (stringValue.length > 1 && stringValue.endsWith("/")) {
+    return stringValue.slice(0, -1);
+  }
+
+  return stringValue;
 }
 
 function getValueFromState(state: SidebarState, key: string) {
@@ -194,7 +199,9 @@ function readSystemInfo(): SystemInfo {
         ? navigator.hardwareConcurrency
         : -1,
     touchPoints:
-      typeof navigator.maxTouchPoints === "number" ? navigator.maxTouchPoints : 0,
+      typeof navigator.maxTouchPoints === "number"
+        ? navigator.maxTouchPoints
+        : 0,
   };
 }
 
@@ -206,9 +213,7 @@ function readDisplayInfo(): DisplayInfo {
     availableResolution: `${availWidth || 0}x${availHeight || 0}`,
     colorDepth: typeof colorDepth === "number" ? colorDepth : 0,
     pixelRatio:
-      typeof window.devicePixelRatio === "number"
-        ? window.devicePixelRatio
-        : 1,
+      typeof window.devicePixelRatio === "number" ? window.devicePixelRatio : 1,
   };
 }
 
@@ -222,7 +227,7 @@ function readViewportInfo(): ViewportInfo {
 function readPageInfo(): PageInfo {
   return {
     url: location.href,
-    protocol: location.protocol,
+    protocol: location.protocol.replace(/:$/, ""),
     hostname: location.hostname,
     path: location.pathname,
     query: location.search,
@@ -274,7 +279,10 @@ function getInitialState(): SidebarState {
   };
 }
 
-function mergeState(current: SidebarState, partial: Partial<SidebarState>): SidebarState {
+function mergeState(
+  current: SidebarState,
+  partial: Partial<SidebarState>,
+): SidebarState {
   const result: any = { ...current };
   for (const groupKey of Object.keys(partial) as Array<keyof SidebarState>) {
     const incoming = partial[groupKey];
@@ -299,15 +307,17 @@ export const SidebarSystemInfo: React.VFC = () => {
         mergeState(prev, {
           display: readDisplayInfo(),
           viewport: readViewportInfo(),
-        })
+        }),
       );
     }
 
     function updatePageAndNavigation() {
-      setState((prev) => mergeState(prev, {
-        page: readPageInfo(),
-        navigation: readNavigationInfo(),
-      }));
+      setState((prev) =>
+        mergeState(prev, {
+          page: readPageInfo(),
+          navigation: readNavigationInfo(),
+        }),
+      );
     }
 
     function updateNetwork() {
@@ -318,9 +328,15 @@ export const SidebarSystemInfo: React.VFC = () => {
       setState((prev) => mergeState(prev, { time: readTimeInfo() }));
     }
 
-    window.addEventListener("resize", updateDisplayAndViewport, { passive: true });
-    window.addEventListener("popstate", updatePageAndNavigation, { passive: true });
-    window.addEventListener("hashchange", updatePageAndNavigation, { passive: true });
+    window.addEventListener("resize", updateDisplayAndViewport, {
+      passive: true,
+    });
+    window.addEventListener("popstate", updatePageAndNavigation, {
+      passive: true,
+    });
+    window.addEventListener("hashchange", updatePageAndNavigation, {
+      passive: true,
+    });
     window.addEventListener("online", updateNetwork, { passive: true });
     window.addEventListener("offline", updateNetwork, { passive: true });
 
@@ -338,19 +354,29 @@ export const SidebarSystemInfo: React.VFC = () => {
 
   const content = useMemo(() => {
     return (
-      <div className="sidebar-system-info__wrapper">
+      <div className="sidebar-system-info__wrapper" tabIndex={0}>
         {GROUPS.map((group) => (
           <section className="sidebar-section" key={group.id}>
             <div className="sidebar-section__heading">{group.title}</div>
             <div className="sidebar-section__list">
-              {group.fields.map((field) => (
-                <React.Fragment key={field.key}>
-                  <div className="sidebar-row__label">{field.label}</div>
-                  <div className="sidebar-row__value">
-                    {formatValue(getValueFromState(state, field.key))}
-                  </div>
-                </React.Fragment>
-              ))}
+              {group.fields.map((field) => {
+                const value = getValueFromState(state, field.key);
+                const isNetworkOnline = field.key === "network.online";
+
+                return (
+                  <SidebarFieldRow
+                    key={field.key}
+                    label={isNetworkOnline ? undefined : field.label}
+                    value={
+                      isNetworkOnline ? (
+                        <NetworkStatus online={Boolean(value)} />
+                      ) : (
+                        formatValue(value)
+                      )
+                    }
+                  />
+                );
+              })}
             </div>
           </section>
         ))}
@@ -358,7 +384,31 @@ export const SidebarSystemInfo: React.VFC = () => {
     );
   }, [state]);
 
-  const portalRoot = typeof document !== "undefined" ? document.getElementById("sidebar") : null;
+  const portalRoot =
+    typeof document !== "undefined" ? document.getElementById("sidebar") : null;
   if (!portalRoot) return null;
   return createPortal(content, portalRoot);
 };
+
+function SidebarFieldRow({
+  label,
+  value,
+}: {
+  label?: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <>
+      {label ? <div className="sidebar-row__label">{label}</div> : null}
+      <div className="sidebar-row__value">{value}</div>
+    </>
+  );
+}
+
+function NetworkStatus({ online }: { online: boolean }) {
+  return (
+    <span className={`network-status ${online ? "online" : "offline"}`}>
+      {online ? "Online" : "Offline"}
+    </span>
+  );
+}

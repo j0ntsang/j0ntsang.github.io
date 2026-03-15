@@ -1,5 +1,15 @@
 .sidebar-system-info__wrapper {
-  padding: 12px 10px;
+  padding: 16px 0 16px 16px;
+  font-family:
+    Consolas, "Courier New", Menlo, Monaco, "Liberation Mono", "Lucida Console",
+    monospace;
+  font-size: 14px;
+  color: var(--text-color);
+  border: 1px solid transparent;
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.45);
+  position: relative;
+  max-height: 100%;
+  overflow: auto;
 }
 
 .sidebar-section {
@@ -7,18 +17,19 @@
 }
 
 .sidebar-section__heading {
-  font-size: 16px;
-  font-weight: bold;
-  letter-spacing: 0.05em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   margin-bottom: 6px;
-  opacity: 0.75;
+  color: var(--text-color);
+  text-transform: uppercase;
 }
 
 .sidebar-section__list {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 4px 8px;
-  align-items: flex-start;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 5px 10px;
+  align-items: center;
 }
 
 .sidebar-row {
@@ -26,15 +37,37 @@
 }
 
 .sidebar-row__label {
-  opacity: 0.85;
-  font-size: 16px;
-  padding-right: 4px;
-  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  padding-right: 8px;
+  text-align: right;
   white-space: nowrap;
+  letter-spacing: 0.08em;
 }
 
 .sidebar-row__value {
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 600;
   word-break: break-word;
   white-space: pre-wrap;
+  color: var(--text-color);
+}
+
+.network-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.network-status::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--status-online, green);
+}
+
+.network-status.offline::before {
+  background-color: var(--status-offline, red);
 }

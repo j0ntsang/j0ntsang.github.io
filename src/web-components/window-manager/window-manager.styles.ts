@@ -84,7 +84,7 @@ export const styles = `
 
   .master {
     grid-area: master;
-    padding: 0 24px 8px 24px;
+    padding: 0 16px 8px 16px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -104,6 +104,14 @@ export const styles = `
     overflow: hidden;
     min-width: 280px;
     min-height: 0;
+    border-width: 1px;
+    border-color: transparent;
+    border-style: solid;
+  }
+
+  .sidebar:focus-within {
+    border-color: currentColor;
+    border-radius: 4px;
   }
 
   .sidebar ::slotted(*) {
