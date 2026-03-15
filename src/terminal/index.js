@@ -138,7 +138,8 @@ export async function startTerminal(htmlPath) {
     });
   });
 
-  term.write("\r\n\r\n");
+  // Dim the prompt in-place once a key is pressed
+  term.write(`\r${C.dim}Press any key to boot...${C.reset}\r\n\r\n`);
   await boot(term, htmlPath || config.welcomeMessage);
 }
 
@@ -148,10 +149,11 @@ export async function startTerminal(htmlPath) {
 
 async function boot(term, motdPath) {
   const ln = (s = "") => term.write(s + "\r\n");
-  const barWidth = () => Math.max(20, Math.min(30, term.cols - 30));
+  // PAD(8) + label + " [" + bar + "] 100% (418.0 KB / 418.0 KB)" — keep within term.cols
+  const barWidth = (label = "") => Math.max(10, term.cols - PAD.length - label.length - 32);
   const setTitle = (t) => term.write(`\x1b]0;${t}\x07`);
 
-  // Write a step label, await fn(), overwrite line with status
+  // Write a step label, await fn(), overwrite line with status — each step gets its own permanent line
   async function step(label, fn) {
     term.write(`${PAD}${label}`);
     try {
@@ -187,17 +189,18 @@ async function boot(term, motdPath) {
   //   return out.buffer;
   // }
 
-  // Simulated fetch — remove once the real WASM binary is available
+  // Simulated fetch — updates a single line in place, no newline until done
   async function simulatedFetch(label, fakeTotal) {
-    term.write(`${PAD}${label} ${progressBar(0, fakeTotal, barWidth())}`);
+    const bw = barWidth(label);
+    term.write(`${PAD}${label} ${progressBar(0, fakeTotal, bw)}`);
     let received = 0;
     while (received < fakeTotal) {
       await delay(40 + Math.random() * 40);
       const chunk = Math.floor(fakeTotal / 18) + Math.floor(Math.random() * (fakeTotal / 18));
       received = Math.min(received + chunk, fakeTotal);
-      term.write(`\r${PAD}${label} ${progressBar(received, fakeTotal, barWidth())}`);
+      term.write(`\r${PAD}${label} ${progressBar(received, fakeTotal, bw)}`);
     }
-    term.write(`\r${OK} ${label} ${progressBar(fakeTotal, fakeTotal, barWidth())}\r\n`);
+    term.write(`\r${OK} ${label} ${progressBar(fakeTotal, fakeTotal, bw)}\r\n`);
   }
 
   try {
@@ -249,9 +252,8 @@ async function boot(term, motdPath) {
       await delay(180);
     });
 
-    ln();
-    ln(`${C.green}Boot complete.${C.reset}`);
-    ln();
+    // Erase the entire visible screen and move cursor to top-left, then show MOTD
+    term.write("\x1b[2J\x1b[H");
 
     // MOTD — fetched here so nothing downloads before the user boots
     if (motdPath) {

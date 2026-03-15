@@ -11,7 +11,7 @@ const C = {
   dim:    "\x1b[2m",
 };
 
-const PROMPT = `${C.green}guest${C.reset}@${C.cyan}j0ntsang${C.reset}:${C.yellow}~${C.reset}$ `;
+const PROMPT = `${C.green}guest${C.reset}@${C.cyan}${window.location.hostname}${C.reset}:${C.yellow}~${C.reset}$ `;
 
 const stripAnsi = (s) => s.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "").replace(/\x1b\][^\x07]*\x07/g, "");
 
