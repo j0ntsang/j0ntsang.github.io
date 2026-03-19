@@ -62,3 +62,15 @@ p {
   text-decoration-style: solid;
   text-underline-position: under;
 }
+
+.xterm-accessibility {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -10,16 +10,16 @@ import { runPrompt } from "./prompt.js";
 // ---------------------------------------------------------------------------
 
 const C = {
-  reset:  "\x1b[0m",
-  green:  "\x1b[32m",
-  red:    "\x1b[31m",
+  reset: "\x1b[0m",
+  green: "\x1b[32m",
+  red: "\x1b[31m",
   yellow: "\x1b[33m",
-  dim:    "\x1b[2m",
+  dim: "\x1b[2m",
 };
 
-const OK   = `${C.green}[  OK  ]${C.reset}`;
+const OK = `${C.green}[  OK  ]${C.reset}`;
 const FAIL = `${C.red}[ FAIL ]${C.reset}`;
-const PAD  = "        "; // 8 chars — aligns with "[  OK  ]"
+const PAD = "         "; // 8 chars — aligns with "[  OK  ]"
 
 // ---------------------------------------------------------------------------
 // Progress bar
@@ -33,7 +33,6 @@ function formatBytes(n) {
 
 function progressBar(received, total, width) {
   if (total === 0) {
-    // Indeterminate — animated spinner position based on time
     const pos = Math.floor((Date.now() / 80) % width);
     const bar = " ".repeat(pos) + "=" + " ".repeat(width - pos - 1);
     return `[${bar}] ${formatBytes(received)}`;
@@ -66,7 +65,8 @@ export async function startTerminal(htmlPath) {
   function getColors() {
     const s = getComputedStyle(document.documentElement);
     const foreground = s.getPropertyValue("--text-color").trim() || "#fff";
-    const background = s.getPropertyValue("--background-color").trim() || "rgba(0,0,0,0)";
+    const background =
+      s.getPropertyValue("--background-color").trim() || "rgba(0,0,0,0)";
     return {
       foreground,
       background,
@@ -87,30 +87,51 @@ export async function startTerminal(htmlPath) {
     theme: getColors(),
     termName: "xterm-256color",
     linkHandler: {
-      activate: (_event, uri) => window.open(uri, "_blank", "noopener,noreferrer"),
+      activate: (_event, uri) =>
+        window.open(uri, "_blank", "noopener,noreferrer"),
     },
   });
 
   const fitAddon = new FitAddon();
   term.loadAddon(fitAddon);
 
+  let _themeRaf = null;
   function syncTheme() {
-    const { foreground, background, cursor, selectionBackground, selectionForeground } = getColors();
-    term.options.theme = { ...term.options.theme, foreground, background, cursor, selectionBackground, selectionForeground };
-    const el = container.querySelector(".xterm-scrollable-element");
-    if (el) el.style.background = background;
+    if (_themeRaf) return;
+    _themeRaf = requestAnimationFrame(() => {
+      _themeRaf = null;
+      const {
+        foreground,
+        background,
+        cursor,
+        selectionBackground,
+        selectionForeground,
+      } = getColors();
+      term.options.theme = {
+        ...term.options.theme,
+        foreground,
+        background,
+        cursor,
+        selectionBackground,
+        selectionForeground,
+      };
+      const el = container.querySelector(".xterm-scrollable-element");
+      if (el) el.style.background = background;
+    });
   }
 
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", syncTheme);
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", syncTheme);
   new MutationObserver(syncTheme).observe(document.documentElement, {
     attributes: true,
     attributeFilter: ["class"],
   });
 
-  syncTheme();
   term.open(container);
   fitAddon.fit();
   term.focus();
+  syncTheme();
 
   const titleEl = document.getElementById("terminal-title");
   const defaultTitle = document.title;
@@ -128,7 +149,14 @@ export async function startTerminal(htmlPath) {
     setDocumentTitle(title);
   });
 
-  new ResizeObserver(() => fitAddon.fit()).observe(container);
+  let _fitRaf = null;
+  new ResizeObserver(() => {
+    if (_fitRaf) cancelAnimationFrame(_fitRaf);
+    _fitRaf = requestAnimationFrame(() => {
+      _fitRaf = null;
+      fitAddon.fit();
+    });
+  }).observe(container);
 
   // ---------------------------------------------------------------------------
   // Wait for keypress — nothing loads or runs until the user initiates
@@ -145,7 +173,6 @@ export async function startTerminal(htmlPath) {
     });
   });
 
-  // Dim the prompt in-place once a key is pressed
   term.write(`\r${C.dim}Press any key to boot...${C.reset}\r\n\r\n`);
   await boot(term, htmlPath || config.welcomeMessage);
 }
@@ -157,10 +184,10 @@ export async function startTerminal(htmlPath) {
 async function boot(term, motdPath) {
   const ln = (s = "") => term.write(s + "\r\n");
   // PAD(8) + label + " [" + bar + "] 100% (418.0 KB / 418.0 KB)" — keep within term.cols
-  const barWidth = (label = "") => Math.max(10, term.cols - PAD.length - label.length - 32);
+  const barWidth = (label = "") =>
+    Math.max(10, term.cols - PAD.length - label.length - 32);
   const setTitle = (t) => term.write(`\x1b]0;${t}\x07`);
 
-  // Write a step label, await fn(), overwrite line with status — each step gets its own permanent line
   async function step(label, fn) {
     term.write(`${PAD}${label}`);
     try {
@@ -173,37 +200,15 @@ async function boot(term, motdPath) {
     }
   }
 
-  // TODO: uncomment when WASM binary is available at public/wasm/dash.wasm
-  // async function fetchWithProgress(label, url) {
-  //   term.write(`${PAD}${label} ${progressBar(0, 0, barWidth())}`);
-  //   const res = await fetch(url);
-  //   if (!res.ok) throw new Error(`HTTP ${res.status} — ${url}`);
-  //   const total = parseInt(res.headers.get("Content-Length") || "0", 10);
-  //   const reader = res.body.getReader();
-  //   const chunks = [];
-  //   let received = 0;
-  //   while (true) {
-  //     const { done, value } = await reader.read();
-  //     if (done) break;
-  //     chunks.push(value);
-  //     received += value.length;
-  //     term.write(`\r${PAD}${label} ${progressBar(received, total, barWidth())}`);
-  //   }
-  //   term.write(`\r${OK} ${label} ${progressBar(received, total, barWidth())}\r\n`);
-  //   const out = new Uint8Array(received);
-  //   let offset = 0;
-  //   for (const chunk of chunks) { out.set(chunk, offset); offset += chunk.length; }
-  //   return out.buffer;
-  // }
-
-  // Simulated fetch — updates a single line in place, no newline until done
   async function simulatedFetch(label, fakeTotal) {
     const bw = barWidth(label);
     term.write(`${PAD}${label} ${progressBar(0, fakeTotal, bw)}`);
     let received = 0;
     while (received < fakeTotal) {
       await delay(40 + Math.random() * 40);
-      const chunk = Math.floor(fakeTotal / 18) + Math.floor(Math.random() * (fakeTotal / 18));
+      const chunk =
+        Math.floor(fakeTotal / 18) +
+        Math.floor(Math.random() * (fakeTotal / 18));
       received = Math.min(received + chunk, fakeTotal);
       term.write(`\r${PAD}${label} ${progressBar(received, fakeTotal, bw)}`);
     }
@@ -217,7 +222,7 @@ async function boot(term, motdPath) {
     await step("Checking SharedArrayBuffer support", async () => {
       if (typeof SharedArrayBuffer === "undefined") {
         throw new Error(
-          "SharedArrayBuffer unavailable — coi-serviceworker may not be active"
+          "SharedArrayBuffer unavailable — coi-serviceworker may not be active",
         );
       }
     });
@@ -262,15 +267,18 @@ async function boot(term, motdPath) {
     // Erase the entire visible screen and move cursor to top-left, then show MOTD
     term.write("\x1b[2J\x1b[H");
 
-    // MOTD — fetched here so nothing downloads before the user boots
+    // MOTD fetched
     if (motdPath) {
       try {
-        const url = new URL(motdPath.replace(/^\//, ""), document.baseURI).toString();
+        const url = new URL(
+          motdPath.replace(/^\//, ""),
+          document.baseURI,
+        ).toString();
         const res = await fetch(url);
         if (res.ok) {
           const raw = await res.text();
           const text = raw.replace(/\\x([0-9a-fA-F]{2})/g, (_, h) =>
-            String.fromCharCode(parseInt(h, 16))
+            String.fromCharCode(parseInt(h, 16)),
           );
           ln(text.trim());
           ln();
@@ -283,7 +291,6 @@ async function boot(term, motdPath) {
     // TODO: replace runPrompt() with the real PTY shell once WASM is wired up.
     setTitle("dash (wasm)");
     await runPrompt(term, motdPath);
-
   } catch (err) {
     console.error("[boot]", err);
     ln();
