@@ -35,9 +35,11 @@ export class Kernel {
 
   kill(pid: number, sig: Signal) {
     const ctl = this.table.get(pid);
-    if (!ctl || pid === 1) return;
+    if (!ctl) return false;
+    if (pid === 1) return true;
     ctl.abort.abort(sig);
     ctl.exit(128 + SIGNAL_NUMBERS[sig]);
+    return true;
   }
 
   /** fork + exec in one step. Resolves to the exit code. */
@@ -55,7 +57,7 @@ export class Kernel {
     };
     const ctl = createProcess({
       pid: this.nextPid++,
-      ppid: parent?.pid ?? 0,
+      ppid: opts.daemon ? 1 : (parent?.pid ?? 0),
       exe: path,
       argv,
       cwd: parent?.cwd ?? env.HOME,
@@ -117,6 +119,7 @@ export class Kernel {
       },
       spawn: (path, argv, opts) => this.spawn(abs(path), argv, proc, opts),
       cwd: () => proc.cwd,
+      kill: (pid, sig = "SIGTERM") => this.kill(pid, sig),
       chdir: async (path) => {
         const target = abs(path);
         const st = await vfs.stat(target);
@@ -144,6 +147,11 @@ export class Kernel {
         window.open(url, "_blank", "noopener,noreferrer");
       },
       createWindow: ({ title }) => this.display.createWindow(proc.pid, title),
+      createPanel: ({ title }) => {
+        const panel = this.display.createPanel(proc.pid);
+        panel.setTitle(title);
+        return panel;
+      },
     };
   }
 }

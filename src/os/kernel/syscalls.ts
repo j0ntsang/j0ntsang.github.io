@@ -8,10 +8,13 @@
 
 import type { Surface } from "../display/compositor";
 import type { Stat } from "../fs/types";
+import type { Signal } from "./process";
 
 export interface SpawnOptions {
   /** Give the child the terminal (Ctrl-C goes to it) until it exits. */
   foreground?: boolean;
+  /** Run detached as a child of init (PID 1), like a daemon that double-forked. */
+  daemon?: boolean;
 }
 
 /** Given the text left of the cursor, returns full replacements for its last word (directories end in "/"). */
@@ -30,6 +33,8 @@ export interface Sys {
   spawn(path: string, argv: string[], opts?: SpawnOptions): Promise<number>;
   cwd(): string;
   chdir(path: string): Promise<void>;
+  /** Signal another process. Returns false if there is no such pid. */
+  kill(pid: number, sig?: Signal): boolean;
 
   // files (paths may be relative, or start with ~)
   resolve(path: string): string;
@@ -49,6 +54,8 @@ export interface Sys {
   fetch(input: string, init?: RequestInit): Promise<Response>;
   openUrl(url: string): void;
   createWindow(opts: { title: string }): Surface;
+  /** A chrome-less surface in the sidebar, for long-running status programs. */
+  createPanel(opts: { title: string }): Surface;
 }
 
 export type Program = (argv: string[], sys: Sys) => number | void | Promise<number | void>;

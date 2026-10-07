@@ -4,6 +4,10 @@
 // surface and gets back a bare HTMLElement. What it draws there — React, a
 // web component, a <template>, raw DOM — is the program's business (its
 // "toolkit"). The compositor only owns window chrome, stacking and focus.
+//
+// Panels are the other kind of surface: like a Wayland layer-shell client
+// (a bar or dock), they live in the sidebar instead of floating over the
+// terminal, have no chrome, and stay up until their process stops.
 
 import "./program-window";
 
@@ -24,7 +28,7 @@ export interface Surface {
 
 interface Entry {
   surface: Surface;
-  win: ProgramWindow;
+  win: HTMLElement;
 }
 
 const isTyping = (t: EventTarget | null) =>
@@ -32,6 +36,7 @@ const isTyping = (t: EventTarget | null) =>
 
 export class Compositor {
   private windows: Entry[] = [];
+  private panels: Entry[] = [];
   private nextId = 1;
 
   /** Wired by the kernel: Ctrl-C inside a window signals its process. */
@@ -39,8 +44,38 @@ export class Compositor {
   /** Wired by the kernel: focus goes back to the TTY when the last window closes. */
   onEmpty: () => void = () => {};
 
-  constructor(private host: HTMLElement) {
+  constructor(private host: HTMLElement, private panelHost: HTMLElement) {
     host.hidden = true;
+  }
+
+  createPanel(pid: number): Surface {
+    const el = document.createElement("div");
+    el.className = "surface";
+    el.slot = "sidebar";
+
+    const teardown: (() => void)[] = [];
+    let resolveClosed!: () => void;
+    const closed = new Promise<void>((r) => (resolveClosed = r));
+
+    const surface: Surface = {
+      id: this.nextId++,
+      pid,
+      el,
+      closed,
+      setTitle: (t) => el.setAttribute("aria-label", t),
+      onClose: (fn) => teardown.push(fn),
+      close: () => {
+        if (!el.isConnected) return;
+        teardown.forEach((fn) => fn());
+        el.remove();
+        this.panels = this.panels.filter((p) => p.win !== el);
+        resolveClosed();
+      },
+    };
+
+    this.panels.push({ surface, win: el });
+    this.panelHost.append(el);
+    return surface;
   }
 
   createWindow(pid: number, title: string): Surface {
@@ -92,9 +127,9 @@ export class Compositor {
     return surface;
   }
 
-  /** Called by the kernel when a process exits: its windows go with it. */
+  /** Called by the kernel when a process exits: its windows and panels go with it. */
   closeAll(pid: number) {
-    this.windows.filter((w) => w.surface.pid === pid).forEach((w) => w.surface.close());
+    [...this.windows, ...this.panels].filter((w) => w.surface.pid === pid).forEach((w) => w.surface.close());
   }
 
   private raiseTop() {

@@ -19,10 +19,12 @@ type Step = (label: string, fn: () => Promise<void>) => Promise<void>;
 export async function bootKernel(term: Terminal, step: Step) {
   const display = document.getElementById("display");
   if (!display) throw new Error("#display element not found");
+  const windowManager = document.querySelector("window-manager");
+  if (!(windowManager instanceof HTMLElement)) throw new Error("<window-manager> element not found");
 
   const vfs = new Vfs();
   const tty = new Tty(term);
-  const kernel = new Kernel(vfs, tty, new Compositor(display));
+  const kernel = new Kernel(vfs, tty, new Compositor(display, windowManager));
 
   await step("Mounting rootfs on / (read-only)", async () => {
     vfs.mount("/", rootfs);
