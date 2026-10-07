@@ -1,7 +1,7 @@
 // /sbin/init — PID 1. Prints the message of the day, then keeps a shell
 // running forever: if you `exit` the shell, init starts a fresh one.
 
-import { title, unescapeAnsi } from "../os/lib/ansi";
+import { unescapeAnsi } from "../os/lib/ansi";
 import type { Sys } from "../os/kernel/syscalls";
 
 export default async function init(_argv: string[], sys: Sys) {
@@ -13,7 +13,6 @@ export default async function init(_argv: string[], sys: Sys) {
   }
 
   for (;;) {
-    sys.write(title("sh"));
     await sys.spawn("/bin/sh", ["sh"], { foreground: true });
     sys.write("\n");
   }

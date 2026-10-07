@@ -32,6 +32,7 @@ export default async function sh(_argv: string[], sys: Sys) {
 
   for (;;) {
     const cwd = tildify(sys.cwd(), sys.env.HOME);
+    sys.write(title(`${sys.env.USER}@${sys.env.HOSTNAME}: ${cwd}`));
     const code = status ? `${C.red}[${status}]${C.reset} ` : "";
     const prompt = `${code}${C.green}${sys.env.USER}${C.reset}@${C.cyan}${sys.env.HOSTNAME}${C.reset}:${C.yellow}${cwd}${C.reset}$ `;
 
@@ -61,6 +62,5 @@ export default async function sh(_argv: string[], sys: Sys) {
 
     sys.write(title(cmd));
     status = await sys.spawn(path, [cmd, ...args], { foreground: true });
-    sys.write(title("sh"));
   }
 }

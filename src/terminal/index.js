@@ -113,12 +113,15 @@ export async function startTerminal() {
   const titleEl = document.getElementById("terminal-title");
   const defaultTitle = document.title;
   const ignoredTitleSet = new Set([
-    "sh",
     "xterm-256color — wasm:/dev/tty",
   ]);
 
+  // The shell's idle title ("user@host: ~") stays in the title bar only; the tab keeps the site name.
+  const promptTitlePattern = /^\S+@\S+: /;
+
   function setDocumentTitle(title) {
-    document.title = ignoredTitleSet.has(title) ? defaultTitle : title;
+    const ignored = ignoredTitleSet.has(title) || promptTitlePattern.test(title);
+    document.title = ignored ? defaultTitle : title;
   }
 
   term.onTitleChange((title) => {
