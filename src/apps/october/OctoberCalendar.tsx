@@ -1,0 +1,304 @@
+import "./october.css";
+
+import { CSSProperties, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
+
+import { DayEditor } from "./DayEditor";
+import {
+  addMovie,
+  allMovies,
+  DAYS_IN_OCTOBER,
+  firstWeekday,
+  isTonight,
+  MovieDay,
+  moviesOn,
+  OctoberYear,
+  removeMovie,
+  toggleWatched,
+  weekdayOf,
+  WEEKDAYS,
+  wikiTitle,
+} from "./model";
+import type { FilmResult, WikiIndex, WikiPage } from "./wiki";
+
+interface Props {
+  initialYear: number;
+  load(year: number): Promise<OctoberYear>;
+  save(data: OctoberYear): Promise<void>;
+  resolve(titles: string[]): Promise<WikiIndex>;
+  remember(pages: WikiIndex): void;
+  search(query: string): Promise<FilmResult[]>;
+  setTitle(title: string): void;
+  yearPathOf(year: number): string;
+}
+
+const KEY_STEPS: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+const days = Array.from({ length: DAYS_IN_OCTOBER }, (_, i) => i + 1);
+
+export function OctoberCalendar({ initialYear, load, save, resolve, remember, search, setTitle, yearPathOf }: Props) {
+  const [year, setYear] = useState(initialYear);
+  const [data, setData] = useState<OctoberYear | null>(null);
+  const [wiki, setWiki] = useState<WikiIndex>({});
+  const [wikiError, setWikiError] = useState(false);
+  const [brokenPosters, setBrokenPosters] = useState<Set<string>>(new Set());
+  const [active, setActive] = useState(() => (isTonight(initialYear, new Date().getDate()) ? new Date().getDate() : 1));
+  const [editing, setEditing] = useState<number | null>(null);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    let current = true;
+    setTitle(`october — ${year}`);
+    setData(null);
+    load(year).then((d) => current && setData(d));
+    return () => {
+      current = false;
+    };
+  }, [year, load, setTitle]);
+
+  // Once the first year loads, put keyboard focus on today (or day 1).
+  const focusedOnce = useRef(false);
+  useEffect(() => {
+    if (!data || focusedOnce.current) return;
+    focusedOnce.current = true;
+    buttons.current[active]?.focus();
+  }, [data, active]);
+
+  const titles = useMemo(
+    () => (data ? allMovies(data).map(wikiTitle).filter((t): t is string => !!t) : []),
+    [data],
+  );
+  const titleKey = titles.join("|");
+
+  useEffect(() => {
+    if (!titles.length) return;
+    let current = true;
+    resolve(titles)
+      .then((index) => {
+        if (!current) return;
+        setWiki(index);
+        setWikiError(false);
+      })
+      .catch(() => current && setWikiError(true));
+    return () => {
+      current = false;
+    };
+    // Keyed on titleKey, not `titles`, so toggling watched doesn't refetch.
+  }, [titleKey, resolve]);
+
+  const update = (next: OctoberYear) => {
+    setData(next);
+    save(next);
+  };
+
+  const toggle = (day: number, index: number) => data?.days[day] && update(toggleWatched(data, day, index));
+
+  const add = (day: number, movie: MovieDay, page?: WikiPage) => {
+    if (!data) return;
+    if (movie.wiki && page) {
+      const known = { [movie.wiki]: { url: page.url, poster: page.poster } };
+      setWiki((prev) => ({ ...prev, ...known }));
+      remember(known);
+    }
+    update(addMovie(data, day, movie));
+  };
+
+  const remove = (day: number, index: number) => data && update(removeMovie(data, day, index));
+
+  const closeEditor = () => {
+    const day = editing;
+    setEditing(null);
+    // The opener may have been re-rendered (an empty day gains a movie), so refocus by day.
+    if (day) requestAnimationFrame(() => buttons.current[day]?.focus());
+  };
+
+  const moveFocus = (e: KeyboardEvent) => {
+    const step = KEY_STEPS[e.key] ?? (e.key === "Home" ? 1 - active : e.key === "End" ? DAYS_IN_OCTOBER - active : 0);
+    if (!step) return;
+    const next = active + step;
+    if (next < 1 || next > DAYS_IN_OCTOBER) return;
+    e.preventDefault();
+    setActive(next);
+    buttons.current[next]?.focus();
+  };
+
+  const entries = data ? allMovies(data) : [];
+  const watchedCount = entries.filter((d) => d.watched).length;
+
+  return (
+    <div className="october">
+      <header className="october__header">
+        <button type="button" className="october__nav" onClick={() => setYear(year - 1)} aria-label={`Previous year, ${year - 1}`}>
+          ‹ {year - 1}
+        </button>
+        <div>
+          <h1 className="october__heading">
+            October <span className="october__year">{year}</span>
+          </h1>
+          <p className="october__sub">{data?.theme ?? "Movie a Day"}</p>
+        </div>
+        <button type="button" className="october__nav" onClick={() => setYear(year + 1)} aria-label={`Next year, ${year + 1}`}>
+          {year + 1} ›
+        </button>
+      </header>
+
+      <div className="october__weekdays" aria-hidden="true">
+        {WEEKDAYS.map((d) => (
+          <span key={d}>{d}</span>
+        ))}
+      </div>
+
+      <ol className="october__grid" aria-label={`October ${year}`} aria-busy={!data} onKeyDown={moveFocus}>
+        {Array.from({ length: firstWeekday(year) }, (_, i) => (
+          <li key={`blank-${i}`} className="october__cell october__cell--blank" aria-hidden="true" />
+        ))}
+        {days.map((day) => (
+          <DayCell
+            key={day}
+            year={year}
+            day={day}
+            movies={data ? moviesOn(data, day) : []}
+            wiki={wiki}
+            brokenPosters={brokenPosters}
+            onPosterError={(src) => setBrokenPosters((prev) => new Set(prev).add(src))}
+            isActive={day === active}
+            buttonRef={(el) => (buttons.current[day] = el)}
+            onFocus={() => setActive(day)}
+            onToggle={(index) => toggle(day, index)}
+            onEdit={() => setEditing(day)}
+          />
+        ))}
+      </ol>
+
+      {editing !== null && data && (
+        <DayEditor
+          year={year}
+          day={editing}
+          movies={moviesOn(data, editing)}
+          wiki={wiki}
+          search={search}
+          onAdd={(movie, page) => add(editing, movie, page)}
+          onRemove={(index) => remove(editing, index)}
+          onClose={closeEditor}
+        />
+      )}
+
+      <footer className="october__footer">
+        <span aria-live="polite">
+          <i className="october__dot" /> {watchedCount} / {entries.length} watched
+          {wikiError && " · posters unavailable (offline?)"}
+        </span>
+        <span>
+          <code>cat {yearPathOf(year)}</code> to export · <code>rm</code> it to reset
+        </span>
+      </footer>
+    </div>
+  );
+}
+
+interface DayCellProps {
+  year: number;
+  day: number;
+  movies: MovieDay[];
+  wiki: WikiIndex;
+  brokenPosters: Set<string>;
+  onPosterError(src: string): void;
+  isActive: boolean;
+  /** Receives the day's first toggle, the roving-focus target for arrow keys. */
+  buttonRef(el: HTMLButtonElement | null): void;
+  onFocus(): void;
+  onToggle(index: number): void;
+  onEdit(): void;
+}
+
+function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActive, buttonRef, onFocus, onToggle, onEdit }: DayCellProps) {
+  const tonight = isTonight(year, day);
+  const when = `${weekdayOf(year, day)}, October ${day}`;
+  const tabIndex = isActive ? 0 : -1;
+  const multi = movies.length > 1;
+  const dayTag = movies.every((m) => m.watched) ? "watched" : tonight ? "tonight" : undefined;
+
+  const classes = [
+    "october__cell",
+    movies.length > 0 && movies.every((m) => m.watched) && "october__cell--watched",
+    tonight && "october__cell--tonight",
+    !movies.length && "october__cell--empty",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <li className={classes}>
+      <span className="october__date" aria-hidden="true">
+        {day}
+      </span>
+      {movies.length > 0 && (
+        <button type="button" className="october__add" tabIndex={tabIndex} onClick={onEdit} aria-label={`Add or remove movies, ${when}`} title="Add or remove movies">
+          +
+        </button>
+      )}
+      {movies.length ? (
+        <div
+          className={`october__movies${multi ? " october__movies--multi" : ""}`}
+          style={{ "--count": movies.length } as CSSProperties}
+        >
+          {movies.map((movie, i) => {
+            const lookup = wikiTitle(movie);
+            const page = lookup ? wiki[lookup] : null;
+            const poster = page?.poster && !brokenPosters.has(page.poster) ? page.poster : null;
+            // Several movies share one day-level tag; per-movie tags would not fit.
+            const tag = multi ? movie.note : movie.watched ? "watched" : tonight ? "tonight" : movie.note;
+            return (
+              <div key={i} className={`october__movie${movie.watched ? " october__movie--watched" : ""}`}>
+                <button
+                  ref={i === 0 ? buttonRef : undefined}
+                  type="button"
+                  className="october__toggle"
+                  tabIndex={tabIndex}
+                  aria-label={`${when}: ${movie.title}${tonight ? " (tonight)" : ""}`}
+                  aria-pressed={!!movie.watched}
+                  onFocus={onFocus}
+                  onClick={() => onToggle(i)}
+                />
+                {poster && (
+                  <img
+                    className="october__poster"
+                    src={poster}
+                    alt=""
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                    onError={() => onPosterError(poster)}
+                  />
+                )}
+                <span className="october__title">
+                  {page ? (
+                    <a href={page.url} target="_blank" rel="noopener noreferrer" tabIndex={tabIndex}>
+                      {movie.title}
+                    </a>
+                  ) : (
+                    movie.title
+                  )}
+                </span>
+                {tag && <span className="october__tag">{tag}</span>}
+              </div>
+            );
+          })}
+          {multi && dayTag && <span className="october__tag october__tag--day">{dayTag}</span>}
+        </div>
+      ) : (
+        <>
+          <button
+            ref={buttonRef}
+            type="button"
+            className="october__toggle"
+            tabIndex={tabIndex}
+            aria-label={`${when}: no movie${tonight ? " (tonight)" : ""}. Add a movie`}
+            onFocus={onFocus}
+            onClick={onEdit}
+          />
+          <span className="october__title">—</span>
+          <span className="october__hint" aria-hidden="true">+ add</span>
+        </>
+      )}
+    </li>
+  );
+}
