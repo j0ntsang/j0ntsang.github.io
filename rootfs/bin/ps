@@ -1,0 +1,2 @@
+#!module:ps
+#summary: List running processes (reads /proc)
