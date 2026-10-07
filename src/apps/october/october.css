@@ -442,7 +442,7 @@
   }
 }
 
-/* Narrow window (phone, or a squeezed master pane): one day per row. */
+/* Narrow window (phone, or a squeezed main pane): one day per row. */
 @container (max-width: 560px) {
   .october__header {
     grid-template-columns: 1fr 1fr;

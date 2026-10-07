@@ -19,7 +19,7 @@ export async function loadAndMountTemplates() {
   }
 
   const terminalRoot = TemplateManager.createRoot("terminal");
-  if (terminalRoot) terminalRoot.setAttribute("slot", "master");
+  if (terminalRoot) terminalRoot.setAttribute("slot", "main");
   const fullscreenClone = TemplateManager.create("fullscreen-toggle");
   const settingsMenuClone = TemplateManager.create("settings-menu");
 

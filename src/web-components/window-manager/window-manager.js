@@ -16,8 +16,8 @@ class WindowManager extends HTMLElement {
                 <slot name="waybar-right"></slot>
               </div>
             </nav>
-            <main class="master window">
-              <slot name="master"></slot>
+            <main class="main window">
+              <slot name="main"></slot>
               <slot name="overlay"></slot>
             </main>
             <sidebar class="sidebar">

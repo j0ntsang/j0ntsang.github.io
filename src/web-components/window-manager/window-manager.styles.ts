@@ -47,7 +47,7 @@ export const styles = `
     grid-row-gap: 16px;
     grid-template-areas:
       "waybar"
-      "master"
+      "main"
       "sidebar";
     width: 100%;
     height: 100%;
@@ -60,7 +60,7 @@ export const styles = `
       grid-template-rows: auto 1fr;
       grid-template-areas:
         "waybar waybar"
-        "master sidebar";
+        "main sidebar";
       column-gap: 16px;
     }
   }
@@ -82,9 +82,9 @@ export const styles = `
     margin-left: auto;
   }
 
-  .master {
+  .main {
     position: relative;
-    grid-area: master;
+    grid-area: main;
     padding: 0 16px 8px 16px;
     overflow: hidden;
     display: flex;
@@ -92,19 +92,19 @@ export const styles = `
     min-height: 0;
   }
 
-  .master ::slotted(*) {
+  .main ::slotted(*) {
     flex: 1 1 0;
     min-height: 0;
   }
 
   /* Program windows from the compositor float above the terminal. */
-  .master ::slotted([slot="overlay"]) {
+  .main ::slotted([slot="overlay"]) {
     position: absolute;
     inset: 0;
     z-index: 1;
   }
 
-  .master ::slotted([slot="overlay"][hidden]) {
+  .main ::slotted([slot="overlay"][hidden]) {
     display: none;
   }
 
