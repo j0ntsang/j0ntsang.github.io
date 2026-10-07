@@ -83,6 +83,7 @@ export const styles = `
   }
 
   .master {
+    position: relative;
     grid-area: master;
     padding: 0 16px 8px 16px;
     overflow: hidden;
@@ -94,6 +95,17 @@ export const styles = `
   .master ::slotted(*) {
     flex: 1 1 0;
     min-height: 0;
+  }
+
+  /* Program windows from the compositor float above the terminal. */
+  .master ::slotted([slot="overlay"]) {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .master ::slotted([slot="overlay"][hidden]) {
+    display: none;
   }
 
   .sidebar {

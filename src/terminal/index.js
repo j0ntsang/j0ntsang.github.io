@@ -2,8 +2,7 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 
-import config from "./config.json";
-import { runPrompt } from "./prompt.js";
+import { bootKernel } from "../os/boot";
 
 // ---------------------------------------------------------------------------
 // ANSI helpers
@@ -22,32 +21,10 @@ const FAIL = `${C.red}[ FAIL ]${C.reset}`;
 const PAD = "         "; // 8 chars — aligns with "[  OK  ]"
 
 // ---------------------------------------------------------------------------
-// Progress bar
-// ---------------------------------------------------------------------------
-
-function formatBytes(n) {
-  if (n < 1024) return `${n} B`;
-  if (n < 1048576) return `${(n / 1024).toFixed(1)} KB`;
-  return `${(n / 1048576).toFixed(1)} MB`;
-}
-
-function progressBar(received, total, width) {
-  if (total === 0) {
-    const pos = Math.floor((Date.now() / 80) % width);
-    const bar = " ".repeat(pos) + "=" + " ".repeat(width - pos - 1);
-    return `[${bar}] ${formatBytes(received)}`;
-  }
-  const pct = Math.min(received / total, 1);
-  const filled = Math.floor(pct * width);
-  const bar = "#".repeat(filled) + "-".repeat(width - filled);
-  return `[${bar}] ${Math.floor(pct * 100)}% (${formatBytes(received)} / ${formatBytes(total)})`;
-}
-
-// ---------------------------------------------------------------------------
 // Terminal setup
 // ---------------------------------------------------------------------------
 
-export async function startTerminal(htmlPath) {
+export async function startTerminal() {
   const container = document.getElementById("terminal-container");
   if (!container) {
     console.error("terminal-container element not found");
@@ -136,7 +113,7 @@ export async function startTerminal(htmlPath) {
   const titleEl = document.getElementById("terminal-title");
   const defaultTitle = document.title;
   const ignoredTitleSet = new Set([
-    "dash (wasm)",
+    "sh",
     "xterm-256color — wasm:/dev/tty",
   ]);
 
@@ -174,18 +151,15 @@ export async function startTerminal(htmlPath) {
   });
 
   term.write(`\r${C.dim}Press any key to boot...${C.reset}\r\n\r\n`);
-  await boot(term, htmlPath || config.welcomeMessage);
+  await boot(term);
 }
 
 // ---------------------------------------------------------------------------
 // Boot sequence
 // ---------------------------------------------------------------------------
 
-async function boot(term, motdPath) {
+async function boot(term) {
   const ln = (s = "") => term.write(s + "\r\n");
-  // PAD(8) + label + " [" + bar + "] 100% (418.0 KB / 418.0 KB)" — keep within term.cols
-  const barWidth = (label = "") =>
-    Math.max(10, term.cols - PAD.length - label.length - 32);
   const setTitle = (t) => term.write(`\x1b]0;${t}\x07`);
 
   async function step(label, fn) {
@@ -200,25 +174,10 @@ async function boot(term, motdPath) {
     }
   }
 
-  async function simulatedFetch(label, fakeTotal) {
-    const bw = barWidth(label);
-    term.write(`${PAD}${label} ${progressBar(0, fakeTotal, bw)}`);
-    let received = 0;
-    while (received < fakeTotal) {
-      await delay(40 + Math.random() * 40);
-      const chunk =
-        Math.floor(fakeTotal / 18) +
-        Math.floor(Math.random() * (fakeTotal / 18));
-      received = Math.min(received + chunk, fakeTotal);
-      term.write(`\r${PAD}${label} ${progressBar(received, fakeTotal, bw)}`);
-    }
-    term.write(`\r${OK} ${label} ${progressBar(fakeTotal, fakeTotal, bw)}\r\n`);
-  }
-
   try {
     setTitle("Booting...");
 
-    // 1. SharedArrayBuffer — required for WASM synchronous I/O
+    // SharedArrayBuffer — required later for a WASM shell's synchronous I/O
     await step("Checking SharedArrayBuffer support", async () => {
       if (typeof SharedArrayBuffer === "undefined") {
         throw new Error(
@@ -227,70 +186,9 @@ async function boot(term, motdPath) {
       }
     });
 
-    // 2. PTY module
-    setTitle("Loading PTY...");
-    await step("Loading PTY module", async () => {
-      // TODO: const { openpty } = await import("xterm-pty");
-      await delay(200);
-    });
-
-    // 3. Fetch dash WASM binary with progress
-    //    Replace simulatedFetch with fetchWithProgress once binary is compiled:
-    //    const wasmBuffer = await fetchWithProgress(
-    //      "Fetching dash.wasm",
-    //      `${import.meta.env.BASE_URL}wasm/dash.wasm`
-    //    );
-    setTitle("Fetching dash.wasm...");
-    await simulatedFetch("Fetching dash.wasm", 427520); // ~418 KB — real dash WASM size
-
-    // 4. Compile WASM module
-    setTitle("Compiling WebAssembly...");
-    await step("Compiling WebAssembly module", async () => {
-      // TODO: const module = await WebAssembly.compile(wasmBuffer);
-      await delay(350);
-    });
-
-    // 5. Mount virtual filesystem
-    setTitle("Mounting filesystem...");
-    await step("Mounting virtual filesystem", async () => {
-      // TODO: FS.mkdir("/home/guest"); FS.writeFile("/etc/motd", ...); FS.chdir("/home/guest");
-      await delay(120);
-    });
-
-    // 6. Start dash
-    setTitle("Starting dash...");
-    await step("Starting dash", async () => {
-      // TODO: instantiate WASM module and connect PTY slave to xterm
-      await delay(180);
-    });
-
-    // Erase the entire visible screen and move cursor to top-left, then show MOTD
-    term.write("\x1b[2J\x1b[H");
-
-    // MOTD fetched
-    if (motdPath) {
-      try {
-        const url = new URL(
-          motdPath.replace(/^\//, ""),
-          document.baseURI,
-        ).toString();
-        const res = await fetch(url);
-        if (res.ok) {
-          const raw = await res.text();
-          const text = raw.replace(/\\x([0-9a-fA-F]{2})/g, (_, h) =>
-            String.fromCharCode(parseInt(h, 16)),
-          );
-          ln(text.trim());
-          ln();
-        }
-      } catch (e) {
-        console.error("MOTD load failed:", e);
-      }
-    }
-
-    // TODO: replace runPrompt() with the real PTY shell once WASM is wired up.
-    setTitle("dash (wasm)");
-    await runPrompt(term, motdPath);
+    // Mount filesystems and start PID 1 (see src/os/boot.ts). A WASM dash
+    // would load here as a second executable format alongside JS modules.
+    await bootKernel(term, step);
   } catch (err) {
     console.error("[boot]", err);
     ln();
