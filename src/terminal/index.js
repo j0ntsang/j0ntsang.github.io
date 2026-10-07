@@ -61,6 +61,8 @@ export async function startTerminal() {
     fontWeight: "500",
     allowTransparency: true,
     screenReaderMode: true,
+    // WCAG AA: xterm lifts ANSI colours below 4.5:1 (dim text is fixed in index.css).
+    minimumContrastRatio: 4.5,
     theme: getColors(),
     termName: "xterm-256color",
     linkHandler: {

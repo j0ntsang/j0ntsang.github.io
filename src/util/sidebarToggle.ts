@@ -29,6 +29,9 @@ export function initializeSidebarToggle(windowManager: WindowManagerElement, con
     const open = windowManager.sidebarOpen;
     button.setAttribute("aria-pressed", String(open));
     button.title = open ? "Hide sidebar" : "Show sidebar";
+    // State is shown by shape (◨ open, ◻ hidden), not by fading: dimming fails WCAG non-text contrast.
+    const icon = button.querySelector(".sidebar-toggle-icon");
+    if (icon) icon.textContent = open ? "\u25E8" : "\u25FB";
   }
 
   windowManager.addEventListener("sidebarchange", sync);

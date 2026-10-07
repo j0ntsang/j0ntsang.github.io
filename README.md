@@ -205,3 +205,15 @@ The site is built to be a portfolio of techniques, not just a portfolio of work.
 - **React** — one toolkit among several, portalled in where it fits; mixed with vanilla code on purpose rather than replacing it
 - **Styled Components + Tailwind** — both CSS-in-JS and utility-first approaches demonstrated together
 - **No build-time HTML** — the shell is static HTML; JavaScript layers in progressively
+
+### Accessibility: WCAG 2.2 AA, always
+
+Every change must keep the site [WCAG 2.2 AA](https://www.w3.org/TR/WCAG22/) compliant. It's a requirement, not a nice-to-have:
+
+- **Text contrast** — at least 4.5:1 against its background, or 3:1 for large text (24px+, or 18.66px+ bold). Text over images (October posters) needs an overlay that guarantees this over any poster.
+- **Non-text contrast** — 3:1 for icons, button borders, focus rings and other UI parts needed to understand or operate the page.
+- **Keyboard** — everything works without a mouse, with a visible focus indicator.
+- **Names and states** — controls have accessible names, and toggles expose their state (`aria-pressed`, `aria-selected`).
+- **Motion** — animations respect `prefers-reduced-motion`.
+
+New colours come from the existing tokens (`--text-color`, `--background-color`, …); check any new pairing's contrast before using it.

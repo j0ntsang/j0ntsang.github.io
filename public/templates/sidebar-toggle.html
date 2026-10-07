@@ -22,14 +22,9 @@
             cursor: pointer;
             user-select: none;
             color: var(--background-color);
-            opacity: 0.5;
-        }
-
-        .sidebar-toggle[aria-pressed="true"] {
-            opacity: 1;
         }
     </style>
     <button id="sidebarToggle" class="sidebar-toggle" type="button" aria-pressed="true" aria-label="Sidebar">
-        <span aria-hidden="true">&#x25E8;</span>
+        <span class="sidebar-toggle-icon" aria-hidden="true">&#x25E8;</span>
     </button>
 </template>

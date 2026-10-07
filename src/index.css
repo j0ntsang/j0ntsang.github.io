@@ -57,6 +57,12 @@ p {
   background: transparent;
 }
 
+/* xterm's DOM renderer draws dim (SGR 2) text at 50% opacity, about 3:1.
+   75% keeps it dim but WCAG AA (5.3:1); minimumContrastRatio doesn't cover it. */
+.xterm .xterm-rows .xterm-dim:not([class*="xterm-fg-"]) {
+  color: rgba(var(--text-color-rgb), 0.75);
+}
+
 .xterm .xterm-underline-5 {
   text-decoration: underline;
   text-decoration-style: solid;
