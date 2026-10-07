@@ -60,7 +60,7 @@ template.innerHTML = `
   </style>
   <header>
     <span part="title"></span>
-    <button type="button" aria-label="Close window" title="Close (q / Esc)">[q]</button>
+    <button type="button" aria-label="Quit program" title="Quit (q / Esc)">[quit]</button>
   </header>
   <div class="body"><slot></slot></div>
 `;
