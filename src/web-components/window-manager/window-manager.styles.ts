@@ -65,6 +65,37 @@ export const styles = `
     }
   }
 
+  /*
+   * An empty sidebar keeps its grid track at zero size instead of dropping
+   * it: tracks only animate between lists of the same length and shape
+   * (minmax ↔ minmax, fr ↔ fr), so this is what lets the sidebar grow in
+   * when a panel arrives and shrink away when it leaves.
+   */
+  .container--no-sidebar {
+    grid-template-rows: auto 1fr 0fr;
+  }
+
+  @media (min-width: 768px) {
+    .container--no-sidebar {
+      grid-template-columns: minmax(320px, 1fr) minmax(0px, 0px);
+      grid-template-rows: auto 1fr;
+      column-gap: 0;
+    }
+  }
+
+  .container--no-sidebar .sidebar {
+    visibility: hidden;
+    border-width: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .container {
+      transition-property: grid-template-columns, grid-template-rows, column-gap;
+      transition-duration: 250ms;
+      transition-timing-function: ease-out;
+    }
+  }
+
   .waybar {
     display: flex;
     grid-area: waybar;
@@ -114,7 +145,7 @@ export const styles = `
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    min-width: 280px;
+    min-width: 0;
     min-height: 0;
     border-width: 1px;
     border-color: transparent;
@@ -126,8 +157,10 @@ export const styles = `
     border-radius: 4px;
   }
 
+  /* Full width from the start, so the panel is revealed rather than reflowed while the column grows. */
   .sidebar ::slotted(*) {
     flex: 1 1 0;
+    min-width: 280px;
     min-height: 0;
     display: flex;
     flex-direction: column;
