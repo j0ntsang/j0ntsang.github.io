@@ -11,6 +11,7 @@
 import type { Terminal } from "@xterm/xterm";
 import LocalEchoController from "local-echo";
 
+import type { Completer } from "../kernel/syscalls";
 import { stripAnsi } from "../lib/ansi";
 
 /**
@@ -89,8 +90,15 @@ function shimLegacyEvents(term: LegacyTerminal) {
   };
 }
 
+function commonPrefix(words: string[]): string {
+  let prefix = words[0];
+  for (const w of words) while (!w.startsWith(prefix)) prefix = prefix.slice(0, -1);
+  return prefix;
+}
+
 export class Tty {
   private echo: LocalEchoController;
+  private complete: Completer | null = null;
   /** Called on Ctrl-C while no line is being read (i.e. a program is in the foreground). */
   onInterrupt: () => void = () => {};
 
@@ -101,6 +109,14 @@ export class Tty {
       const prompt = this._activePrompt?.prompt || "";
       const cont = this._activePrompt?.continuationPrompt || "";
       return new AnsiAwareString(prompt + input.replace(/\n/g, "\n" + cont));
+    };
+
+    // local-echo's own Tab support needs synchronous candidates and always
+    // appends a space, so Tab is handled here instead, bash-style.
+    const handleData = this.echo.handleData.bind(this.echo);
+    this.echo.handleData = (data) => {
+      if (data === "\t" && this.complete) void this.handleTab(this.complete);
+      else handleData(data);
     };
 
     term.onData((data) => {
@@ -115,12 +131,50 @@ export class Tty {
   }
 
   /** Canonical-mode read: resolves with one edited line, or null if aborted. */
-  async readLine(prompt: string): Promise<string | null> {
+  async readLine(prompt: string, complete?: Completer): Promise<string | null> {
+    this.complete = complete ?? null;
     try {
       return await this.echo.read(prompt);
     } catch {
       return null;
+    } finally {
+      this.complete = null;
     }
+  }
+
+  /**
+   * One match: insert it, plus a space unless it's a directory.
+   * Several: extend to their common prefix, or list them if there is none.
+   */
+  private async handleTab(complete: Completer) {
+    const echo = this.echo;
+    const { _input: input, _cursor: cursor } = echo;
+    const before = input.slice(0, cursor);
+    const word = before.match(/\S*$/)![0];
+
+    const matches = Array.from(new Set(await complete(before)))
+      .filter((m) => m.startsWith(word))
+      .sort();
+
+    // The user kept typing (or pressed Enter) while we were looking.
+    if (!echo._active || echo._input !== input || echo._cursor !== cursor) return;
+    if (matches.length === 0) return;
+
+    if (matches.length === 1) {
+      const [match] = matches;
+      echo.handleCursorInsert(match.slice(word.length) + (match.endsWith("/") ? "" : " "));
+      return;
+    }
+
+    const prefix = commonPrefix(matches);
+    if (prefix.length > word.length) {
+      echo.handleCursorInsert(prefix.slice(word.length));
+      return;
+    }
+
+    // Like bash, list just the part after the last "/".
+    const dirLength = word.lastIndexOf("/") + 1;
+    echo.printAndRestartPrompt(() => echo.printWide(matches.map((m) => m.slice(dirLength))));
   }
 
   get columns() {

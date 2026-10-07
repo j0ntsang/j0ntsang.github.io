@@ -134,7 +134,7 @@ export class Kernel {
 
       write: (s) => alive() && tty.write(s),
       error: (s) => alive() && tty.write(s),
-      readLine: (prompt) => tty.readLine(prompt),
+      readLine: (prompt, complete) => tty.readLine(prompt, complete),
       get columns() {
         return tty.columns;
       },

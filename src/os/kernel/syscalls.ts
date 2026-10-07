@@ -14,6 +14,9 @@ export interface SpawnOptions {
   foreground?: boolean;
 }
 
+/** Given the text left of the cursor, returns full replacements for its last word (directories end in "/"). */
+export type Completer = (beforeCursor: string) => Promise<string[]>;
+
 export interface Sys {
   readonly pid: number;
   /** Path of this program's executable (like /proc/self/exe). */
@@ -39,7 +42,7 @@ export interface Sys {
   // stdio
   write(s: string): void;
   error(s: string): void;
-  readLine(prompt: string): Promise<string | null>;
+  readLine(prompt: string, complete?: Completer): Promise<string | null>;
   readonly columns: number;
 
   // devices

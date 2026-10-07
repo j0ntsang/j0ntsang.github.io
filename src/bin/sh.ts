@@ -6,7 +6,9 @@
 
 import { tildify } from "../os/fs/path";
 import { C, title } from "../os/lib/ansi";
-import type { Sys } from "../os/kernel/syscalls";
+import type { Completer, Sys } from "../os/kernel/syscalls";
+
+const BUILTINS = ["cd", "exit"];
 
 /** Split on whitespace, honouring "double" and 'single' quotes. */
 function tokenize(line: string): string[] {
@@ -27,8 +29,35 @@ async function which(cmd: string, sys: Sys): Promise<string | null> {
   return null;
 }
 
+/** Tab completion: commands for the first word, paths after that (`cd` gets directories only). */
+function completer(sys: Sys): Completer {
+  return async (before) => {
+    const words = before.split(/\s+/);
+    const word = words[words.length - 1];
+
+    if (words.length === 1 && !word.includes("/")) {
+      const dirs = sys.env.PATH.split(":");
+      const listings = await Promise.all(dirs.map((dir) => sys.readdir(dir).catch(() => [])));
+      return [...BUILTINS, ...listings.flat()];
+    }
+
+    const dir = word.slice(0, word.lastIndexOf("/") + 1);
+    const names = await sys.readdir(dir || ".").catch(() => [] as string[]);
+    const matches = await Promise.all(
+      names
+        .filter((name) => name.startsWith(word.slice(dir.length)))
+        .map(async (name) => {
+          const isDir = (await sys.stat(dir + name))?.type === "dir";
+          return isDir ? `${dir}${name}/` : `${dir}${name}`;
+        }),
+    );
+    return words[0] === "cd" ? matches.filter((m) => m.endsWith("/")) : matches;
+  };
+}
+
 export default async function sh(_argv: string[], sys: Sys) {
   let status = 0;
+  const complete = completer(sys);
 
   for (;;) {
     const cwd = tildify(sys.cwd(), sys.env.HOME);
@@ -36,7 +65,7 @@ export default async function sh(_argv: string[], sys: Sys) {
     const code = status ? `${C.red}[${status}]${C.reset} ` : "";
     const prompt = `${code}${C.green}${sys.env.USER}${C.reset}@${C.cyan}${sys.env.HOSTNAME}${C.reset}:${C.yellow}${cwd}${C.reset}$ `;
 
-    const line = await sys.readLine(prompt);
+    const line = await sys.readLine(prompt, complete);
     if (line === null) continue;
     const [cmd, ...args] = tokenize(line);
     if (!cmd) continue;
