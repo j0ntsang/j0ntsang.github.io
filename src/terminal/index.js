@@ -165,9 +165,12 @@ async function boot(term) {
   const ln = (s = "") => term.write(s + "\r\n");
   const setTitle = (t) => term.write(`\x1b]0;${t}\x07`);
 
+  // The real steps take milliseconds; pause on each so the boot log can be read.
   async function step(label, fn) {
+    setTitle(`${label}...`);
     term.write(`${PAD}${label}`);
     try {
+      await delay(150 + Math.random() * 250);
       await fn();
       term.write(`\r${OK} ${label}\r\n`);
     } catch (err) {
