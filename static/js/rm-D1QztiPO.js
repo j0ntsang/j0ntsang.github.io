@@ -1,0 +1,3 @@
+async function o(e,r){if(e.length<2)return r.error(`usage: rm <file>...
+`),1;let t=0;for(const n of e.slice(1))try{await r.unlink(n)}catch(a){r.error(`rm: ${a.message}
+`),t=1}return t}export{o as default};

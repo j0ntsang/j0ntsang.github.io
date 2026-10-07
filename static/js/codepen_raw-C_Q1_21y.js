@@ -1,0 +1,4 @@
+const e=`#!module:xdg-open
+#summary: Open CodePen profile
+#url: https://codepen.io/tsang
+`;export{e as default};
