@@ -7,14 +7,6 @@ export function initializeSettingsMenu() {
     'input[name="animation"]'
   ) as HTMLInputElement | null;
 
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  function getStoredTheme(): "dark" | "light" {
-    const stored = localStorage.getItem("theme");
-    if (stored === "dark" || stored === "light") return stored;
-    return prefersDark ? "dark" : "light";
-  }
-
   function applyTheme(theme: "dark" | "light") {
     document.documentElement.classList.remove("dark", "light");
     document.documentElement.classList.add(theme);
@@ -28,22 +20,15 @@ export function initializeSettingsMenu() {
     document.documentElement.classList.toggle("animation", enabled);
   }
 
-  const initialTheme = getStoredTheme();
-  applyTheme(initialTheme);
+  // Light mode is disabled for now; always dark regardless of OS or stored preference.
+  applyTheme("dark");
 
   const initialAnimation = getStoredAnimation();
   applyAnimation(initialAnimation);
 
   if (darkModeCheckbox) {
-    darkModeCheckbox.checked = initialTheme === "dark";
-    darkModeCheckbox.disabled = false;
-
-    darkModeCheckbox.addEventListener("change", (e) => {
-      const target = e.target as HTMLInputElement;
-      const theme = target.checked ? "dark" : "light";
-      applyTheme(theme);
-      localStorage.setItem("theme", theme);
-    });
+    darkModeCheckbox.checked = true;
+    darkModeCheckbox.disabled = true;
   }
 
   if (animationCheckbox) {
