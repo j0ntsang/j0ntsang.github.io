@@ -5,10 +5,11 @@
 //   october --list     text mode: print the month to the terminal
 //
 // Data lives at ~/october/<year>.json. The shipped copy is read-only; your
-// cross-offs are copied up into the overlay. `rm` the file to reset it.
+// cross-offs are copied up into the overlay. Reset (or `rm` the file) drops
+// your copy and reveals the shipped one again.
 
 import { OctoberCalendar } from "../apps/october/OctoberCalendar";
-import { allMovies, emptyYear, firstWeekday, moviesOn, OctoberYear, weekdayOf, wikiTitle, yearPath } from "../apps/october/model";
+import { allMovies, emptyYear, firstWeekday, moviesOn, OctoberYear, toJson, weekdayOf, wikiTitle, yearPath } from "../apps/october/model";
 import { rememberWiki, resolveWiki, searchFilms } from "../apps/october/wiki";
 import { mountReact } from "../os/display/toolkits/react";
 import { C, link } from "../os/lib/ansi";
@@ -74,12 +75,16 @@ export default async function october(argv: string[], sys: Sys) {
     <OctoberCalendar
       initialYear={year}
       load={(y) => load(sys, y)}
-      save={(data) => sys.writeFile(yearPath(data.year), JSON.stringify(data, null, 2) + "\n")}
+      save={(data) => sys.writeFile(yearPath(data.year), toJson(data))}
+      hasLocalChanges={async (y) => !!(await sys.stat(yearPath(y)))?.upper}
+      // Only ever drop a local copy: unlinking an unchanged shipped file would hide it.
+      reset={async (y) => {
+        if ((await sys.stat(yearPath(y)))?.upper) await sys.unlink(yearPath(y));
+      }}
       resolve={(titles) => resolveWiki(titles, sys)}
       remember={(pages) => rememberWiki(pages, sys)}
       search={(query) => searchFilms(query, sys)}
       setTitle={surface.setTitle}
-      yearPathOf={yearPath}
     />,
   );
   await surface.closed;

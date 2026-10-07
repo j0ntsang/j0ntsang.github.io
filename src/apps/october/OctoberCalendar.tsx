@@ -13,6 +13,7 @@ import {
   moviesOn,
   OctoberYear,
   removeMovie,
+  toJson,
   toggleWatched,
   weekdayOf,
   WEEKDAYS,
@@ -28,13 +29,16 @@ interface Props {
   remember(pages: WikiIndex): void;
   search(query: string): Promise<FilmResult[]>;
   setTitle(title: string): void;
-  yearPathOf(year: number): string;
+  /** Whether this visitor has a saved copy of the year (something to reset). */
+  hasLocalChanges(year: number): Promise<boolean>;
+  /** Drop the saved copy, revealing the shipped file again. */
+  reset(year: number): Promise<void>;
 }
 
 const KEY_STEPS: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
 const days = Array.from({ length: DAYS_IN_OCTOBER }, (_, i) => i + 1);
 
-export function OctoberCalendar({ initialYear, load, save, resolve, remember, search, setTitle, yearPathOf }: Props) {
+export function OctoberCalendar({ initialYear, load, save, resolve, remember, search, setTitle, hasLocalChanges, reset }: Props) {
   const [year, setYear] = useState(initialYear);
   const [data, setData] = useState<OctoberYear | null>(null);
   const [wiki, setWiki] = useState<WikiIndex>({});
@@ -42,17 +46,28 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
   const [brokenPosters, setBrokenPosters] = useState<Set<string>>(new Set());
   const [active, setActive] = useState(() => (isTonight(initialYear, new Date().getDate()) ? new Date().getDate() : 1));
   const [editing, setEditing] = useState<number | null>(null);
+  const [modified, setModified] = useState(false);
+  const [confirmingReset, setConfirmingReset] = useState(false);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
     let current = true;
     setTitle(`october — ${year}`);
     setData(null);
+    setConfirmingReset(false);
     load(year).then((d) => current && setData(d));
+    hasLocalChanges(year).then((m) => current && setModified(m));
     return () => {
       current = false;
     };
-  }, [year, load, setTitle]);
+  }, [year, load, hasLocalChanges, setTitle]);
+
+  // Reset asks twice; the second click has to come within a few seconds.
+  useEffect(() => {
+    if (!confirmingReset) return;
+    const timer = setTimeout(() => setConfirmingReset(false), 3000);
+    return () => clearTimeout(timer);
+  }, [confirmingReset]);
 
   // Once the first year loads, put keyboard focus on today (or day 1).
   const focusedOnce = useRef(false);
@@ -86,7 +101,26 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
 
   const update = (next: OctoberYear) => {
     setData(next);
+    setModified(true);
     save(next);
+  };
+
+  const clickReset = async () => {
+    if (!confirmingReset) return setConfirmingReset(true);
+    setConfirmingReset(false);
+    await reset(year);
+    setData(await load(year));
+    setModified(false);
+  };
+
+  const exportYear = () => {
+    if (!data) return;
+    const url = URL.createObjectURL(new Blob([toJson(data)], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `october-${year}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const toggle = (day: number, index: number) => data?.days[day] && update(toggleWatched(data, day, index));
@@ -129,12 +163,9 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
         <button type="button" className="october__nav" onClick={() => setYear(year - 1)} aria-label={`Previous year, ${year - 1}`}>
           ‹ {year - 1}
         </button>
-        <div>
-          <h1 className="october__heading">
-            October <span className="october__year">{year}</span>
-          </h1>
-          <p className="october__sub">{data?.theme ?? "Movie a Day"}</p>
-        </div>
+        <h1 className="october__heading">
+          October <span className="october__year">{year}</span>
+        </h1>
         <button type="button" className="october__nav" onClick={() => setYear(year + 1)} aria-label={`Next year, ${year + 1}`}>
           {year + 1} ›
         </button>
@@ -183,11 +214,22 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
 
       <footer className="october__footer">
         <span aria-live="polite">
-          <i className="october__dot" /> {watchedCount} / {entries.length} watched
+          <span aria-hidden="true">🎃</span> {watchedCount} / {entries.length} watched
           {wikiError && " · posters unavailable (offline?)"}
         </span>
-        <span>
-          <code>cat {yearPathOf(year)}</code> to export · <code>rm</code> it to reset
+        <span className="october__actions">
+          <button type="button" className="october__nav" onClick={exportYear} disabled={!data}>
+            Export
+          </button>
+          <button
+            type="button"
+            className="october__nav"
+            onClick={clickReset}
+            disabled={!modified}
+            title={modified ? "Drop your changes and go back to the shipped calendar" : "Nothing to reset"}
+          >
+            {confirmingReset ? "Click again to reset" : "Click to reset"}
+          </button>
         </span>
       </footer>
     </div>
@@ -214,11 +256,9 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
   const when = `${weekdayOf(year, day)}, October ${day}`;
   const tabIndex = isActive ? 0 : -1;
   const multi = movies.length > 1;
-  const dayTag = movies.every((m) => m.watched) ? "watched" : tonight ? "tonight" : undefined;
 
   const classes = [
     "october__cell",
-    movies.length > 0 && movies.every((m) => m.watched) && "october__cell--watched",
     tonight && "october__cell--tonight",
     !movies.length && "october__cell--empty",
   ]
@@ -227,6 +267,7 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
 
   return (
     <li className={classes}>
+      {/* Top overlay: the date (and the add button) sit over the posters. */}
       <span className="october__date" aria-hidden="true">
         {day}
       </span>
@@ -244,20 +285,8 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
             const lookup = wikiTitle(movie);
             const page = lookup ? wiki[lookup] : null;
             const poster = page?.poster && !brokenPosters.has(page.poster) ? page.poster : null;
-            // Several movies share one day-level tag; per-movie tags would not fit.
-            const tag = multi ? movie.note : movie.watched ? "watched" : tonight ? "tonight" : movie.note;
             return (
               <div key={i} className={`october__movie${movie.watched ? " october__movie--watched" : ""}`}>
-                <button
-                  ref={i === 0 ? buttonRef : undefined}
-                  type="button"
-                  className="october__toggle"
-                  tabIndex={tabIndex}
-                  aria-label={`${when}: ${movie.title}${tonight ? " (tonight)" : ""}`}
-                  aria-pressed={!!movie.watched}
-                  onFocus={onFocus}
-                  onClick={() => onToggle(i)}
-                />
                 {poster && (
                   <img
                     className="october__poster"
@@ -269,20 +298,31 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
                     onError={() => onPosterError(poster)}
                   />
                 )}
+                <button
+                  ref={i === 0 ? buttonRef : undefined}
+                  type="button"
+                  className="october__toggle"
+                  tabIndex={tabIndex}
+                  title={movie.note}
+                  aria-label={`${when}: ${movie.title}${movie.note ? `, ${movie.note}` : ""}${tonight ? " (tonight)" : ""}`}
+                  aria-pressed={!!movie.watched}
+                  onFocus={onFocus}
+                  onClick={() => onToggle(i)}
+                />
+                {/* Bottom overlay: the title over the poster. */}
                 <span className="october__title">
                   {page ? (
-                    <a href={page.url} target="_blank" rel="noopener noreferrer" tabIndex={tabIndex}>
+                    <a href={page.url} target="_blank" rel="noopener noreferrer" tabIndex={tabIndex} title="Open on Wikipedia">
+                      <LinkIcon />
                       {movie.title}
                     </a>
                   ) : (
                     movie.title
                   )}
                 </span>
-                {tag && <span className="october__tag">{tag}</span>}
               </div>
             );
           })}
-          {multi && dayTag && <span className="october__tag october__tag--day">{dayTag}</span>}
         </div>
       ) : (
         <>
@@ -295,10 +335,19 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
             onFocus={onFocus}
             onClick={onEdit}
           />
-          <span className="october__title">—</span>
           <span className="october__hint" aria-hidden="true">+ add</span>
         </>
       )}
     </li>
+  );
+}
+
+/** Chain-link glyph drawn in the text colour, so it inherits the title's contrast. */
+function LinkIcon() {
+  return (
+    <svg className="october__link-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5" />
+      <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5" />
+    </svg>
   );
 }
