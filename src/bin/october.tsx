@@ -69,7 +69,8 @@ export default async function october(argv: string[], sys: Sys) {
     return 0;
   }
 
-  const surface = sys.createWindow({ title: `october — ${year}` });
+  // Maximized: the calendar wants the width, so the sidebar steps aside while it's open.
+  const surface = sys.createWindow({ title: `october — ${year}`, maximized: true });
   mountReact(
     surface,
     <OctoberCalendar

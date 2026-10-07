@@ -82,7 +82,7 @@ The main window is an [`@xterm/xterm`](https://xtermjs.org/) terminal running a 
 | Syscalls | `src/os/kernel/syscalls.ts` — the only API programs get; no DOM or storage access |
 | Executables + `$PATH` | `rootfs/usr/bin/october` holds `#!module:october`; the kernel lazy-loads `src/bin/october.tsx` |
 | TTY + line discipline | `src/os/tty/tty.ts` — xterm is the device, `local-echo` is canonical-mode line editing |
-| Display server | `src/os/display/compositor.ts` — hands a process a bare `HTMLElement` surface (Wayland-style): a window over the terminal, or a sidebar panel (like layer-shell) |
+| Display server | `src/os/display/compositor.ts` — hands a process a bare `HTMLElement` surface (Wayland-style): a window over the terminal, or a sidebar panel (like layer-shell). A window can ask to be `maximized` (`october` does): the sidebar hides while it's open and comes back when it closes |
 | Daemons + signals | `spawn(…, { daemon: true })` re-parents to init (PPID 1); `kill <pid>` sends SIGTERM/SIGINT |
 | GUI toolkits | `src/os/display/toolkits/` — each program draws with React, a `<template>`, a web component or raw DOM |
 | init + shell | `src/bin/init.ts` (PID 1) prints `/etc/motd`, starts `sysinfo`, and respawns `src/bin/sh.ts` |

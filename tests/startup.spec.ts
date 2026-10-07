@@ -119,3 +119,32 @@ test("a sidebar hidden before sysinfo stops is open again when it restarts", asy
   await expect(sidebarPanel(page)).toBeVisible();
   await expect(sidebarIcon(page)).toHaveAttribute("aria-pressed", "true");
 });
+
+test("opening october hides the sidebar, and closing it brings the sidebar back", async ({ page }) => {
+  await page.goto("/");
+  await boot(page);
+  await expect(sidebarPanel(page)).toBeVisible();
+
+  await run(page, "october");
+  await expect(page.locator(".october")).toBeVisible();
+  await expect(sidebarColumn(page)).toBeHidden();
+  await expect(sidebarIcon(page)).toHaveAttribute("aria-pressed", "false");
+
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".october")).toHaveCount(0);
+  await expect(sidebarPanel(page)).toBeVisible();
+  await expect(sidebarIcon(page)).toHaveAttribute("aria-pressed", "true");
+});
+
+test("a sidebar that was hidden before october stays hidden after it closes", async ({ page }) => {
+  await page.goto("/");
+  await boot(page);
+  await sidebarIcon(page).click();
+  await expect(sidebarColumn(page)).toBeHidden();
+
+  await run(page, "october");
+  await expect(page.locator(".october")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".october")).toHaveCount(0);
+  await expect(sidebarColumn(page)).toBeHidden();
+});

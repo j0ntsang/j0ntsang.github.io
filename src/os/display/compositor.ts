@@ -31,6 +31,17 @@ interface Entry {
   win: HTMLElement;
 }
 
+/** What the compositor needs from the window manager (<window-manager>) that hosts panels. */
+interface PanelHost extends HTMLElement {
+  readonly sidebarOpen?: boolean;
+  toggleSidebar?(open?: boolean): void;
+}
+
+export interface WindowOptions {
+  /** Ask for the whole screen, like xdg-toplevel's set_maximized: the sidebar hides while it's open. */
+  maximized?: boolean;
+}
+
 const isTyping = (t: EventTarget | null) =>
   t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
 
@@ -38,13 +49,16 @@ export class Compositor {
   private windows: Entry[] = [];
   private panels: Entry[] = [];
   private nextId = 1;
+  private maximized = 0;
+  /** Whether the sidebar was open before the first maximized window hid it. */
+  private sidebarWasOpen = false;
 
   /** Wired by the kernel: Ctrl-C inside a window signals its process. */
   onInterrupt: (pid: number) => void = () => {};
   /** Wired by the kernel: focus goes back to the TTY when the last window closes. */
   onEmpty: () => void = () => {};
 
-  constructor(private host: HTMLElement, private panelHost: HTMLElement) {
+  constructor(private host: HTMLElement, private panelHost: PanelHost) {
     host.hidden = true;
   }
 
@@ -78,7 +92,7 @@ export class Compositor {
     return surface;
   }
 
-  createWindow(pid: number, title: string): Surface {
+  createWindow(pid: number, title: string, opts: WindowOptions = {}): Surface {
     const win = document.createElement("program-window") as ProgramWindow;
     const el = document.createElement("div");
     el.className = "surface";
@@ -100,6 +114,7 @@ export class Compositor {
         teardown.forEach((fn) => fn());
         win.remove();
         this.windows = this.windows.filter((w) => w.win !== win);
+        if (opts.maximized) this.unmaximize();
         resolveClosed();
         this.raiseTop();
       },
@@ -107,6 +122,7 @@ export class Compositor {
 
     win.heading = title;
     win.onRequestClose = surface.close;
+    if (opts.maximized) this.maximize();
     win.addEventListener("keydown", (e) => {
       if (e.defaultPrevented) return;
       if (e.key === "Escape" || (e.key === "q" && !isTyping(e.target) && !e.ctrlKey && !e.metaKey)) {
@@ -125,6 +141,18 @@ export class Compositor {
       if (!win.contains(document.activeElement)) win.focus();
     });
     return surface;
+  }
+
+  private maximize() {
+    if (this.maximized++ > 0) return;
+    this.sidebarWasOpen = !!this.panelHost.sidebarOpen;
+    this.panelHost.toggleSidebar?.(false);
+  }
+
+  /** The last maximized window closed: bring the sidebar back, unless the user already did. */
+  private unmaximize() {
+    if (--this.maximized > 0) return;
+    if (this.sidebarWasOpen && !this.panelHost.sidebarOpen) this.panelHost.toggleSidebar?.(true);
   }
 
   /** Called by the kernel when a process exits: its windows and panels go with it. */

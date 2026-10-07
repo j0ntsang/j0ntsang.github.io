@@ -6,7 +6,7 @@
 // for localStorage) never touches a single program — that boundary is the
 // whole point of a kernel.
 
-import type { Surface } from "../display/compositor";
+import type { Surface, WindowOptions } from "../display/compositor";
 import type { Stat } from "../fs/types";
 import type { Signal } from "./process";
 
@@ -53,7 +53,7 @@ export interface Sys {
   // devices
   fetch(input: string, init?: RequestInit): Promise<Response>;
   openUrl(url: string): void;
-  createWindow(opts: { title: string }): Surface;
+  createWindow(opts: { title: string } & WindowOptions): Surface;
   /** A chrome-less surface in the sidebar, for long-running status programs. */
   createPanel(opts: { title: string }): Surface;
 }

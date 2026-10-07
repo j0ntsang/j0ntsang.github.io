@@ -146,7 +146,7 @@ export class Kernel {
       openUrl: (url) => {
         window.open(url, "_blank", "noopener,noreferrer");
       },
-      createWindow: ({ title }) => this.display.createWindow(proc.pid, title),
+      createWindow: ({ title, ...opts }) => this.display.createWindow(proc.pid, title, opts),
       createPanel: ({ title }) => {
         const panel = this.display.createPanel(proc.pid);
         panel.setTitle(title);
