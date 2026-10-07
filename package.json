@@ -15,7 +15,8 @@
     "build": "npm run copy:coi && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "test": "playwright test"
   },
   "browserslist": {
     "production": [
@@ -30,6 +31,7 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@types/node": "^22.15.29",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
