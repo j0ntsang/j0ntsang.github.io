@@ -84,7 +84,7 @@ export function overlayfs(lower: FsDriver, mountPoint: string): FsDriver {
     async stat(path) {
       const own = upper.get(path);
       if (own === WHITEOUT) return null;
-      if (own !== null) return { type: "file", size: own.length };
+      if (own !== null) return { type: "file", size: own.length, upper: true };
       if (path === "/" || upperFiles().some((k) => k.startsWith(path + "/"))) {
         return { type: "dir", size: 0 };
       }

@@ -12,6 +12,8 @@ export type FileType = "file" | "dir";
 export interface Stat {
   type: FileType;
   size: number;
+  /** Overlay mounts only: the file lives in the writable layer (changed or created locally). */
+  upper?: boolean;
 }
 
 export interface FsDriver {
