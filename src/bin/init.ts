@@ -1,5 +1,7 @@
-// /sbin/init — PID 1. Prints the message of the day, then keeps a shell
-// running forever: if you `exit` the shell, init starts a fresh one.
+// /sbin/init — PID 1. Prints the message of the day, starts the sysinfo
+// daemon, then keeps a shell running forever: if you `exit` the shell, init
+// starts a fresh one. Daemons are re-parented to init, so they keep running
+// after whatever started them exits.
 
 import { unescapeAnsi } from "../os/lib/ansi";
 import type { Sys } from "../os/kernel/syscalls";
@@ -11,6 +13,9 @@ export default async function init(_argv: string[], sys: Sys) {
   } catch {
     // No motd is fine.
   }
+
+  // Services that run from boot, like systemd's enabled units.
+  await sys.spawn("/usr/bin/sysinfo", ["sysinfo", "start"]);
 
   for (;;) {
     await sys.spawn("/bin/sh", ["sh"], { foreground: true });

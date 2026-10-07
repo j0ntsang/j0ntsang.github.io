@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 
-type ConnectionInfo = {
+type ConnectionState = {
   supported: boolean;
   effectiveType: string;
   downlink: number | "unknown";
@@ -48,10 +47,8 @@ function SidebarFieldRow({
   );
 }
 
-export const SidebarConnectionInfo: React.VFC<{ usePortal?: boolean }> = ({
-  usePortal = true,
-}) => {
-  const [connection, setConnection] = useState<ConnectionInfo>(() => ({
+export const ConnectionInfo: React.VFC = () => {
+  const [connection, setConnection] = useState<ConnectionState>(() => ({
     supported: typeof (navigator as any).connection !== "undefined",
     effectiveType: "unknown",
     downlink: "unknown",
@@ -122,10 +119,5 @@ export const SidebarConnectionInfo: React.VFC<{ usePortal?: boolean }> = ({
     );
   }, [connection]);
 
-  if (!usePortal) return content;
-
-  const portalRoot =
-    typeof document !== "undefined" ? document.getElementById("sidebar") : null;
-  if (!portalRoot) return null;
-  return createPortal(content, portalRoot);
+  return content;
 };

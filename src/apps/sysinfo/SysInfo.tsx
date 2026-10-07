@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import { SidebarSystemInfo } from "./SidebarSystemInfo";
-import { SidebarConnectionInfo } from "./SidebarConnectionInfo";
+import { SystemInfo } from "./SystemInfo";
+import { ConnectionInfo } from "./ConnectionInfo";
 
 const TABS = [
   { id: "system", label: "System" },
@@ -10,18 +9,16 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-export const SidebarTabs: React.VFC<{ usePortal?: boolean }> = ({
-  usePortal = true,
-}) => {
+export const SysInfo: React.VFC = () => {
   const [activeTab, setActiveTab] = useState<TabId>("system");
 
   const content = useMemo(() => {
     switch (activeTab) {
       case "connection":
-        return <SidebarConnectionInfo usePortal={false} />;
+        return <ConnectionInfo />;
       case "system":
       default:
-        return <SidebarSystemInfo usePortal={false} />;
+        return <SystemInfo />;
     }
   }, [activeTab]);
 
@@ -56,10 +53,5 @@ export const SidebarTabs: React.VFC<{ usePortal?: boolean }> = ({
     </div>
   );
 
-  if (!usePortal) return sidebar;
-
-  const portalRoot =
-    typeof document !== "undefined" ? document.getElementById("sidebar") : null;
-  if (!portalRoot) return null;
-  return createPortal(sidebar, portalRoot);
+  return sidebar;
 };

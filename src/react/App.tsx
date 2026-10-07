@@ -1,9 +1,9 @@
 import "./App.css";
 
 import React from "react";
-import { SidebarTabs } from "./SidebarTabs";
 
+// The sidebar moved into the sysinfo program (src/bin/sysinfo.tsx).
 export const App: React.VFC = () => {
   console.log("React connected");
-  return <SidebarTabs />;
+  return null;
 };

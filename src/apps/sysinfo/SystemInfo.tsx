@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 
-import "./SidebarSystemInfo.css";
+import "./sysinfo.css";
 
 type BrowserInfo = {
   userAgent: string;
@@ -11,7 +10,7 @@ type BrowserInfo = {
   languages: string[];
 };
 
-type SystemInfo = {
+type HardwareInfo = {
   cpuCores: number;
   touchPoints: number;
 };
@@ -59,7 +58,7 @@ type NavigationInfo = {
 
 type SidebarState = {
   browser: BrowserInfo;
-  system: SystemInfo;
+  system: HardwareInfo;
   display: DisplayInfo;
   viewport: ViewportInfo;
   locale: unknown;
@@ -192,7 +191,7 @@ function readBrowserInfo(): BrowserInfo {
   };
 }
 
-function readSystemInfo(): SystemInfo {
+function readSystemInfo(): HardwareInfo {
   return {
     cpuCores:
       typeof navigator.hardwareConcurrency === "number"
@@ -298,9 +297,7 @@ function mergeState(
   return result;
 }
 
-export const SidebarSystemInfo: React.VFC<{ usePortal?: boolean }> = ({
-  usePortal = true,
-}) => {
+export const SystemInfo: React.VFC = () => {
   const [state, setState] = useState<SidebarState>(() => getInitialState());
 
   useEffect(() => {
@@ -386,12 +383,7 @@ export const SidebarSystemInfo: React.VFC<{ usePortal?: boolean }> = ({
     );
   }, [state]);
 
-  if (!usePortal) return content;
-
-  const portalRoot =
-    typeof document !== "undefined" ? document.getElementById("sidebar") : null;
-  if (!portalRoot) return null;
-  return createPortal(content, portalRoot);
+  return content;
 };
 
 function SidebarFieldRow({
