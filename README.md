@@ -67,15 +67,29 @@ Reusable UI pieces are authored as `<template>` elements in standalone HTML file
 
 `TemplateManager` fetches each file, extracts the `<template>`, appends it to `<body>`, then clones and mounts instances on demand via `TemplateManager.create()` / `TemplateManager.mount()`.
 
-### 4. xterm.js — Terminal Emulator (`src/terminal/`)
+### 4. xterm.js + a small OS (`src/terminal/`, `src/os/`, `src/bin/`, `rootfs/`)
 
-The main window is an interactive terminal powered by [`@xterm/xterm`](https://xtermjs.org/).
+The main window is an [`@xterm/xterm`](https://xtermjs.org/) terminal running a tiny operating system, built to learn how the real thing fits together. Each piece models one OS concept:
 
-- **`index.js`** — Initializes the terminal, reads CSS custom properties to match the current theme, loads a MOTD from the path configured in `config.json`, and starts the prompt loop.
-- **`prompt.js`** — Interactive prompt loop powered by [`local-echo`](https://github.com/wavesoft/local-echo) for full line-editing (history, cursor movement, Ctrl+C). Commands: `help`, `about`, `resume`, `github`, `linkedin`, `codepen`, `clear`. Includes an `AnsiAwareString` shim so ANSI-colored prompts work correctly with `local-echo`'s line-width calculations.
-- **`config.json`** — Terminal configuration; currently sets `welcomeMessage` to the MOTD path (`templates/motd.txt`).
-- Theme syncs live with both OS `prefers-color-scheme` changes and manual dark/light class toggles via `MutationObserver`.
-- Terminal resizing is handled by a `ResizeObserver` that reads xterm's internal cell dimensions (replacing `FitAddon`) and calls `term.resize()`.
+| OS concept | Here |
+|---|---|
+| Disk image | `rootfs/` — baked into the build by Vite, read-only (GitHub Pages is static) |
+| VFS + mounts | `src/os/fs/vfs.ts` — `/` rootfs, `/home` + `/var` overlay, `/proc` |
+| overlayfs | `src/os/fs/overlayfs.ts` — your changes copied up into localStorage; `rm` reverts to the shipped file |
+| procfs | `src/os/fs/procfs.ts` — generated from the process table; `ps` just reads it |
+| Kernel / processes | `src/os/kernel/` — pid, argv, cwd, env, exit codes, SIGINT via `AbortSignal` |
+| Syscalls | `src/os/kernel/syscalls.ts` — the only API programs get; no DOM or storage access |
+| Executables + `$PATH` | `rootfs/usr/bin/october` holds `#!module:october`; the kernel lazy-loads `src/bin/october.tsx` |
+| TTY + line discipline | `src/os/tty/tty.ts` — xterm is the device, `local-echo` is canonical-mode line editing |
+| Display server | `src/os/display/compositor.ts` — hands a process a bare `HTMLElement` surface (Wayland-style) |
+| GUI toolkits | `src/os/display/toolkits/` — each program draws with React, a `<template>`, a web component or raw DOM |
+| init + shell | `src/bin/init.ts` (PID 1) prints `/etc/motd` and respawns `src/bin/sh.ts` |
+
+`src/terminal/index.js` sets up xterm (theme sync, resize, OSC title/links), waits for a keypress, then calls `bootKernel()`.
+
+**Adding a program:** write `src/bin/<name>.ts` exporting `default (argv, sys) => exitCode`, then add `rootfs/usr/bin/<name>` containing `#!module:<name>` plus `#summary:` / `#usage:` lines (that's what `help` prints).
+
+**`october`** — movie-a-day calendar. Data lives in `rootfs/home/guest/october/<year>.json`. Each day has a display `title` and optional `wiki` article title; posters and links are hotlinked from Wikipedia. Wikimedia sends CORS headers, which COEP `require-corp` needs, and no API key is required. Lookups are cached in `/var/cache/october/wiki.json`. To add or remove movies, click an empty day or a day's `+` and search Wikipedia by title. Picking a result fills in the poster and link, and a day can hold more than one movie. To publish your cross-offs, `cat ~/october/2026.json` into the rootfs file and deploy.
 
 ### 5. Sidebar System Info (`src/terminal/sidebarSystemInfo.js`)
 
@@ -124,10 +138,10 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 │   │       ├── window-manager.js     # <window-manager> custom element (Shadow DOM)
 │   │       └── window-manager.styles.ts  # Shadow DOM layout styles
 │   ├── terminal/
-│   │   ├── index.js                  # xterm.js setup, MOTD, theme sync, resize
-│   │   ├── prompt.js                 # local-echo prompt loop + shell commands
-│   │   ├── config.json               # Terminal config (MOTD path)
-│   │   └── sidebarSystemInfo.js      # Live system info sidebar
+│   │   └── index.js                  # xterm.js setup, theme sync, resize, boot
+│   ├── os/                           # The kernel: fs/, kernel/, tty/, display/, lib/, boot.ts
+│   ├── bin/                          # User-space programs (sh, init, ls, cat, ps, october…)
+│   ├── apps/october/                 # October calendar UI (React) + Wikipedia lookup
 │   ├── util/
 │   │   ├── templateManager.ts        # HTML Template loader/mounter
 │   │   ├── templateLoader.js         # Batch template orchestration + wiring
@@ -141,9 +155,9 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 │   ├── templates/                    # HTML Template fragments (lazy-loaded)
 │   │   ├── fullscreen-toggle.html
 │   │   ├── settings-menu.html
-│   │   ├── terminal.html
-│   │   │   └── motd.txt                  # Message of the day (plain text, ANSI escape sequences)
+│   │   └── terminal.html
 │   └── thrive/                       # Embedded sub-project (separate Vite build)
+├── rootfs/                           # Read-only disk image: bin/, sbin/, usr/bin/, etc/motd, home/guest/
 ├── tailwind.config.js
 └── postcss.config.js
 ```
@@ -168,6 +182,6 @@ The site is built to be a portfolio of techniques, not just a portfolio of work.
 - **Web Components** — framework-agnostic, encapsulated layout that works alongside React without conflict
 - **HTML Templates** — deferred, fetchable UI fragments that keep `index.html` clean
 - **xterm.js** — a real terminal emulator, not a styled `<pre>` block
-- **React** — coexists with vanilla code, ready to take over more of the UI
+- **React** — one toolkit among several, portalled in where it fits; mixed with vanilla code on purpose rather than replacing it
 - **Styled Components + Tailwind** — both CSS-in-JS and utility-first approaches demonstrated together
 - **No build-time HTML** — the shell is static HTML; JavaScript layers in progressively
