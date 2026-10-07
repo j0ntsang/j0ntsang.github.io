@@ -1,0 +1,4 @@
+const s=`#!module:sysinfo
+#summary: Browser and connection info in the sidebar
+#usage: sysinfo [start|stop|status]
+`;export{s as default};

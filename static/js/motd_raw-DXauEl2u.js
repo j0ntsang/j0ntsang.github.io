@@ -8,4 +8,6 @@ Proficient in semantic, accessible HTML and an expert in CSS, with deep experien
 \\x1b]8;;https://codepen.io/tsang\\x07CodePen\\x1b]8;;\\x07   \\x1b]8;;https://www.github.com/j0ntsang\\x07GitHub\\x1b]8;;\\x07   \\x1b]8;;https://www.linkedin.com/in/j0ntsang\\x07LinkedIn\\x1b]8;;\\x07
 
 For more details, check out my \\x1b]8;;https://jontsang.ca/resume.pdf\\x07current resume\\x1b]8;;\\x07.
+
+Type \\x1b[1mhelp\\x1b[0m to see available commands.
 `;export{e as default};
