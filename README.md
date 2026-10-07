@@ -6,14 +6,14 @@ A frontend portfolio built as a deliberate mix of web technologies — vanilla H
 
 ## Architecture Overview
 
-The site intentionally blends multiple rendering paradigms to demonstrate breadth across the frontend stack. No single framework owns the page; each layer of the UI uses the technology most suited to it.
+The site intentionally blends multiple rendering paradigms to demonstrate breadth across the frontend stack. No single framework owns the page; each layer of the UI has its own flavor.
 
 ```
 index.html
 ├── <window-manager>          ← Web Component (Shadow DOM layout)
-│   ├── waybar-right slot     ← fullscreen toggle + settings menu (HTML Templates)
-│   ├── master slot           ← xterm.js terminal (HTML Template)
-│   └── sidebar slot          ← live system info panel (React portal)
+│   ├── waybar-right slot     ← sidebar toggle + fullscreen toggle + settings menu (HTML Templates)
+│   ├── main slot             ← xterm.js terminal (HTML Template)
+│   └── sidebar slot          ← panels from the OS compositor (the sysinfo daemon)
 └── #react                    ← React 18 root (TypeScript)
 ```
 
@@ -23,7 +23,7 @@ Two scripts are loaded as ES modules from `index.html`:
 
 | File | Role |
 |------|------|
-| `src/init.js` | Registers the Web Component, loads HTML Templates, boots the terminal and sidebar |
+| `src/init.js` | Registers the Web Component, loads HTML Templates, boots the terminal |
 | `src/index.tsx` | Mounts the React app into `#react` |
 
 Both run after `DOMContentLoaded` independently. React and the vanilla layer coexist without interfering.
@@ -49,9 +49,9 @@ The outer shell is pure HTML/CSS. Key features defined inline:
 | Slot | Region |
 |------|--------|
 | `waybar-left` | Left side of the top bar |
-| `waybar-right` | Right side of the top bar (settings, fullscreen) |
-| `master` | Main content window (terminal) |
-| `sidebar` | Right sidebar panel |
+| `waybar-right` | Right side of the top bar (sidebar toggle, fullscreen, settings) |
+| `main` | Main content window (terminal) |
+| `sidebar` | Right sidebar; the column animates closed when no panel is slotted or the user hides it (`toggleSidebar()`) |
 
 The naming mirrors Linux compositor tooling (Waybar, Hyprland) intentionally.
 
@@ -62,6 +62,7 @@ Reusable UI pieces are authored as `<template>` elements in standalone HTML file
 | Template | Purpose |
 |----------|---------|
 | `fullscreen-toggle.html` | Browser fullscreen button (⛶/⧉ icon, cross-browser API) |
+| `sidebar-toggle.html` | ◨ button that hides/shows the sidebar; only mounted while the sidebar has content |
 | `settings-menu.html` | Gear icon `<details>` dropdown — dark mode, animation, layout toggles |
 | `terminal.html` | xterm.js container shell with title bar |
 
@@ -81,9 +82,10 @@ The main window is an [`@xterm/xterm`](https://xtermjs.org/) terminal running a 
 | Syscalls | `src/os/kernel/syscalls.ts` — the only API programs get; no DOM or storage access |
 | Executables + `$PATH` | `rootfs/usr/bin/october` holds `#!module:october`; the kernel lazy-loads `src/bin/october.tsx` |
 | TTY + line discipline | `src/os/tty/tty.ts` — xterm is the device, `local-echo` is canonical-mode line editing |
-| Display server | `src/os/display/compositor.ts` — hands a process a bare `HTMLElement` surface (Wayland-style) |
+| Display server | `src/os/display/compositor.ts` — hands a process a bare `HTMLElement` surface (Wayland-style): a window over the terminal, or a sidebar panel (like layer-shell) |
+| Daemons + signals | `spawn(…, { daemon: true })` re-parents to init (PPID 1); `kill <pid>` sends SIGTERM/SIGINT |
 | GUI toolkits | `src/os/display/toolkits/` — each program draws with React, a `<template>`, a web component or raw DOM |
-| init + shell | `src/bin/init.ts` (PID 1) prints `/etc/motd` and respawns `src/bin/sh.ts` |
+| init + shell | `src/bin/init.ts` (PID 1) prints `/etc/motd`, starts `sysinfo`, and respawns `src/bin/sh.ts` |
 
 `src/terminal/index.js` sets up xterm (theme sync, resize, OSC title/links), waits for a keypress, then calls `bootKernel()`.
 
@@ -91,9 +93,13 @@ The main window is an [`@xterm/xterm`](https://xtermjs.org/) terminal running a 
 
 **`october`** — movie-a-day calendar. Data lives in `rootfs/home/guest/october/<year>.json`. Each day has a display `title` and optional `wiki` article title; posters and links are hotlinked from Wikipedia. Wikimedia sends CORS headers, which COEP `require-corp` needs, and no API key is required. Lookups are cached in `/var/cache/october/wiki.json`. To add or remove movies, click an empty day or a day's `+` and search Wikipedia by title. Picking a result fills in the poster and link, and a day can hold more than one movie. To publish your cross-offs, `cat ~/october/2026.json` into the rootfs file and deploy.
 
-### 5. Sidebar System Info (`src/terminal/sidebarSystemInfo.js`)
+### 5. sysinfo (`src/bin/sysinfo.tsx`, `src/apps/sysinfo/`)
 
-A live-updating panel in the sidebar that displays browser and client environment data:
+A daemon that draws a live-updating panel of browser and client environment data in the sidebar. init starts it at boot. `sysinfo stop` (or `kill <pid>`) stops it and the sidebar collapses; `sysinfo start` brings it back, and `sysinfo status` reports it. The ◨ waybar button only hides/shows the sidebar: sysinfo keeps running underneath. `sysinfo start` spawns a second copy with `--daemon` and exits, so the shell gets its prompt back; the daemon is found again by reading `/proc`, like `pgrep`.
+
+The panel has System and Connection tabs.
+
+**Startup order:** the page loads the terminal into the `main` slot → a keypress boots the kernel → init starts `sysinfo`, whose panel fills the `sidebar` slot → the ◨ sidebar toggle appears. `tests/startup.spec.ts` checks this.
 
 **Sections:** NETWORK · TIME · NAVIGATION · SYSTEM · DISPLAY · VIEWPORT · BROWSER · FEATURES · PAGE
 
@@ -107,6 +113,7 @@ Updates are batched with `requestAnimationFrame` and driven by browser events (`
 | `templateLoader.js` | Orchestrates batch template loading and mounting; wires up fullscreen and settings after mount |
 | `settingsMenu.ts` | Wire up settings checkboxes; persist theme + animation to `localStorage` |
 | `fullscreenToggle.ts` | Cross-browser Fullscreen API (standard + webkit + ms prefixes) |
+| `sidebarToggle.ts` | Waybar button for the window manager's sidebar; appears/disappears with sidebar content |
 
 ### 7. React + TypeScript (`src/react/`)
 
@@ -142,11 +149,13 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 │   ├── os/                           # The kernel: fs/, kernel/, tty/, display/, lib/, boot.ts
 │   ├── bin/                          # User-space programs (sh, init, ls, cat, ps, october…)
 │   ├── apps/october/                 # October calendar UI (React) + Wikipedia lookup
+│   ├── apps/sysinfo/                 # sysinfo sidebar panel UI (React)
 │   ├── util/
 │   │   ├── templateManager.ts        # HTML Template loader/mounter
 │   │   ├── templateLoader.js         # Batch template orchestration + wiring
 │   │   ├── settingsMenu.ts           # Dark mode + animation settings
-│   │   └── fullscreenToggle.ts       # Fullscreen API wrapper
+│   │   ├── fullscreenToggle.ts       # Fullscreen API wrapper
+│   │   └── sidebarToggle.ts          # Waybar show/hide button for the sidebar
 │   └── react/
 │       ├── App.tsx                   # React root component
 │       ├── components/Divider.tsx    # Styled Components example
@@ -154,6 +163,7 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 ├── public/
 │   ├── templates/                    # HTML Template fragments (lazy-loaded)
 │   │   ├── fullscreen-toggle.html
+│   │   ├── sidebar-toggle.html
 │   │   ├── settings-menu.html
 │   │   └── terminal.html
 │   └── thrive/                       # Embedded sub-project (separate Vite build)
@@ -163,6 +173,16 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 ```
 
 ---
+
+## Testing
+
+End-to-end tests run in Chromium with [Playwright](https://playwright.dev/), against the Vite dev server (started automatically):
+
+```
+npm test
+```
+
+`tests/startup.spec.ts` covers the startup order above, hiding/showing the sidebar with the icon, and the icon coming and going as `sysinfo` stops and starts. Every test also fails on any page or console error.
 
 ## Runtime Dependencies
 
