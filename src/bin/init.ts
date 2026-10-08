@@ -1,4 +1,4 @@
-// /sbin/init — PID 1. Prints the motd, starts sysinfo, then keeps a shell
+// /sbin/init — PID 1. Prints the motd, then keeps a shell
 // running forever: if you `exit` the shell, init starts a fresh one.
 
 import { unescapeAnsi } from "../os/lib/ansi";
@@ -11,8 +11,6 @@ export default async function init(_argv: string[], sys: Sys) {
   } catch {
     // No motd is fine.
   }
-
-  await sys.spawn("/usr/bin/sysinfo", ["sysinfo", "start"]);
 
   for (;;) {
     await sys.spawn("/bin/sh", ["sh"], { foreground: true });

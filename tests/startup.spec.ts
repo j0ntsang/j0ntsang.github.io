@@ -17,6 +17,11 @@ async function run(page: Page, command: string) {
   await page.keyboard.press("Enter");
 }
 
+async function startSysinfo(page: Page) {
+  await run(page, "sysinfo start");
+  await expect(sidebarPanel(page)).toBeVisible();
+}
+
 test.beforeEach(async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (err) => errors.push(err.message));
@@ -53,11 +58,22 @@ test("main window loads the terminal before boot, with no sidebar or icon yet", 
   await expect(sidebarIcon(page)).toHaveCount(0);
 });
 
-test("boot runs sysinfo in the sidebar after main, then shows the icon", async ({ page }) => {
+test("boot leaves sysinfo off, with no sidebar or icon", async ({ page }) => {
   await page.goto("/");
   await boot(page);
 
-  await expect(sidebarPanel(page)).toBeVisible();
+  await run(page, "sysinfo status");
+  await expect(terminalText(page)).toContainText("sysinfo: stopped");
+  await expect(sidebarPanel(page)).toHaveCount(0);
+  await expect(sidebarColumn(page)).toBeHidden();
+  await expect(sidebarIcon(page)).toHaveCount(0);
+});
+
+test("sysinfo start opens the sidebar after main, then shows the icon", async ({ page }) => {
+  await page.goto("/");
+  await boot(page);
+  await startSysinfo(page);
+
   await expect(sidebarPanel(page).getByRole("tab", { name: "System" })).toBeVisible();
   await expect(sidebarIcon(page)).toBeVisible();
   await expect(sidebarIcon(page)).toHaveAttribute("aria-pressed", "true");
@@ -70,7 +86,7 @@ test("boot runs sysinfo in the sidebar after main, then shows the icon", async (
 test("the icon hides and shows the sidebar while sysinfo keeps running", async ({ page }) => {
   await page.goto("/");
   await boot(page);
-  await expect(sidebarPanel(page)).toBeVisible();
+  await startSysinfo(page);
   await sidebarPanel(page).getByRole("tab", { name: "Connection" }).click();
 
   await sidebarIcon(page).click();
@@ -88,7 +104,7 @@ test("the icon hides and shows the sidebar while sysinfo keeps running", async (
 test("stopping sysinfo empties the sidebar and removes the icon; starting brings both back", async ({ page }) => {
   await page.goto("/");
   await boot(page);
-  await expect(sidebarIcon(page)).toBeVisible();
+  await startSysinfo(page);
 
   await run(page, "sysinfo stop");
   await expect(sidebarPanel(page)).toHaveCount(0);
@@ -103,6 +119,7 @@ test("stopping sysinfo empties the sidebar and removes the icon; starting brings
 test("a sidebar hidden before sysinfo stops is open again when it restarts", async ({ page }) => {
   await page.goto("/");
   await boot(page);
+  await startSysinfo(page);
 
   await sidebarIcon(page).click();
   await expect(sidebarColumn(page)).toBeHidden();
@@ -117,7 +134,7 @@ test("a sidebar hidden before sysinfo stops is open again when it restarts", asy
 test("opening october hides the sidebar, and closing it brings the sidebar back", async ({ page }) => {
   await page.goto("/");
   await boot(page);
-  await expect(sidebarPanel(page)).toBeVisible();
+  await startSysinfo(page);
 
   await run(page, "october");
   await expect(page.locator(".october")).toBeVisible();
@@ -133,6 +150,7 @@ test("opening october hides the sidebar, and closing it brings the sidebar back"
 test("a sidebar that was hidden before october stays hidden after it closes", async ({ page }) => {
   await page.goto("/");
   await boot(page);
+  await startSysinfo(page);
   await sidebarIcon(page).click();
   await expect(sidebarColumn(page)).toBeHidden();
 
