@@ -1,4 +1,6 @@
 // window-manager.styles.ts
+import scrollbarStyles from "../../styles/scrollbar.css?inline";
+
 export const styles = `
   *,
   *::before,
@@ -6,30 +8,7 @@ export const styles = `
     box-sizing: border-box;
   }
 
-  @supports not selector(::-webkit-scrollbar) {
-    html {
-      scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-thumb-color) transparent;
-    }
-  }
-
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb-color);
-    border-radius: 0;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--scrollbar-thumb-hover);
-  }
+  ${scrollbarStyles}
 
   :host {
     display: flex;

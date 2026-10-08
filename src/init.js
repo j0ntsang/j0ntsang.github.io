@@ -1,3 +1,4 @@
+import "./styles/scrollbar.css";
 import "./web-components/window-manager/window-manager.js";
 
 import { loadAndMountTemplates } from "./util/templateLoader.js";

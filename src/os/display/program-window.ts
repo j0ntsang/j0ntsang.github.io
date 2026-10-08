@@ -4,9 +4,12 @@
 // The chrome lives in Shadow DOM so its styles can't leak; the program's
 // surface is slotted light DOM, so page-level CSS (e.g. october.css) applies.
 
+import scrollbarStyles from "../../styles/scrollbar.css?inline";
+
 const template = document.createElement("template");
 template.innerHTML = `
   <style>
+    ${scrollbarStyles}
     :host {
       position: absolute;
       inset: 0;

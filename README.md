@@ -130,6 +130,7 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 | **PostCSS** | Processes Tailwind |
 | **Inline CSS** | Global theming, animations, and layout in `index.html` |
 | **Template `<style>`** | Scoped styles shipped with each HTML Template fragment |
+| **Shared system CSS** | `src/styles/scrollbar.css`: one scrollbar style, imported by the document and inlined (`?inline`) into every shadow root, since `::-webkit-scrollbar` doesn't cross shadow boundaries |
 
 ---
 
