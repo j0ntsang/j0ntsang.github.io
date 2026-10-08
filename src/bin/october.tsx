@@ -4,11 +4,24 @@
 //   october 2025       another year (an empty calendar if there's no file)
 //   october --list     text mode: print the month to the terminal
 //
-// Data lives at ~/october/<year>.json. The shipped copy is read-only; your
-// cross-offs are copied up into the overlay; reset drops them.
+// The shipped calendar is /usr/share/october/<year>.json (read-only). Your
+// cross-offs and additions are saved to ~/october/<year>.json and merged on
+// top of it, so updates to the shipped file still show; reset drops your copy.
 
 import { OctoberCalendar } from "../apps/october/OctoberCalendar";
-import { allMovies, emptyYear, firstWeekday, moviesOn, OctoberYear, toJson, weekdayOf, wikiTitle, yearPath } from "../apps/october/model";
+import {
+  allMovies,
+  emptyYear,
+  firstWeekday,
+  mergeYears,
+  moviesOn,
+  OctoberYear,
+  shippedPath,
+  toJson,
+  weekdayOf,
+  wikiTitle,
+  yearPath,
+} from "../apps/october/model";
 import { rememberWiki, resolveWiki, searchFilms } from "../apps/october/wiki";
 import { mountReact } from "../os/display/toolkits/react";
 import { C, link } from "../os/lib/ansi";
@@ -16,13 +29,15 @@ import type { Sys } from "../os/kernel/syscalls";
 
 const USAGE = "usage: october [year] [--list]\n";
 
+async function readYear(sys: Sys, path: string): Promise<OctoberYear | null> {
+  if ((await sys.stat(path)) === null) return null;
+  return JSON.parse(await sys.readFile(path));
+}
+
 async function load(sys: Sys, year: number): Promise<OctoberYear> {
-  try {
-    return JSON.parse(await sys.readFile(yearPath(year)));
-  } catch (err) {
-    if ((await sys.stat(yearPath(year))) === null) return emptyYear(year);
-    throw err;
-  }
+  const [shipped, local] = await Promise.all([readYear(sys, shippedPath(year)), readYear(sys, yearPath(year))]);
+  if (shipped && local) return mergeYears(shipped, local);
+  return local ?? shipped ?? emptyYear(year);
 }
 
 async function list(sys: Sys, data: OctoberYear) {
@@ -75,10 +90,9 @@ export default async function october(argv: string[], sys: Sys) {
       initialYear={year}
       load={(y) => load(sys, y)}
       save={(data) => sys.writeFile(yearPath(data.year), toJson(data))}
-      hasLocalChanges={async (y) => !!(await sys.stat(yearPath(y)))?.upper}
-      // Only ever drop a local copy: unlinking an unchanged shipped file would hide it.
+      hasLocalChanges={async (y) => !!(await sys.stat(yearPath(y)))}
       reset={async (y) => {
-        if ((await sys.stat(yearPath(y)))?.upper) await sys.unlink(yearPath(y));
+        if (await sys.stat(yearPath(y))) await sys.unlink(yearPath(y));
       }}
       resolve={(titles) => resolveWiki(titles, sys)}
       remember={(pages) => rememberWiki(pages, sys)}

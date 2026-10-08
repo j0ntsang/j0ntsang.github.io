@@ -23,7 +23,11 @@ export const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export const emptyYear = (year: number): OctoberYear => ({ year, days: {} });
 
+/** Your copy: cross-offs and additions, saved in the /home overlay. */
 export const yearPath = (year: number) => `~/october/${year}.json`;
+
+/** The read-only calendar shipped with the build. */
+export const shippedPath = (year: number) => `/usr/share/october/${year}.json`;
 
 export const toJson = (data: OctoberYear) => JSON.stringify(data, null, 2) + "\n";
 
@@ -74,3 +78,25 @@ export const removeMovie = (data: OctoberYear, day: number, index: number) =>
 
 /** "Carrie (1976 film)" → "Carrie" */
 export const displayTitle = (wikiPageTitle: string) => wikiPageTitle.replace(/\s*\([^)]*\b(film|movie)\)$/i, "");
+
+const sameMovie = (a: MovieDay, b: MovieDay) =>
+  (a.wiki ?? a.title).toLowerCase() === (b.wiki ?? b.title).toLowerCase();
+
+/**
+ * The shipped calendar plus anything your copy adds: extra movies are appended to
+ * their day, and a cross-off in either copy counts. Shipped fields win otherwise,
+ * so fixes to the shipped file show up even after you've saved a copy.
+ */
+export function mergeYears(shipped: OctoberYear, local: OctoberYear): OctoberYear {
+  let merged = shipped;
+  for (const day of Object.keys(local.days).map(Number)) {
+    const ours = moviesOn(local, day);
+    const movies = moviesOn(shipped, day).map((movie) => {
+      const match = ours.find((m) => sameMovie(m, movie));
+      return match?.watched && !movie.watched ? { ...movie, watched: true } : movie;
+    });
+    const added = ours.filter((m) => !movies.some((movie) => sameMovie(m, movie)));
+    merged = withMovies(merged, day, [...movies, ...added]);
+  }
+  return merged;
+}
