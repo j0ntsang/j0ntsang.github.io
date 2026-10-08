@@ -36,4 +36,30 @@ export function initializeSettingsMenu() {
     });
   }
 
+  const menu = document.querySelector("details.settings") as HTMLDetailsElement | null;
+  if (menu) makeDismissable(menu);
+}
+
+/** Close the <details> on Escape, on a click outside it, or when Tab leaves it. */
+function makeDismissable(menu: HTMLDetailsElement) {
+  const summary = menu.querySelector("summary");
+
+  menu.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !menu.open) return;
+    e.preventDefault();
+    e.stopPropagation();
+    menu.open = false;
+    summary?.focus();
+  });
+
+  // composedPath, not contains: the menu is slotted into window-manager's shadow root.
+  document.addEventListener("pointerdown", (e) => {
+    if (menu.open && !e.composedPath().includes(menu)) menu.open = false;
+  });
+
+  // A null relatedTarget is a click on plain text inside the menu, not leaving it.
+  menu.addEventListener("focusout", (e) => {
+    const next = e.relatedTarget as Node | null;
+    if (menu.open && next && !menu.contains(next)) menu.open = false;
+  });
 }
