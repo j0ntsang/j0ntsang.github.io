@@ -1,12 +1,5 @@
-// /usr/bin/sysinfo — browser and connection info in the sidebar.
-//
-//   sysinfo [start]   start the daemon; its panel appears in the sidebar
-//   sysinfo stop      stop it; the sidebar goes away
-//   sysinfo status    print whether it's running
-//
-// `start` doesn't draw the panel itself: it spawns a second copy with
-// --daemon, detached under init, and exits so the shell gets its prompt back.
-// The daemon is found again the way pgrep does it: by reading /proc.
+// `start` spawns a detached `--daemon` copy and exits, so the shell gets its
+// prompt back; the daemon is found again through /proc, like pgrep.
 
 import { SysInfo } from "../apps/sysinfo/SysInfo";
 import { mountReact } from "../os/display/toolkits/react";
@@ -27,7 +20,6 @@ async function findDaemon(sys: Sys): Promise<number | null> {
 async function daemon(sys: Sys) {
   const panel = sys.createPanel({ title: "sysInfo" });
   mountReact(panel, <SysInfo />);
-  // Runs until signalled; the kernel then closes the panel with the process.
   await new Promise<void>((resolve) => sys.signal.addEventListener("abort", () => resolve()));
   return 0;
 }

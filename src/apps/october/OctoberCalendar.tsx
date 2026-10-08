@@ -29,9 +29,7 @@ interface Props {
   remember(pages: WikiIndex): void;
   search(query: string): Promise<FilmResult[]>;
   setTitle(title: string): void;
-  /** Whether this visitor has a saved copy of the year (something to reset). */
   hasLocalChanges(year: number): Promise<boolean>;
-  /** Drop the saved copy, revealing the shipped file again. */
   reset(year: number): Promise<void>;
 }
 
@@ -62,7 +60,6 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
     };
   }, [year, load, hasLocalChanges, setTitle]);
 
-  // Reset asks twice; the second click has to come within a few seconds.
   useEffect(() => {
     if (!confirmingReset) return;
     const timer = setTimeout(() => setConfirmingReset(false), 3000);
@@ -267,7 +264,6 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
 
   return (
     <li className={classes}>
-      {/* Top overlay: the date (and the add button) sit over the posters. */}
       <span className="october__date" aria-hidden="true">
         {day}
       </span>
@@ -309,7 +305,6 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
                   onFocus={onFocus}
                   onClick={() => onToggle(i)}
                 />
-                {/* Bottom overlay: the title over the poster. */}
                 <span className="october__title">
                   {page ? (
                     <a href={page.url} target="_blank" rel="noopener noreferrer" tabIndex={tabIndex} title="Open on Wikipedia">
@@ -342,7 +337,6 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
   );
 }
 
-/** Chain-link glyph drawn in the text colour, so it inherits the title's contrast. */
 function LinkIcon() {
   return (
     <svg className="october__link-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

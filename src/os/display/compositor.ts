@@ -4,10 +4,6 @@
 // surface and gets back a bare HTMLElement. What it draws there — React, a
 // web component, a <template>, raw DOM — is the program's business (its
 // "toolkit"). The compositor only owns window chrome, stacking and focus.
-//
-// Panels are the other kind of surface: like a Wayland layer-shell client
-// (a bar or dock), they live in the sidebar instead of floating over the
-// terminal, have no chrome, and stay up until their process stops.
 
 import "./program-window";
 
@@ -31,14 +27,12 @@ interface Entry {
   win: HTMLElement;
 }
 
-/** What the compositor needs from the window manager (<window-manager>) that hosts panels. */
 interface PanelHost extends HTMLElement {
   readonly sidebarOpen?: boolean;
   toggleSidebar?(open?: boolean): void;
 }
 
 export interface WindowOptions {
-  /** Ask for the whole screen, like xdg-toplevel's set_maximized: the sidebar hides while it's open. */
   maximized?: boolean;
 }
 
@@ -50,7 +44,6 @@ export class Compositor {
   private panels: Entry[] = [];
   private nextId = 1;
   private maximized = 0;
-  /** Whether the sidebar was open before the first maximized window hid it. */
   private sidebarWasOpen = false;
 
   /** Wired by the kernel: Ctrl-C inside a window signals its process. */
@@ -149,13 +142,11 @@ export class Compositor {
     this.panelHost.toggleSidebar?.(false);
   }
 
-  /** The last maximized window closed: bring the sidebar back, unless the user already did. */
   private unmaximize() {
     if (--this.maximized > 0) return;
     if (this.sidebarWasOpen && !this.panelHost.sidebarOpen) this.panelHost.toggleSidebar?.(true);
   }
 
-  /** Called by the kernel when a process exits: its windows and panels go with it. */
   closeAll(pid: number) {
     [...this.windows, ...this.panels].filter((w) => w.surface.pid === pid).forEach((w) => w.surface.close());
   }

@@ -5,8 +5,7 @@
 //   october --list     text mode: print the month to the terminal
 //
 // Data lives at ~/october/<year>.json. The shipped copy is read-only; your
-// cross-offs are copied up into the overlay. Reset (or `rm` the file) drops
-// your copy and reveals the shipped one again.
+// cross-offs are copied up into the overlay; reset drops them.
 
 import { OctoberCalendar } from "../apps/october/OctoberCalendar";
 import { allMovies, emptyYear, firstWeekday, moviesOn, OctoberYear, toJson, weekdayOf, wikiTitle, yearPath } from "../apps/october/model";
@@ -69,7 +68,6 @@ export default async function october(argv: string[], sys: Sys) {
     return 0;
   }
 
-  // Maximized: the calendar wants the width, so the sidebar steps aside while it's open.
   const surface = sys.createWindow({ title: `october — ${year}`, maximized: true });
   mountReact(
     surface,

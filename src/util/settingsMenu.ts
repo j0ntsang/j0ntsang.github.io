@@ -20,7 +20,7 @@ export function initializeSettingsMenu() {
     document.documentElement.classList.toggle("animation", enabled);
   }
 
-  // Light mode is disabled for now; always dark regardless of OS or stored preference.
+  // Light mode is off for now, on purpose: ignore OS and stored preference.
   applyTheme("dark");
 
   const initialAnimation = getStoredAnimation();

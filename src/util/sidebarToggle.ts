@@ -6,10 +6,6 @@ type WindowManagerElement = HTMLElement & {
   toggleSidebar(open?: boolean): void;
 };
 
-/**
- * Waybar button that shows/hides the sidebar. It's only there while
- * something (like the sysinfo daemon's panel) is in the sidebar.
- */
 export function initializeSidebarToggle(windowManager: WindowManagerElement, container: HTMLElement) {
   let button: HTMLButtonElement | null = null;
 
@@ -29,7 +25,7 @@ export function initializeSidebarToggle(windowManager: WindowManagerElement, con
     const open = windowManager.sidebarOpen;
     button.setAttribute("aria-pressed", String(open));
     button.title = open ? "Hide sidebar" : "Show sidebar";
-    // State is shown by shape (◨ open, ◻ hidden), not by fading: dimming fails WCAG non-text contrast.
+    // Shape, not opacity, shows state: a faded icon fails 3:1 non-text contrast.
     const icon = button.querySelector(".sidebar-toggle-icon");
     if (icon) icon.textContent = open ? "\u25E8" : "\u25FB";
   }

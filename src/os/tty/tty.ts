@@ -111,8 +111,7 @@ export class Tty {
       return new AnsiAwareString(prompt + input.replace(/\n/g, "\n" + cont));
     };
 
-    // local-echo's own Tab support needs synchronous candidates and always
-    // appends a space, so Tab is handled here instead, bash-style.
+    // Not local-echo's addAutocompleteHandler: it's sync-only and always appends a space.
     const handleData = this.echo.handleData.bind(this.echo);
     this.echo.handleData = (data) => {
       if (data === "\t" && this.complete) void this.handleTab(this.complete);
@@ -142,10 +141,6 @@ export class Tty {
     }
   }
 
-  /**
-   * One match: insert it, plus a space unless it's a directory.
-   * Several: extend to their common prefix, or list them if there is none.
-   */
   private async handleTab(complete: Completer) {
     const echo = this.echo;
     const { _input: input, _cursor: cursor } = echo;
@@ -172,7 +167,6 @@ export class Tty {
       return;
     }
 
-    // Like bash, list just the part after the last "/".
     const dirLength = word.lastIndexOf("/") + 1;
     echo.printAndRestartPrompt(() => echo.printWide(matches.map((m) => m.slice(dirLength))));
   }

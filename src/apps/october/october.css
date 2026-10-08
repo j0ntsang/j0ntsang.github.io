@@ -1,16 +1,11 @@
-/* october — styled like the rest of the system: the terminal's monospace
-   font and orange-on-dark palette, flat 1px lines, no gradients except the
-   overlays that keep text readable on top of posters. */
-
 .october {
   --oct-bg: var(--background-color, #1e1e1e);
   --oct-ink: var(--text-color, #ffa500);
   --oct-ink-rgb: var(--text-color-rgb, 255, 165, 0);
-  /* 0.75 keeps secondary text ≥ 4.5:1 (WCAG AA) on both --oct-bg and --oct-cell. */
+  /* Below 0.75, secondary text drops under 4.5:1 (WCAG AA). */
   --oct-muted: rgba(var(--oct-ink-rgb), 0.75);
-  /* Decorative lines (the day grid). */
   --oct-line: rgba(var(--oct-ink-rgb), 0.3);
-  /* Control outlines: 0.55 keeps them ≥ 3:1 (WCAG AA non-text contrast). */
+  /* Control outlines; below 0.55 they drop under 3:1. --oct-line is for decoration only. */
   --oct-edge: rgba(var(--oct-ink-rgb), 0.55);
   --oct-cell: #141414;
   --oct-red: 200, 20, 20;
@@ -103,7 +98,6 @@
   border: 1px solid var(--oct-line);
 }
 
-/* A cell is a stack: posters fill it, the date overlays the top, titles the bottom. */
 .october__cell {
   position: relative;
   min-height: 150px;
@@ -125,11 +119,7 @@
   box-shadow: inset 0 0 0 2px var(--oct-ink);
 }
 
-/*
- * Top overlay. The overlays are solid 85% black behind the text itself and
- * only fade out in the padding beyond it, so text stays WCAG AA over any
- * poster, even pure white (date 7.6:1, title 13.5:1, watched title 9.1:1).
- */
+/* Overlays are solid behind the text and fade only in the padding: AA even over a white poster. */
 .october__date {
   position: absolute;
   inset: 0 0 auto;
@@ -178,7 +168,6 @@
   object-position: center 20%;
 }
 
-/* The toggle covers the movie; the title link sits above it. */
 .october__toggle {
   position: absolute;
   inset: 0;
@@ -193,7 +182,6 @@
   outline-offset: -3px;
 }
 
-/* Bottom overlay. */
 .october__title {
   position: absolute;
   inset: auto 0 0;
@@ -212,7 +200,7 @@
   font-size: 10px;
 }
 
-/* The cell's own cursor is the hand (cross off); the link gets "alias" (goes elsewhere). */
+/* alias, not pointer: the cell's pointer already means "cross off". */
 .october__title a {
   display: flex;
   align-items: flex-start;
@@ -223,7 +211,6 @@
   cursor: alias;
 }
 
-/* Pinned to the first line; a wrapping title wraps beside it, not under it. */
 .october__link-icon {
   flex: none;
   width: 0.9em;
@@ -237,7 +224,6 @@
   outline: none;
 }
 
-/* Watched: struck through, with the poster under a red wash. */
 .october__movie--watched .october__poster {
   filter: grayscale(1) brightness(0.7);
 }
@@ -328,7 +314,7 @@
   gap: 8px;
 }
 
-/* Day editor (native <dialog>, rendered in the top layer, so it repeats the font). */
+/* <dialog> renders in the top layer, outside .october, so it repeats the font. */
 .october__editor {
   width: min(520px, calc(100vw - 32px));
   max-height: min(640px, calc(100vh - 32px));
@@ -461,7 +447,6 @@
   }
 }
 
-/* Narrow window (phone, or a squeezed main pane): one day per row. */
 @container (max-width: 560px) {
   .october__weekdays,
   .october__cell.october__cell--blank {

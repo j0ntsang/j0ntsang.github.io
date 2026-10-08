@@ -1,8 +1,3 @@
-// /bin/kill — signal a process by pid (find pids with `ps`).
-//
-//   kill <pid>...        SIGTERM: ask it to stop
-//   kill -INT <pid>...   SIGINT: what Ctrl-C sends
-
 import type { Signal } from "../os/kernel/process";
 import type { Sys } from "../os/kernel/syscalls";
 

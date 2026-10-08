@@ -8,7 +8,7 @@ import type { Surface } from "../compositor";
 
 export function mountReact(surface: Surface, element: ReactElement) {
   const root = createRoot(surface.el);
-  // Render synchronously, so the surface has content once this returns.
+  // Sync: the sidebar toggle mounts on slotchange and must find content already there.
   flushSync(() => root.render(element));
   surface.onClose(() => root.unmount());
 }

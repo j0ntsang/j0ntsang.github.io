@@ -28,9 +28,6 @@ class WindowManager extends HTMLElement {
 
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    // The sidebar only takes up room while a panel (e.g. sysinfo) is in it
-    // and the user hasn't hidden it. Hiding is the window manager's business:
-    // the program keeps running, its panel just isn't shown.
     this.container = this.shadowRoot.querySelector(".container");
     this.sidebarSlot = this.shadowRoot.querySelector('slot[name="sidebar"]');
     this.sidebarHidden = false;

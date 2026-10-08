@@ -25,7 +25,6 @@ export const emptyYear = (year: number): OctoberYear => ({ year, days: {} });
 
 export const yearPath = (year: number) => `~/october/${year}.json`;
 
-/** How a year file is written, both to disk and for export. */
 export const toJson = (data: OctoberYear) => JSON.stringify(data, null, 2) + "\n";
 
 /** 0 = Sunday. October is month index 9. */

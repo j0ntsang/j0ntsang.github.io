@@ -13,11 +13,10 @@ import type { Signal } from "./process";
 export interface SpawnOptions {
   /** Give the child the terminal (Ctrl-C goes to it) until it exits. */
   foreground?: boolean;
-  /** Run detached as a child of init (PID 1), like a daemon that double-forked. */
   daemon?: boolean;
 }
 
-/** Given the text left of the cursor, returns full replacements for its last word (directories end in "/"). */
+/** Returns whole replacements for the last word, not suffixes; a trailing "/" suppresses the space. */
 export type Completer = (beforeCursor: string) => Promise<string[]>;
 
 export interface Sys {
@@ -33,7 +32,6 @@ export interface Sys {
   spawn(path: string, argv: string[], opts?: SpawnOptions): Promise<number>;
   cwd(): string;
   chdir(path: string): Promise<void>;
-  /** Signal another process. Returns false if there is no such pid. */
   kill(pid: number, sig?: Signal): boolean;
 
   // files (paths may be relative, or start with ~)
@@ -54,7 +52,6 @@ export interface Sys {
   fetch(input: string, init?: RequestInit): Promise<Response>;
   openUrl(url: string): void;
   createWindow(opts: { title: string } & WindowOptions): Surface;
-  /** A chrome-less surface in the sidebar, for long-running status programs. */
   createPanel(opts: { title: string }): Surface;
 }
 

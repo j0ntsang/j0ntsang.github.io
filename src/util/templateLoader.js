@@ -6,7 +6,7 @@ import { initializeSidebarToggle } from "./sidebarToggle.js";
 export async function loadAndMountTemplates() {
   await TemplateManager.loadTemplatesBatch([
     "templates/fullscreen-toggle.html",
-    // Mounted only while the sidebar has content (see sidebarToggle.ts).
+    // Not mounted here: sidebarToggle.ts mounts it only while the sidebar has content.
     "templates/sidebar-toggle.html",
     "templates/terminal.html",
     "templates/settings-menu.html",

@@ -29,7 +29,6 @@ async function which(cmd: string, sys: Sys): Promise<string | null> {
   return null;
 }
 
-/** Tab completion: commands for the first word, paths after that (`cd` gets directories only). */
 function completer(sys: Sys): Completer {
   return async (before) => {
     const words = before.split(/\s+/);

@@ -61,7 +61,6 @@ export async function startTerminal() {
     fontWeight: "500",
     allowTransparency: true,
     screenReaderMode: true,
-    // WCAG AA: xterm lifts ANSI colours below 4.5:1 (dim text is fixed in index.css).
     minimumContrastRatio: 4.5,
     theme: getColors(),
     termName: "xterm-256color",
@@ -118,11 +117,10 @@ export async function startTerminal() {
     "xterm-256color — wasm:/dev/tty",
   ]);
 
-  // The shell's idle title ("user@host: ~") stays in the title bar only; the tab keeps the site name.
-  const promptTitlePattern = /^\S+@\S+: /;
+  const idlePromptTitle = /^\S+@\S+: /;
 
   function setDocumentTitle(title) {
-    const ignored = ignoredTitleSet.has(title) || promptTitlePattern.test(title);
+    const ignored = ignoredTitleSet.has(title) || idlePromptTitle.test(title);
     document.title = ignored ? defaultTitle : title;
   }
 
@@ -167,7 +165,7 @@ async function boot(term) {
   const ln = (s = "") => term.write(s + "\r\n");
   const setTitle = (t) => term.write(`\x1b]0;${t}\x07`);
 
-  // The real steps take milliseconds; pause on each so the boot log can be read.
+  // Real steps take milliseconds; the pause keeps the boot log readable.
   async function step(label, fn) {
     setTitle(`${label}...`);
     term.write(`${PAD}${label}`);

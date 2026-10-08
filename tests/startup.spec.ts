@@ -1,9 +1,5 @@
 import { expect, Page, test } from "@playwright/test";
 
-// Startup order: the main window (terminal) loads with the page; booting
-// starts init, which starts the sysinfo daemon in the sidebar; the waybar
-// sidebar icon appears once the sidebar has something in it.
-
 const terminalText = (page: Page) => page.locator(".xterm-rows");
 const sidebarPanel = (page: Page) => page.locator('window-manager > [slot="sidebar"]');
 const sidebarColumn = (page: Page) => page.locator("window-manager .sidebar");
@@ -27,7 +23,6 @@ test.beforeEach(async ({ page }) => {
   page.on("console", (msg) => msg.type() === "error" && errors.push(msg.text()));
   (page as Page & { errors: string[] }).errors = errors;
 
-  // Record when each piece first shows up, to check the order later.
   await page.addInitScript(() => {
     const seen: Record<string, number> = {};
     (window as any).__seen = seen;
@@ -87,7 +82,6 @@ test("the icon hides and shows the sidebar while sysinfo keeps running", async (
   await sidebarIcon(page).click();
   await expect(sidebarPanel(page)).toBeVisible();
   await expect(sidebarIcon(page)).toHaveAttribute("aria-pressed", "true");
-  // Same process, same panel: the tab it was left on is still selected.
   await expect(sidebarPanel(page).getByRole("tab", { name: "Connection" })).toHaveAttribute("aria-selected", "true");
 });
 
