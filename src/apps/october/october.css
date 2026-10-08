@@ -314,15 +314,22 @@
   gap: 8px;
 }
 
-/* <dialog> renders in the top layer, outside .october, so it repeats the font. */
+/* <dialog> renders in the top layer, outside .october, so it repeats the font.
+   The chrome mirrors program-window: title bar, body, then a footer of actions. */
 .october__editor {
-  width: min(520px, calc(100vw - 32px));
-  max-height: min(640px, calc(100vh - 32px));
-  padding: 16px;
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(680px, calc(100vh - 32px));
+  padding: 0;
   font: 14px/1.3 Consolas, "Courier New", Menlo, Monaco, "Liberation Mono", "Lucida Console", monospace;
   color: var(--oct-ink);
   background: var(--oct-bg);
   border: 1px solid var(--oct-ink);
+  border-radius: 4px;
+}
+
+.october__editor[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 .october__editor button,
@@ -334,19 +341,78 @@
   background: rgba(0, 0, 0, 0.6);
 }
 
-.october__editor-header {
+.october__editor-titlebar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 16px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--oct-ink);
 }
 
 .october__editor h2 {
   margin: 0;
-  font-size: 16px;
-  letter-spacing: 0.1em;
+  font-size: inherit;
+  letter-spacing: 0.025em;
+}
+
+.october__editor-titlebar button {
+  padding: 0 4px;
+  color: inherit;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.october__editor-titlebar button:hover,
+.october__editor-titlebar button:focus-visible {
+  border-color: currentColor;
+  outline: none;
+}
+
+.october__editor-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+}
+
+.october__editor fieldset {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--oct-line);
+}
+
+.october__editor fieldset:last-child {
+  margin-bottom: 0;
+}
+
+.october__editor legend {
+  padding: 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  color: var(--oct-muted);
+}
+
+.october__editor label {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--oct-muted);
+}
+
+.october__editor input {
+  padding: 6px 8px;
+  color: var(--oct-ink);
+  background: var(--oct-cell);
+  border: 1px solid var(--oct-edge);
+}
+
+.october__editor input:focus {
+  border-color: var(--oct-ink);
+  outline: none;
 }
 
 .october__editor ul {
@@ -365,80 +431,88 @@
   border: 1px solid var(--oct-line);
 }
 
-.october__editor-list li {
+.october__editor-list li,
+.october__editor-results li {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--oct-line);
+  padding: 6px;
 }
 
-.october__editor-list li > span:not(.october__editor-noposter) {
+.october__editor-list li + li {
+  border-top: 1px solid var(--oct-line);
+}
+
+.october__editor li > span:not(.october__editor-noposter) {
   flex: 1;
-  font-weight: 700;
+  min-width: 0;
 }
 
-.october__editor-search {
-  display: grid;
-  gap: 6px;
-  margin: 14px 0 10px;
+.october__editor strong,
+.october__editor small {
+  display: block;
 }
 
-.october__editor-search label {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.october__editor small {
+  margin-top: 2px;
   color: var(--oct-muted);
 }
 
-.october__editor-search input {
-  padding: 6px 8px;
-  color: var(--oct-ink);
+.october__editor-results {
+  max-height: 260px;
+  overflow: auto;
   background: var(--oct-cell);
   border: 1px solid var(--oct-edge);
 }
 
-.october__editor-search input:focus {
-  border-color: var(--oct-ink);
-  outline: none;
-}
-
 .october__editor-results p {
-  margin: 8px 0;
+  margin: 0;
+  padding: 8px;
   color: var(--oct-muted);
 }
 
-.october__editor-results ul {
-  margin-bottom: 10px;
-}
-
-.october__editor-results li button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 6px;
-  text-align: left;
-  color: inherit;
-  background: none;
+.october__editor-results li {
   border: 1px solid transparent;
   cursor: pointer;
 }
 
-.october__editor-results li button:hover,
-.october__editor-results li button:focus-visible {
+.october__editor-results li:hover {
+  border-color: var(--oct-line);
+}
+
+.october__editor-results li[aria-selected="true"] {
+  background: rgba(var(--oct-ink-rgb), 0.15);
   border-color: var(--oct-ink);
-  outline: none;
 }
 
-.october__editor-results strong {
-  display: block;
-}
-
-.october__editor-results small {
-  display: block;
-  margin-top: 2px;
+.october__editor-article {
+  margin: 0;
+  font-size: 12px;
   color: var(--oct-muted);
+  overflow-wrap: anywhere;
+}
+
+.october__editor-article a {
+  color: var(--oct-ink);
+}
+
+.october__editor-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--oct-line);
+}
+
+.october__nav--primary:not(:disabled) {
+  color: var(--oct-bg);
+  background: var(--oct-ink);
+  border-color: var(--oct-ink);
+}
+
+.october__nav--primary:hover:not(:disabled),
+.october__nav--primary:focus-visible {
+  color: var(--oct-ink);
 }
 
 @media (prefers-reduced-motion: no-preference) {

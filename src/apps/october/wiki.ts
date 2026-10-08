@@ -94,14 +94,23 @@ interface SearchResponse {
 const isFilm = (r: FilmResult) =>
   /\b(film|movie)\b/i.test(r.description ?? "") && !/\b(series|franchise|list)\b/i.test(r.description ?? "");
 
-/** Full-text search, biased to films: "film" is added to the query and film pages are ranked first. */
+/** Each word must appear in the article title; plain text would match pages that merely mention them. */
+const titleQuery = (query: string) =>
+  query
+    .split(/\s+/)
+    .map((word) => word.replace(/["\\]/g, ""))
+    .filter(Boolean)
+    .map((word) => `intitle:"${word}"`)
+    .join(" ");
+
+/** Title search, biased to films: "film" must appear in the article and film pages are ranked first. */
 export async function searchFilms(query: string, sys: Pick<Sys, "fetch">): Promise<FilmResult[]> {
   const params = new URLSearchParams({
     action: "query",
     format: "json",
     origin: "*",
     generator: "search",
-    gsrsearch: `${query} film`,
+    gsrsearch: `${titleQuery(query)} film`,
     gsrnamespace: "0",
     gsrlimit: "10",
     prop: "pageimages|info|description",
