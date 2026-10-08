@@ -11,7 +11,10 @@
     ],
     "5": { "title": "Night of the Living Dead", "wiki": "Night of the Living Dead", "watched": true },
     "6": { "title": "Insidious: Out of the Further", "wiki": "Insidious: Out of the Further", "watched": true },
-    "7": { "title": "Colony", "wiki": "Colony (2026 film)", "note": "Yeon Sang-ho · Korean outbreak horror" },
+    "7": [
+      { "title": "Colony", "wiki": "Colony (2026 film)", "note": "Yeon Sang-ho · Korean outbreak horror", "watched": true },
+      { "title": "Shaun of the Dead", "wiki": "Shaun of the Dead", "watched": true }
+    ],
     "8": { "title": "The Fly", "wiki": "The Fly (1986 film)" },
     "9": { "title": "Freddy vs. Jason", "wiki": "Freddy vs. Jason" },
     "10": { "title": "Serial Mom", "wiki": "Serial Mom" },
