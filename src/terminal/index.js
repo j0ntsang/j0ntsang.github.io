@@ -99,6 +99,10 @@ export async function startTerminal() {
     attributes: true,
     attributeFilter: ["data-theme"],
   });
+  // Mid-transition reads catch in-between colors; settle once it finishes.
+  document.documentElement.addEventListener("transitionend", (e) => {
+    if (e.target === document.documentElement) syncTheme();
+  });
 
   term.open(container);
   fitAddon.fit();

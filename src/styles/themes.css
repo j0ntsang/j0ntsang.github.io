@@ -2,6 +2,105 @@
    else should hard-code one. <html data-theme> picks the theme (see
    src/os/display/theme.ts). With no attribute, the default theme applies. */
 
+/* Registered so theme switches can transition: an unregistered custom
+   property is just a string and snaps. "-rgb" tokens are channel lists. */
+
+@property --background-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1e1e1e;
+}
+
+@property --text-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffa500;
+}
+
+@property --surface-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #141414;
+}
+
+@property --on-image-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f2f2f2;
+}
+
+@property --focus-ring {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #069;
+}
+
+@property --status-online {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: green;
+}
+
+@property --status-offline {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: red;
+}
+
+@property --ansi-red {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #cd3131;
+}
+
+@property --ansi-green {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0dbc79;
+}
+
+@property --ansi-yellow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #e5e510;
+}
+
+@property --ansi-blue {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #2472c8;
+}
+
+@property --ansi-magenta {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #bc3fbc;
+}
+
+@property --ansi-cyan {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #11a8cd;
+}
+
+@property --text-color-rgb {
+  syntax: "<number>#";
+  inherits: true;
+  initial-value: 255, 165, 0;
+}
+
+@property --accent-rgb {
+  syntax: "<number>#";
+  inherits: true;
+  initial-value: 200, 20, 20;
+}
+
+@property --shade-rgb {
+  syntax: "<number>#";
+  inherits: true;
+  initial-value: 0, 0, 0;
+}
+
 :root,
 :root[data-theme="default"] {
   --background-color: #1e1e1e;
@@ -84,3 +183,24 @@
   --scrollbar-thumb-hover: var(--text-color);
 }
 
+:root {
+  transition-property:
+    --background-color,
+    --text-color,
+    --surface-color,
+    --on-image-color,
+    --focus-ring,
+    --status-online,
+    --status-offline,
+    --ansi-red,
+    --ansi-green,
+    --ansi-yellow,
+    --ansi-blue,
+    --ansi-magenta,
+    --ansi-cyan,
+    --text-color-rgb,
+    --accent-rgb,
+    --shade-rgb;
+  transition-duration: var(--duration-instant);
+  transition-timing-function: linear;
+}

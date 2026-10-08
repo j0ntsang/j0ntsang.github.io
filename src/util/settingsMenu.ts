@@ -9,16 +9,13 @@ export function initializeSettingsMenu() {
     'input[name="animation"]'
   ) as HTMLInputElement | null;
 
-  function getStoredAnimation(): boolean {
-    return localStorage.getItem("animation") === "true";
-  }
-
   function applyAnimation(enabled: boolean) {
     document.documentElement.classList.toggle("animation", enabled);
   }
 
-  const initialAnimation = getStoredAnimation();
-  applyAnimation(initialAnimation);
+  // index.html sets the initial class before first paint.
+  const initialAnimation =
+    document.documentElement.classList.contains("animation");
 
   if (themeSelect) {
     themeSelect.value = preferredTheme();

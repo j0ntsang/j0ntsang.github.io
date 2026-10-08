@@ -515,10 +515,8 @@
   color: var(--oct-ink);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .october__poster {
-    transition: filter 150ms ease;
-  }
+.october__poster {
+  transition: filter var(--duration-instant) linear;
 }
 
 @container (max-width: 560px) {

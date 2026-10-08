@@ -49,15 +49,13 @@ template.innerHTML = `
       min-height: 0;
       overflow: auto;
     }
-    @media (prefers-reduced-motion: no-preference) {
-      :host {
-        animation: open 120ms ease-out;
-      }
-      @keyframes open {
-        from {
-          opacity: 0;
-          transform: scale(0.98);
-        }
+    :host {
+      animation: open var(--duration-fast) steps(3, end);
+    }
+    @keyframes open {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
       }
     }
   </style>

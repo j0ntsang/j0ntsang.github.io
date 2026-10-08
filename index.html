@@ -17,6 +17,15 @@
     -->
   <link rel="manifest" href="%BASE_URL%manifest.json" />
   <link rel="stylesheet" href="src/styles/themes.css" />
+  <script>
+    // Before first paint, so the boot animation honours the setting. Settings'
+    // Animation toggle wins; until it's touched, follow the OS preference.
+    try {
+      var stored = localStorage.getItem("animation");
+      var animate = stored === null ? !matchMedia("(prefers-reduced-motion: reduce)").matches : stored === "true";
+      document.documentElement.classList.toggle("animation", animate);
+    } catch (e) {}
+  </script>
   <script src="%BASE_URL%coi-serviceworker.js"></script>
   <script type="module" src="src/init.js"></script>
   <script type="module" src="src/index.tsx"></script>
@@ -29,12 +38,23 @@
       box-sizing: border-box;
     }
 
-    @media (prefers-reduced-motion: no-preference) {
-      html.animation {
-        transition-duration: 150ms;
-        transition-property: background-color, border-radius, border-color, color;
-        transition-timing-function: ease-in-out;
-      }
+    /* Every duration is multiplied by --motion, which is 0 unless the
+       Animation setting is on. It's a custom property, not a class check,
+       so it reaches into shadow roots too. Animations still run at 0ms, so
+       their end state (e.g. forwards fills) still applies.
+
+       Legacy-terminal feel: state changes land in well under ~100ms (reads
+       as instant), and motion uses linear or steps() rather than smooth
+       easing, like a CRT redrawing. Only the one-off power-on lingers. */
+    :root {
+      --motion: 0;
+      --duration-instant: calc(50ms * var(--motion));
+      --duration-fast: calc(100ms * var(--motion));
+      --duration-slow: calc(300ms * var(--motion));
+    }
+
+    :root.animation {
+      --motion: 1;
     }
 
     html,
@@ -86,30 +106,28 @@
       transform-origin: center;
     }
 
-    @media (prefers-reduced-motion: no-preference) {
-      @keyframes crtTurnOn {
-        0% {
-          transform: scaleX(0) scaleY(0);
-        }
-
-        30% {
-          transform: scaleX(.5) scaleY(0.05);
-        }
-
-        80% {
-          transform: scaleX(.9) scaleY(0.5);
-        }
-
-        100% {
-          transform: scaleX(1) scaleY(1);
-        }
-      }
-
-      .screen {
-        animation: crtTurnOn 250ms ease-in-out forwards;
+    @keyframes crtTurnOn {
+      0% {
         transform: scaleX(0) scaleY(0);
-        will-change: transform;
       }
+
+      30% {
+        transform: scaleX(.5) scaleY(0.05);
+      }
+
+      80% {
+        transform: scaleX(.9) scaleY(0.5);
+      }
+
+      100% {
+        transform: scaleX(1) scaleY(1);
+      }
+    }
+
+    .screen {
+      animation: crtTurnOn var(--duration-slow) steps(6, end) forwards;
+      transform: scaleX(0) scaleY(0);
+      will-change: transform;
     }
 
     .page {
@@ -121,16 +139,14 @@
       opacity: 0.5;
     }
 
-    @media (prefers-reduced-motion: no-preference) {
-      @keyframes fadeIn {
-        to {
-          opacity: 1;
-        }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
       }
+    }
 
-      .page {
-        animation: fadeIn 150ms ease-in-out forwards;
-      }
+    .page {
+      animation: fadeIn var(--duration-fast) linear forwards;
     }
   </style>
 </head>

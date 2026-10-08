@@ -62,12 +62,10 @@ export const styles = `
     border-width: 0;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .container {
-      transition-property: grid-template-columns, grid-template-rows, column-gap;
-      transition-duration: 250ms;
-      transition-timing-function: ease-out;
-    }
+  .container {
+    transition-property: grid-template-columns, grid-template-rows, column-gap;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: steps(4, end);
   }
 
   .waybar {
