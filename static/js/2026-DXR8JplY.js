@@ -11,7 +11,10 @@ const e=`{
     ],
     "5": { "title": "Night of the Living Dead", "wiki": "Night of the Living Dead", "watched": true },
     "6": { "title": "Insidious: Out of the Further", "wiki": "Insidious: Out of the Further", "watched": true },
-    "7": { "title": "Colony", "wiki": "Colony (2026 film)", "note": "Yeon Sang-ho · Korean outbreak horror" },
+    "7": [
+      { "title": "Colony", "wiki": "Colony (2026 film)", "note": "Yeon Sang-ho · Korean outbreak horror", "watched": true },
+      { "title": "Shaun of the Dead", "wiki": "Shaun of the Dead", "watched": true }
+    ],
     "8": { "title": "The Fly", "wiki": "The Fly (1986 film)" },
     "9": { "title": "Freddy vs. Jason", "wiki": "Freddy vs. Jason" },
     "10": { "title": "Serial Mom", "wiki": "Serial Mom" },
@@ -19,6 +22,13 @@ const e=`{
     "12": { "title": "Misery", "wiki": "Misery (film)" },
     "13": { "title": "The Long Walk", "wiki": "The Long Walk (2025 film)" },
     "14": { "title": "Repo! The Genetic Opera", "wiki": "Repo! The Genetic Opera" },
+    "15": { "title": "Jennifer's Body", "wiki": "Jennifer's Body" },
+    "16": { "title": "The Return of the Living Dead", "wiki": "The Return of the Living Dead" },
+    "17": { "title": "What We Do in the Shadows", "wiki": "What We Do in the Shadows" },
+    "18": { "title": "Slither", "wiki": "Slither (2006 film)" },
+    "19": { "title": "Death Becomes Her", "wiki": "Death Becomes Her" },
+    "20": { "title": "The Lost Boys", "wiki": "The Lost Boys" },
+    "21": { "title": "Ginger Snaps", "wiki": "Ginger Snaps (film)" },
     "31": { "title": "HALLOWEEN", "wiki": "Halloween" }
   }
 }

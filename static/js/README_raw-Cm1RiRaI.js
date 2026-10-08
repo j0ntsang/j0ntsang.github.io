@@ -1,0 +1,6 @@
+const e=`Your october calendars live here, one <year>.json per year.
+
+The shipped calendar is read-only at /usr/share/october. Crossing off or
+adding a movie saves your copy here, and october merges it over the
+shipped one. rm ~/october/<year>.json (or "Click to reset") drops it.
+`;export{e as default};
