@@ -1,3 +1,4 @@
+import "./os/display/theme";
 import "./styles/scrollbar.css";
 import "./web-components/window-manager/window-manager.js";
 

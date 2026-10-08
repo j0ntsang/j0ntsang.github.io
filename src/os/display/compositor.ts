@@ -8,6 +8,7 @@
 import "./program-window";
 
 import type { ProgramWindow } from "./program-window";
+import { setWindowTheme, type Theme } from "./theme";
 
 export interface Surface {
   readonly id: number;
@@ -25,6 +26,7 @@ export interface Surface {
 interface Entry {
   surface: Surface;
   win: HTMLElement;
+  theme?: Theme;
 }
 
 interface PanelHost extends HTMLElement {
@@ -34,6 +36,8 @@ interface PanelHost extends HTMLElement {
 
 export interface WindowOptions {
   maximized?: boolean;
+  /** Recolor the whole system while this window is on top. */
+  theme?: Theme;
 }
 
 const isTyping = (t: EventTarget | null) =>
@@ -127,8 +131,9 @@ export class Compositor {
       }
     });
 
-    this.windows.push({ surface, win });
+    this.windows.push({ surface, win, theme: opts.theme });
     this.host.append(win);
+    this.syncTheme();
     this.host.hidden = false;
     requestAnimationFrame(() => {
       if (!win.contains(document.activeElement)) win.focus();
@@ -151,7 +156,12 @@ export class Compositor {
     [...this.windows, ...this.panels].filter((w) => w.surface.pid === pid).forEach((w) => w.surface.close());
   }
 
+  private syncTheme() {
+    setWindowTheme(this.windows[this.windows.length - 1]?.theme ?? null);
+  }
+
   private raiseTop() {
+    this.syncTheme();
     const top = this.windows[this.windows.length - 1];
     if (top) {
       top.win.focus();

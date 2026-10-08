@@ -1,16 +1,13 @@
+import { preferredTheme, setPreferredTheme, Theme } from "../os/display/theme";
+
 export function initializeSettingsMenu() {
-  const darkModeCheckbox = document.querySelector(
-    'input[name="dark_mode"]'
-  ) as HTMLInputElement | null;
+  const themeSelect = document.querySelector(
+    'select[name="theme"]'
+  ) as HTMLSelectElement | null;
 
   const animationCheckbox = document.querySelector(
     'input[name="animation"]'
   ) as HTMLInputElement | null;
-
-  function applyTheme(theme: "dark" | "light") {
-    document.documentElement.classList.remove("dark", "light");
-    document.documentElement.classList.add(theme);
-  }
 
   function getStoredAnimation(): boolean {
     return localStorage.getItem("animation") === "true";
@@ -20,15 +17,14 @@ export function initializeSettingsMenu() {
     document.documentElement.classList.toggle("animation", enabled);
   }
 
-  // Light mode is off for now, on purpose: ignore OS and stored preference.
-  applyTheme("dark");
-
   const initialAnimation = getStoredAnimation();
   applyAnimation(initialAnimation);
 
-  if (darkModeCheckbox) {
-    darkModeCheckbox.checked = true;
-    darkModeCheckbox.disabled = true;
+  if (themeSelect) {
+    themeSelect.value = preferredTheme();
+    themeSelect.addEventListener("change", () =>
+      setPreferredTheme(themeSelect.value as Theme)
+    );
   }
 
   if (animationCheckbox) {
@@ -42,4 +38,5 @@ export function initializeSettingsMenu() {
       localStorage.setItem("animation", String(isEnabled));
     });
   }
+
 }

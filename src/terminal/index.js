@@ -16,6 +16,9 @@ const C = {
   dim: "\x1b[2m",
 };
 
+// Themed via --ansi-<name> in src/styles/themes.css.
+const ANSI_COLORS = ["red", "green", "yellow", "blue", "magenta", "cyan"];
+
 const OK = `${C.green}[  OK  ]${C.reset}`;
 const FAIL = `${C.red}[ FAIL ]${C.reset}`;
 const PAD = "         "; // 8 chars — aligns with "[  OK  ]"
@@ -44,7 +47,13 @@ export async function startTerminal() {
     const foreground = s.getPropertyValue("--text-color").trim() || "#fff";
     const background =
       s.getPropertyValue("--background-color").trim() || "rgba(0,0,0,0)";
+    const ansi = {};
+    for (const name of ANSI_COLORS) {
+      const value = s.getPropertyValue(`--ansi-${name}`).trim();
+      if (value) ansi[name] = ansi[`bright${name[0].toUpperCase()}${name.slice(1)}`] = value;
+    }
     return {
+      ...ansi,
       foreground,
       background,
       cursor: foreground,
@@ -78,32 +87,17 @@ export async function startTerminal() {
     if (_themeRaf) return;
     _themeRaf = requestAnimationFrame(() => {
       _themeRaf = null;
-      const {
-        foreground,
-        background,
-        cursor,
-        selectionBackground,
-        selectionForeground,
-      } = getColors();
-      term.options.theme = {
-        ...term.options.theme,
-        foreground,
-        background,
-        cursor,
-        selectionBackground,
-        selectionForeground,
-      };
+      const colors = getColors();
+      term.options.theme = { ...term.options.theme, ...colors };
+      const { background } = colors;
       const el = container.querySelector(".xterm-scrollable-element");
       if (el) el.style.background = background;
     });
   }
 
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", syncTheme);
   new MutationObserver(syncTheme).observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ["class"],
+    attributeFilter: ["data-theme"],
   });
 
   term.open(container);

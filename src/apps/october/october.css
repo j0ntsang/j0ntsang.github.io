@@ -1,14 +1,14 @@
 .october {
-  --oct-bg: var(--background-color, #1e1e1e);
-  --oct-ink: var(--text-color, #ffa500);
-  --oct-ink-rgb: var(--text-color-rgb, 255, 165, 0);
+  --oct-bg: var(--background-color);
+  --oct-ink: var(--text-color);
+  --oct-ink-rgb: var(--text-color-rgb);
   /* Below 0.75, secondary text drops under 4.5:1 (WCAG AA). */
   --oct-muted: rgba(var(--oct-ink-rgb), 0.75);
   --oct-line: rgba(var(--oct-ink-rgb), 0.3);
   /* Control outlines; below 0.55 they drop under 3:1. --oct-line is for decoration only. */
   --oct-edge: rgba(var(--oct-ink-rgb), 0.55);
-  --oct-cell: #141414;
-  --oct-red: 200, 20, 20;
+  --oct-cell: var(--surface-color);
+  --oct-red: var(--accent-rgb);
 
   container-type: inline-size;
   min-height: 100%;
@@ -127,7 +127,7 @@
   padding: 6px 8px 18px;
   font-weight: 700;
   color: var(--oct-ink);
-  background: linear-gradient(rgba(0, 0, 0, 0.85) calc(100% - 18px), transparent);
+  background: linear-gradient(rgba(var(--shade-rgb), 0.85) calc(100% - 18px), transparent);
   pointer-events: none;
 }
 
@@ -189,8 +189,8 @@
   padding: 24px 8px 6px;
   font-size: 12px;
   font-weight: 700;
-  color: #f2f2f2;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85) 24px);
+  color: var(--on-image-color);
+  background: linear-gradient(transparent, rgba(var(--shade-rgb), 0.85) 24px);
   overflow-wrap: anywhere;
   pointer-events: none;
 }
@@ -238,7 +238,7 @@
 }
 
 .october__movie--watched .october__title {
-  color: rgba(242, 242, 242, 0.8);
+  color: color-mix(in srgb, var(--on-image-color) 80%, transparent);
   text-decoration: line-through;
   text-decoration-color: rgb(var(--oct-red));
   text-decoration-thickness: 2px;
@@ -259,7 +259,7 @@
   padding: 0;
   line-height: 1;
   color: var(--oct-ink);
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(var(--shade-rgb), 0.7);
   border: 1px solid var(--oct-edge);
   cursor: pointer;
   opacity: 0;
@@ -338,7 +338,7 @@
 }
 
 .october__editor::backdrop {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(var(--shade-rgb), 0.6);
 }
 
 .october__editor-titlebar {

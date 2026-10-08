@@ -1,0 +1,86 @@
+/* System themes. Every color the UI draws comes from these tokens; nothing
+   else should hard-code one. <html data-theme> picks the theme (see
+   src/os/display/theme.ts). With no attribute, the default theme applies. */
+
+:root,
+:root[data-theme="default"] {
+  --background-color: #1e1e1e;
+  --text-color: #ffa500;
+  --text-color-rgb: 255, 165, 0;
+  /* Inset panels, e.g. calendar cells. */
+  --surface-color: #141414;
+  /* Highlights such as "watched" marks. */
+  --accent-rgb: 200, 20, 20;
+  /* Text drawn over images, and the scrim behind it. */
+  --on-image-color: #f2f2f2;
+  --shade-rgb: 0, 0, 0;
+  --text-glow: 0 0 1px rgba(255, 255, 255, 0.1);
+  --focus-ring: #069;
+  --status-online: green;
+  --status-offline: red;
+
+  --ansi-red: #cd3131;
+  --ansi-green: #0dbc79;
+  --ansi-yellow: #e5e510;
+  --ansi-blue: #2472c8;
+  --ansi-magenta: #bc3fbc;
+  --ansi-cyan: #11a8cd;
+}
+
+:root[data-theme="october"] {
+  --background-color: #120505;
+  --text-color: #ff4433;
+  --text-color-rgb: 255, 68, 51;
+  --surface-color: #1d0808;
+  --accent-rgb: 150, 0, 0;
+  --on-image-color: #ffe9e6;
+  --shade-rgb: 10, 0, 0;
+  --text-glow: 0 0 2px rgba(255, 40, 20, 0.35);
+  --focus-ring: #ff8a3d;
+  --status-online: #ff8a3d;
+  --status-offline: #8b0000;
+
+  --ansi-red: #ff2a2a;
+  --ansi-green: #ff8a3d;
+  --ansi-yellow: #ffc04d;
+  --ansi-blue: #b366ff;
+  --ansi-magenta: #ff5fa2;
+  --ansi-cyan: #ff7b5c;
+}
+
+/* Pip-Boy: monochrome phosphor green, with glow and scanlines. */
+:root[data-theme="fallout"] {
+  --background-color: #07140b;
+  --text-color: #1bff80;
+  --text-color-rgb: 27, 255, 128;
+  --surface-color: #0b1f11;
+  --accent-rgb: 27, 255, 128;
+  --on-image-color: #c8ffdc;
+  --shade-rgb: 2, 12, 5;
+  --text-glow: 0 0 4px rgba(27, 255, 128, 0.55);
+  --focus-ring: #b7ffd0;
+  --status-online: #1bff80;
+  --status-offline: #0d6b37;
+
+  --ansi-red: #b7ffd0;
+  --ansi-green: #1bff80;
+  --ansi-yellow: #8cff9e;
+  --ansi-blue: #12c060;
+  --ansi-magenta: #5aff9a;
+  --ansi-cyan: #3dffa8;
+}
+
+:root[data-theme="fallout"] .screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  background: repeating-linear-gradient(transparent 0 2px, rgba(0, 0, 0, 0.2) 2px 3px);
+}
+
+:root {
+  --scrollbar-thumb-color: var(--text-color);
+  --scrollbar-thumb-hover: var(--text-color);
+}
+

@@ -83,7 +83,7 @@ export default async function october(argv: string[], sys: Sys) {
     return 0;
   }
 
-  const surface = sys.createWindow({ title: `october — ${year}`, maximized: true });
+  const surface = sys.createWindow({ title: `october — ${year}`, maximized: true, theme: "october" });
   mountReact(
     surface,
     <OctoberCalendar
