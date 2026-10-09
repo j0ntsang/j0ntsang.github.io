@@ -15,7 +15,7 @@ const e=`{
       { "title": "Colony", "wiki": "Colony (2026 film)", "note": "Yeon Sang-ho · Korean outbreak horror", "watched": true },
       { "title": "Shaun of the Dead", "wiki": "Shaun of the Dead", "watched": true }
     ],
-    "8": { "title": "The Fly", "wiki": "The Fly (1986 film)" },
+    "8": { "title": "The Fly", "wiki": "The Fly (1986 film)", "watched": true },
     "9": { "title": "Freddy vs. Jason", "wiki": "Freddy vs. Jason" },
     "10": { "title": "Serial Mom", "wiki": "Serial Mom" },
     "11": { "title": "Teenage Sex and Death at Camp Miasma", "wiki": "Teenage Sex and Death at Camp Miasma" },
