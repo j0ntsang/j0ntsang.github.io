@@ -1,0 +1,39 @@
+const e=`{
+  "year": 2026,
+  "theme": "Horror · Camp · Cult · Halloween",
+  "days": {
+    "1": { "title": "Carrie", "wiki": "Carrie (1976 film)", "watched": true },
+    "2": { "title": "Friday the 13th: The Final Chapter", "wiki": "Friday the 13th: The Final Chapter", "watched": true },
+    "3": { "title": "Resident Evil (2026)", "wiki": "Resident Evil (2026 film)", "watched": true },
+    "4": [
+      { "title": "Little Shop of Horrors", "wiki": "Little Shop of Horrors (film)", "watched": true },
+      { "title": "Idle Hands", "wiki": "Idle Hands", "watched": true }
+    ],
+    "5": { "title": "Night of the Living Dead", "wiki": "Night of the Living Dead", "watched": true },
+    "6": { "title": "Insidious: Out of the Further", "wiki": "Insidious: Out of the Further", "watched": true },
+    "7": [
+      { "title": "Colony", "wiki": "Colony (2026 film)", "note": "Yeon Sang-ho · Korean outbreak horror", "watched": true },
+      { "title": "Shaun of the Dead", "wiki": "Shaun of the Dead", "watched": true }
+    ],
+    "8": { "title": "The Fly", "wiki": "The Fly (1986 film)", "watched": true },
+    "9": { "title": "Freddy vs. Jason", "wiki": "Freddy vs. Jason", "watched": true },
+    "10": { "title": "Serial Mom", "wiki": "Serial Mom", "watched": true },
+    "11": { "title": "Carrie (2026 series)", "wiki": "Carrie (miniseries)", "note": "Mike Flanagan · Prime Video miniseries", "watched": true },
+    "12": [
+      { "title": "Carrie (2026 series)", "wiki": "Carrie (miniseries)", "note": "Mike Flanagan · Prime Video miniseries", "watched": true },
+      { "title": "Teenage Sex and Death at Camp Miasma", "wiki": "Teenage Sex and Death at Camp Miasma", "watched": true }
+    ],
+    "13": { "title": "Misery", "wiki": "Misery (film)" },
+    "14": { "title": "The Long Walk", "wiki": "The Long Walk (2025 film)" },
+    "15": { "title": "Repo! The Genetic Opera", "wiki": "Repo! The Genetic Opera" },
+    "16": { "title": "Jennifer's Body", "wiki": "Jennifer's Body" },
+    "17": { "title": "The Return of the Living Dead", "wiki": "The Return of the Living Dead" },
+    "18": { "title": "What We Do in the Shadows", "wiki": "What We Do in the Shadows" },
+    "19": { "title": "Slither", "wiki": "Slither (2006 film)" },
+    "20": { "title": "Death Becomes Her", "wiki": "Death Becomes Her" },
+    "21": { "title": "The Lost Boys", "wiki": "The Lost Boys" },
+    "22": { "title": "Ginger Snaps", "wiki": "Ginger Snaps (film)" },
+    "31": { "title": "HALLOWEEN", "wiki": "Halloween" }
+  }
+}
+`;export{e as default};
