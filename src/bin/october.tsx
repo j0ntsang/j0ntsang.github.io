@@ -13,6 +13,7 @@ import {
   allMovies,
   emptyYear,
   firstWeekday,
+  isMissed,
   mergeYears,
   moviesOn,
   OctoberYear,
@@ -51,6 +52,7 @@ async function list(sys: Sys, data: OctoberYear) {
   if (!days.length) sys.write(`${C.dim}No movies yet — edit ${yearPath(data.year)}${C.reset}\n`);
 
   for (const day of days) {
+    if (isMissed(data, day)) sys.write(`${C.red}✗${C.reset} ${weekdayOf(data.year, day)} ${String(day).padStart(2)}  ${C.red}missed${C.reset}\n`);
     moviesOn(data, day).forEach((entry, i) => {
       const lookup = wikiTitle(entry);
       const page = lookup ? wiki[lookup] : null;

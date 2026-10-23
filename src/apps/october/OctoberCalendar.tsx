@@ -1,6 +1,6 @@
 import "./october.css";
 
-import { CSSProperties, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { DayEditor } from "./DayEditor";
 import {
@@ -8,6 +8,7 @@ import {
   allMovies,
   DAYS_IN_OCTOBER,
   firstWeekday,
+  isMissed,
   isTonight,
   MovieDay,
   moviesOn,
@@ -153,6 +154,7 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
 
   const entries = data ? allMovies(data) : [];
   const watchedCount = entries.filter((d) => d.watched).length;
+  const missedCount = days.filter((day) => data && isMissed(data, day)).length;
 
   return (
     <div className="october">
@@ -184,6 +186,7 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
             year={year}
             day={day}
             movies={data ? moviesOn(data, day) : []}
+            missed={!!data && isMissed(data, day)}
             wiki={wiki}
             brokenPosters={brokenPosters}
             onPosterError={(src) => setBrokenPosters((prev) => new Set(prev).add(src))}
@@ -212,6 +215,7 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
       <footer className="october__footer">
         <span aria-live="polite">
           <span aria-hidden="true">🎃</span> {watchedCount} / {entries.length} watched
+          {missedCount > 0 && ` · ${missedCount} missed`}
           {wikiError && " · posters unavailable (offline?)"}
         </span>
         <span className="october__actions">
@@ -237,6 +241,8 @@ interface DayCellProps {
   year: number;
   day: number;
   movies: MovieDay[];
+  /** An empty `{}` day in the year file. */
+  missed: boolean;
   wiki: WikiIndex;
   brokenPosters: Set<string>;
   onPosterError(src: string): void;
@@ -248,7 +254,7 @@ interface DayCellProps {
   onEdit(): void;
 }
 
-function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActive, buttonRef, onFocus, onToggle, onEdit }: DayCellProps) {
+function DayCell({ year, day, movies, missed, wiki, brokenPosters, onPosterError, isActive, buttonRef, onFocus, onToggle, onEdit }: DayCellProps) {
   const tonight = isTonight(year, day);
   const when = `${weekdayOf(year, day)}, October ${day}`;
   const tabIndex = isActive ? 0 : -1;
@@ -257,7 +263,7 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
   const classes = [
     "october__cell",
     tonight && "october__cell--tonight",
-    !movies.length && "october__cell--empty",
+    !movies.length && (missed ? "october__cell--missed" : "october__cell--empty"),
   ]
     .filter(Boolean)
     .join(" ");
@@ -321,19 +327,85 @@ function DayCell({ year, day, movies, wiki, brokenPosters, onPosterError, isActi
         </div>
       ) : (
         <>
+          {missed && <Blood />}
           <button
             ref={buttonRef}
             type="button"
             className="october__toggle"
             tabIndex={tabIndex}
-            aria-label={`${when}: no movie${tonight ? " (tonight)" : ""}. Add a movie`}
+            aria-label={`${when}: ${missed ? "missed" : "no movie"}${tonight ? " (tonight)" : ""}. Add a movie`}
             onFocus={onFocus}
             onClick={onEdit}
           />
-          <span className="october__hint" aria-hidden="true">+ add</span>
+          {missed ? (
+            <span className="october__missed" aria-hidden="true">Missed</span>
+          ) : (
+            <span className="october__hint" aria-hidden="true">+ add</span>
+          )}
         </>
       )}
     </li>
+  );
+}
+
+/**
+ * Drips as [left %, width px, reach, start s]. Reach is how far past the pool a
+ * drip runs, as a fraction of the rest of the cell. The pool sags at the same
+ * lefts, so each drip runs out of a low point.
+ */
+const DRIPS = [
+  [9, 6, 0.25, 0.4],
+  [24, 9, 0.6, 0],
+  [41, 5, 0.12, 1.1],
+  [57, 8, 0.75, 0.2],
+  [73, 6, 0.38, 0.8],
+  [88, 7, 0.5, 1.5],
+] as const;
+
+/** Drips that also shed drops: [index into DRIPS, seconds per drop]. */
+const DROPS = [
+  [1, 3.4],
+  [3, 2.6],
+  [5, 4.2],
+] as const;
+
+const GROW_S = 3.5;
+
+/* 34px tall at the cell's full width, so y is px and x is %. Solid to y=26 everywhere, under the date. */
+const POOL =
+  "M0 0H100V28C94 28 94 33 88 33C84 33 84 27 80 27C76.5 27 76.5 32 73 32C69 32 69 28 65 28" +
+  "C61 28 61 34 57 34C53 34 53 27 49 27C45 27 45 31 41 31C37 31 37 26 33 26" +
+  "C28.5 26 28.5 33 24 33C20 33 20 28 16 28C12.5 28 12.5 32 9 32C4.5 32 4.5 28 0 28Z";
+
+function dripStyle(i: number) {
+  const [left, width, reach, start] = DRIPS[i];
+  return { "--left": `${left}%`, "--width": `${width}px`, "--reach": reach, "--start": `${start}s` };
+}
+
+function Blood() {
+  const gradient = `blood${useId().replace(/:/g, "")}`;
+  return (
+    <span className="october__blood" style={{ "--grow": `${GROW_S}s` } as CSSProperties} aria-hidden="true">
+      {DRIPS.map((_, i) => (
+        <span key={i} className="october__drip" style={dripStyle(i) as CSSProperties} />
+      ))}
+      {DROPS.map(([i, every]) => (
+        <span
+          key={i}
+          className="october__drop"
+          style={{ ...dripStyle(i), "--every": `${every}s`, "--wait": `${DRIPS[i][3] + GROW_S}s` } as CSSProperties}
+        />
+      ))}
+      <svg className="october__pool" viewBox="0 0 100 34" preserveAspectRatio="none" focusable="false">
+        <defs>
+          <linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" className="october__pool-top" />
+            <stop offset="1" className="october__pool-edge" />
+          </linearGradient>
+        </defs>
+        <path d={POOL} fill={`url(#${gradient})`} />
+      </svg>
+    </span>
   );
 }
 

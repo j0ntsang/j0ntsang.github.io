@@ -9,8 +9,11 @@ export interface MovieDay {
   note?: string;
 }
 
-/** One movie, or a list when you watched several on the same day. */
-export type DayEntry = MovieDay | MovieDay[];
+/** `{}` in the year file: a day you missed. */
+export type MissedDay = Record<string, never>;
+
+/** One movie, a list when you watched several on the same day, or a missed day. */
+export type DayEntry = MovieDay | MovieDay[] | MissedDay;
 
 export interface OctoberYear {
   year: number;
@@ -42,9 +45,17 @@ export function isTonight(year: number, day: number, now = new Date()) {
 
 export const wikiTitle = (entry: MovieDay) => (entry.wiki === null ? null : entry.wiki ?? entry.title);
 
+const isMissedEntry = (entry: DayEntry): entry is MissedDay =>
+  !Array.isArray(entry) && Object.keys(entry).length === 0;
+
+export function isMissed(data: OctoberYear, day: number) {
+  const entry = data.days[day];
+  return !!entry && isMissedEntry(entry);
+}
+
 export function moviesOn(data: OctoberYear, day: number): MovieDay[] {
   const entry = data.days[day];
-  return !entry ? [] : Array.isArray(entry) ? entry : [entry];
+  return !entry || isMissedEntry(entry) ? [] : Array.isArray(entry) ? entry : [entry];
 }
 
 export const allMovies = (data: OctoberYear) =>
@@ -85,12 +96,14 @@ const sameMovie = (a: MovieDay, b: MovieDay) =>
 /**
  * The shipped calendar plus anything your copy adds: extra movies are appended to
  * their day, and a cross-off in either copy counts. Shipped fields win otherwise,
- * so fixes to the shipped file show up even after you've saved a copy.
+ * so fixes to the shipped file show up even after you've saved a copy. Missed
+ * days come from the shipped file; a movie you add to one makes it up.
  */
 export function mergeYears(shipped: OctoberYear, local: OctoberYear): OctoberYear {
   let merged = shipped;
   for (const day of Object.keys(local.days).map(Number)) {
     const ours = moviesOn(local, day);
+    if (!ours.length) continue;
     const movies = moviesOn(shipped, day).map((movie) => {
       const match = ours.find((m) => sameMovie(m, movie));
       return match?.watched && !movie.watched ? { ...movie, watched: true } : movie;
