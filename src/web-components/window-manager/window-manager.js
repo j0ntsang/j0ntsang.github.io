@@ -1,4 +1,4 @@
-import { styles } from "./window-manager.styles.ts";
+import { styles } from "./window-manager.styles";
 
 class WindowManager extends HTMLElement {
   constructor() {
@@ -18,7 +18,7 @@ class WindowManager extends HTMLElement {
             </nav>
             <main class="main window">
               <slot name="main"></slot>
-              <slot name="overlay"></slot>
+              <slot name="windows"></slot>
             </main>
             <sidebar class="sidebar">
               <slot name="sidebar"></slot>

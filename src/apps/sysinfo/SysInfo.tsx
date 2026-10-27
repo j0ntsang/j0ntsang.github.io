@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { SystemInfo } from "./SystemInfo";
 import { ConnectionInfo } from "./ConnectionInfo";
 
@@ -12,18 +12,14 @@ type TabId = (typeof TABS)[number]["id"];
 export const SysInfo: React.VFC = () => {
   const [activeTab, setActiveTab] = useState<TabId>("system");
 
-  const content = useMemo(() => {
-    switch (activeTab) {
-      case "connection":
-        return <ConnectionInfo />;
-      case "system":
-      default:
-        return <SystemInfo />;
-    }
-  }, [activeTab]);
-
-  const sidebar = (
-    <div className="sidebar-system-info__wrapper" tabIndex={0}>
+  // Focusable so the keyboard can scroll it: the only tab stop besides the tabs.
+  return (
+    <div
+      className="sidebar-system-info__wrapper"
+      role="region"
+      aria-label="System info"
+      tabIndex={0}
+    >
       <div className="sidebar-tabs" role="tablist">
         {TABS.map((tab) => (
           <button
@@ -33,9 +29,7 @@ export const SysInfo: React.VFC = () => {
             aria-selected={activeTab === tab.id}
             aria-controls={`sidebar-tabpanel-${tab.id}`}
             id={`sidebar-tab-${tab.id}`}
-            className={
-              activeTab === tab.id ? "sidebar-tab active" : "sidebar-tab"
-            }
+            className="sidebar-tab"
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
@@ -48,10 +42,8 @@ export const SysInfo: React.VFC = () => {
         id={`sidebar-tabpanel-${activeTab}`}
         aria-labelledby={`sidebar-tab-${activeTab}`}
       >
-        {content}
+        {activeTab === "connection" ? <ConnectionInfo /> : <SystemInfo />}
       </div>
     </div>
   );
-
-  return sidebar;
 };

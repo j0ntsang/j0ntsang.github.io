@@ -1,15 +1,17 @@
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
-import { displayTitle, MovieDay, weekdayOf, wikiTitle } from "./model";
+import { displayTitle, Movie, weekdayOf, wikiTitle } from "./model";
 import type { FilmResult, WikiIndex, WikiPage } from "./wiki";
 
 interface Props {
   year: number;
   day: number;
-  movies: MovieDay[];
-  wiki: WikiIndex;
+  movies: Movie[];
+  wikiPages: WikiIndex;
+  /** Why your last change wasn't saved; shown here too, since the modal hides the calendar's alert. */
+  writeError: string | null;
   search(query: string): Promise<FilmResult[]>;
-  onAdd(movie: MovieDay, page?: WikiPage): void;
+  onAdd(movie: Movie, page?: WikiPage): void;
   onRemove(index: number): void;
   onClose(): void;
 }
@@ -23,12 +25,12 @@ type SearchState =
 const DEBOUNCE_MS = 350;
 const optionId = (i: number) => `october-option-${i}`;
 
-export function DayEditor({ year, day, movies, wiki, search, onAdd, onRemove, onClose }: Props) {
+export function DayEditor({ year, day, movies, wikiPages, writeError, search, onAdd, onRemove, onClose }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const input = useRef<HTMLInputElement>(null);
-  const latest = useRef(0);
+  const latestSearchId = useRef(0);
   const [query, setQuery] = useState("");
-  const [state, setState] = useState<SearchState>({ status: "idle" });
+  const [searchState, setSearchState] = useState<SearchState>({ status: "idle" });
   /** Index into the results; results.length is the trailing "no article" option. */
   const [selected, setSelected] = useState(0);
   /** null until the user types a title of their own. */
@@ -42,17 +44,17 @@ export function DayEditor({ year, day, movies, wiki, search, onAdd, onRemove, on
   }, []);
 
   const runSearch = (q: string) => {
-    const id = ++latest.current;
-    if (q.trim().length < 2) return setState({ status: "idle" });
-    setState({ status: "loading" });
+    const id = ++latestSearchId.current;
+    if (q.trim().length < 2) return setSearchState({ status: "idle" });
+    setSearchState({ status: "loading" });
     search(q.trim())
       .then((results) => {
-        if (id !== latest.current) return;
-        setState({ status: "done", results });
+        if (id !== latestSearchId.current) return;
+        setSearchState({ status: "done", results });
         setSelected(0);
         setTitleDraft(null);
       })
-      .catch(() => id === latest.current && setState({ status: "error" }));
+      .catch(() => id === latestSearchId.current && setSearchState({ status: "error" }));
   };
 
   useEffect(() => {
@@ -61,26 +63,27 @@ export function DayEditor({ year, day, movies, wiki, search, onAdd, onRemove, on
     // runSearch only closes over stable props and refs.
   }, [query]);
 
-  const results = state.status === "done" ? state.results : [];
+  const results = searchState.status === "done" ? searchState.results : [];
   const article: FilmResult | undefined = results[selected];
   const title = titleDraft ?? (article ? displayTitle(article.title) : query.trim());
-  const optionCount = state.status === "done" ? results.length + 1 : 0;
+  const optionCount = searchState.status === "done" ? results.length + 1 : 0;
 
   const select = (i: number) => {
     setSelected(i);
     setTitleDraft(null);
   };
 
-  const save = (e?: FormEvent) => {
+  const submitPick = (e?: FormEvent) => {
     e?.preventDefault();
     // Enter before results arrive searches now instead of saving an article-less title.
-    if (state.status === "loading" || (state.status === "idle" && query.trim().length >= 2)) return runSearch(query);
+    if (searchState.status === "loading" || (searchState.status === "idle" && query.trim().length >= 2)) return runSearch(query);
     if (!title.trim()) return;
     onAdd({ title: title.trim(), wiki: article?.title ?? null }, article);
-    latest.current++;
+    // Drop any search still in flight, so it can't refill the cleared form.
+    latestSearchId.current++;
     setQuery("");
     setTitleDraft(null);
-    setState({ status: "idle" });
+    setSearchState({ status: "idle" });
     input.current?.focus();
   };
 
@@ -109,20 +112,20 @@ export function DayEditor({ year, day, movies, wiki, search, onAdd, onRemove, on
         </button>
       </header>
 
-      <form className="october__editor-body" id="october-editor-form" onSubmit={save}>
+      <form className="october__editor-body" id="october-editor-form" onSubmit={submitPick}>
         {movies.length > 0 && (
           <fieldset>
             <legend>On this day</legend>
             <ul className="october__editor-list">
               {movies.map((movie, i) => {
-                const lookup = wikiTitle(movie);
-                const poster = lookup ? wiki[lookup]?.poster : undefined;
+                const articleTitle = wikiTitle(movie);
+                const poster = articleTitle ? wikiPages[articleTitle]?.poster : undefined;
                 return (
                   <li key={`${movie.title}-${i}`}>
                     <Poster src={poster} />
                     <span>
                       <strong>{movie.title}</strong>
-                      <small>{lookup ?? "No Wikipedia article"}</small>
+                      <small>{articleTitle ?? "No Wikipedia article"}</small>
                     </span>
                     <button type="button" className="october__nav" onClick={() => onRemove(i)} aria-label={`Remove ${movie.title}`}>
                       Remove
@@ -154,10 +157,10 @@ export function DayEditor({ year, day, movies, wiki, search, onAdd, onRemove, on
           />
 
           <div className="october__editor-results" aria-live="polite">
-            {state.status === "idle" && <p>Type at least two letters.</p>}
-            {state.status === "loading" && <p>Searching…</p>}
-            {state.status === "error" && <p>Search failed. Check your connection and try again.</p>}
-            {state.status === "done" && (
+            {searchState.status === "idle" && <p>Type at least two letters.</p>}
+            {searchState.status === "loading" && <p>Searching…</p>}
+            {searchState.status === "error" && <p>Search failed. Check your connection and try again.</p>}
+            {searchState.status === "done" && (
               <ul role="listbox" id="october-results" aria-label="Wikipedia articles">
                 {results.map((r, i) => (
                   <li
@@ -166,7 +169,7 @@ export function DayEditor({ year, day, movies, wiki, search, onAdd, onRemove, on
                     role="option"
                     aria-selected={i === selected}
                     onClick={() => select(i)}
-                    onDoubleClick={() => save()}
+                    onDoubleClick={() => submitPick()}
                   >
                     <Poster src={r.poster} lazy />
                     <span>
@@ -180,7 +183,7 @@ export function DayEditor({ year, day, movies, wiki, search, onAdd, onRemove, on
                   role="option"
                   aria-selected={selected === results.length}
                   onClick={() => select(results.length)}
-                  onDoubleClick={() => save()}
+                  onDoubleClick={() => submitPick()}
                 >
                   <Poster />
                   <span>
@@ -206,6 +209,12 @@ export function DayEditor({ year, day, movies, wiki, search, onAdd, onRemove, on
           </p>
         </fieldset>
       </form>
+
+      {writeError && (
+        <div className="october__error" role="alert">
+          <p>{writeError}</p>
+        </div>
+      )}
 
       <footer className="october__editor-footer">
         <button type="button" className="october__nav" onClick={() => dialog.current?.close()}>

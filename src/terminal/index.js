@@ -20,8 +20,15 @@ const C = {
 const ANSI_COLORS = ["red", "green", "yellow", "blue", "magenta", "cyan"];
 
 const OK = `${C.green}[  OK  ]${C.reset}`;
+const WARN = `${C.yellow}[ WARN ]${C.reset}`;
 const FAIL = `${C.red}[ FAIL ]${C.reset}`;
-const PAD = "         "; // 8 chars — aligns with "[  OK  ]"
+// A pending label starts where it will sit once "\r<badge> " overwrites it.
+const STATUS_COLUMN_PAD = " ".repeat("[  OK  ] ".length);
+
+// Settings' Animation toggle (and, until it's touched, prefers-reduced-motion)
+// lives in the .animation class on <html>.
+const animationEnabled = () =>
+  document.documentElement.classList.contains("animation");
 
 // ---------------------------------------------------------------------------
 // Terminal setup
@@ -29,10 +36,7 @@ const PAD = "         "; // 8 chars — aligns with "[  OK  ]"
 
 export async function startTerminal() {
   const container = document.getElementById("terminal-container");
-  if (!container) {
-    console.error("terminal-container element not found");
-    return;
-  }
+  if (!container) throw new Error("terminal-container element not found");
 
   container.innerHTML = "";
   Object.assign(container.style, {
@@ -63,7 +67,7 @@ export async function startTerminal() {
   }
 
   const term = new Terminal({
-    cursorBlink: true,
+    cursorBlink: animationEnabled(),
     convertEol: true,
     fontFamily: getComputedStyle(document.body).fontFamily,
     fontSize: 16,
@@ -102,6 +106,15 @@ export async function startTerminal() {
   // Mid-transition reads catch in-between colors; settle once it finishes.
   document.documentElement.addEventListener("transitionend", (e) => {
     if (e.target === document.documentElement) syncTheme();
+  });
+
+  // xterm blinks the cursor with its own CSS animation, which --motion can't
+  // reach, so turn it off and on with the setting.
+  new MutationObserver(() => {
+    term.options.cursorBlink = animationEnabled();
+  }).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
   });
 
   term.open(container);
@@ -164,31 +177,37 @@ async function boot(term) {
   const setTitle = (t) => term.write(`\x1b]0;${t}\x07`);
 
   // Real steps take milliseconds; the pause keeps the boot log readable.
-  async function step(label, fn) {
+  // A failed step stops the boot, unless it isn't fatal: then it only warns.
+  async function step(label, fn, { fatal = true } = {}) {
     setTitle(`${label}...`);
-    term.write(`${PAD}${label}`);
+    term.write(`${STATUS_COLUMN_PAD}${label}`);
     try {
       await delay(150 + Math.random() * 250);
       await fn();
       term.write(`\r${OK} ${label}\r\n`);
     } catch (err) {
-      term.write(`\r${FAIL} ${label}\r\n`);
-      ln(`${PAD}  ${C.red}${err.message}${C.reset}`);
-      throw err;
+      term.write(`\r${fatal ? FAIL : WARN} ${label}\r\n`);
+      ln(`${STATUS_COLUMN_PAD}  ${fatal ? C.red : C.yellow}${err.message}${C.reset}`);
+      if (fatal) throw err;
     }
   }
 
   try {
     setTitle("Booting...");
 
-    // SharedArrayBuffer — required later for a WASM shell's synchronous I/O
-    await step("Checking SharedArrayBuffer support", async () => {
-      if (typeof SharedArrayBuffer === "undefined") {
-        throw new Error(
-          "SharedArrayBuffer unavailable — coi-serviceworker may not be active",
-        );
-      }
-    });
+    // SharedArrayBuffer — a WASM shell's synchronous I/O will need it. Nothing
+    // does yet, so a page that isn't cross-origin isolated still boots.
+    await step(
+      "Checking SharedArrayBuffer support",
+      async () => {
+        if (typeof SharedArrayBuffer === "undefined") {
+          throw new Error(
+            "SharedArrayBuffer unavailable — coi-serviceworker may not be active",
+          );
+        }
+      },
+      { fatal: false },
+    );
 
     // Mount filesystems and start PID 1 (see src/os/boot.ts). A WASM dash
     // would load here as a second executable format alongside JS modules.

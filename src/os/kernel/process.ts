@@ -2,8 +2,10 @@
 //
 // JavaScript can't pre-empt or kill a running function, so "killing" a
 // process means: resolve its exit status immediately, fire its AbortSignal so
-// it can clean up, and drop anything it writes afterwards. That's close to
-// how a real kernel tears down a process, minus forcibly stopping the CPU.
+// it can clean up, drop anything it writes afterwards, and fail its next
+// blocking syscall (reading the TTY, spawning) so its stack unwinds. That's
+// close to how a real kernel tears down a process, minus forcibly stopping
+// the CPU.
 
 export type Signal = "SIGINT" | "SIGTERM";
 

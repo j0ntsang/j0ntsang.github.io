@@ -2,11 +2,12 @@
   --oct-bg: var(--background-color);
   --oct-ink: var(--text-color);
   --oct-ink-rgb: var(--text-color-rgb);
-  /* Below 0.75, secondary text drops under 4.5:1 (WCAG AA). */
-  --oct-muted: rgba(var(--oct-ink-rgb), 0.75);
+  /* Ratios below are in the October theme, which the calendar window always uses.
+     Secondary text: 4.89:1 on --oct-bg, 4.74:1 on --oct-cell (AA is 4.5:1). */
+  --oct-muted: rgba(var(--oct-ink-rgb), 0.9);
   --oct-line: rgba(var(--oct-ink-rgb), 0.3);
-  /* Control outlines; below 0.55 they drop under 3:1. --oct-line is for decoration only. */
-  --oct-edge: rgba(var(--oct-ink-rgb), 0.55);
+  /* Control outlines: 3.34:1 on --oct-bg, 3.30:1 on --oct-cell (AA is 3:1). --oct-line is for decoration only. */
+  --oct-edge: rgba(var(--oct-ink-rgb), 0.7);
   --oct-cell: var(--surface-color);
   --oct-red: var(--accent-rgb);
   --oct-blood: rgb(var(--oct-red));
@@ -122,7 +123,9 @@
   box-shadow: inset 0 0 0 2px var(--oct-ink);
 }
 
-/* Overlays are solid behind the text and fade only in the padding: AA even over a white poster. */
+/* Overlays are solid behind the text and fade only in the padding, so text passes AA over any
+   poster. Over white, the date's 0.9 scrim keeps --oct-ink at 4.99:1, and the title's 0.85 keeps
+   --on-image-color at 12.64:1. */
 .october__date {
   position: absolute;
   inset: 0 0 auto;
@@ -130,7 +133,7 @@
   padding: 6px 8px 18px;
   font-weight: 700;
   color: var(--oct-ink);
-  background: linear-gradient(rgba(var(--shade-rgb), 0.85) calc(100% - 18px), transparent);
+  background: linear-gradient(rgba(var(--shade-rgb), 0.9) calc(100% - 18px), transparent);
   pointer-events: none;
 }
 
@@ -230,7 +233,12 @@
 .october__title a:hover,
 .october__title a:focus-visible {
   text-decoration: underline;
-  outline: none;
+}
+
+/* An outline as well: a crossed-off title's line-through replaces the underline. */
+.october__title a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
 }
 
 .october__movie--watched .october__poster {
@@ -268,7 +276,8 @@
   padding: 0;
   line-height: 1;
   color: var(--oct-ink);
-  background: rgba(var(--shade-rgb), 0.7);
+  /* "+" is 4.99:1 even over a white poster, as with the date. */
+  background: rgba(var(--shade-rgb), 0.9);
   border: 1px solid var(--oct-edge);
   cursor: pointer;
   opacity: 0;
@@ -405,6 +414,16 @@
   }
 }
 
+/* Static unless the Animation setting is on (it starts from prefers-reduced-motion), and always under
+   prefers-reduced-motion. The blood is timed in seconds, not --duration-*, so --motion doesn't stop it. */
+:root:not(.animation) .october__drip {
+  animation: none;
+}
+
+:root:not(.animation) .october__drop {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .october__drip {
     animation: none;
@@ -449,6 +468,27 @@
 .october__actions {
   display: inline-flex;
   gap: 8px;
+}
+
+/* Load and save failures. */
+.october__error {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--oct-ink);
+}
+
+.october__error p {
+  margin: 0;
+  line-height: inherit;
+  overflow-wrap: anywhere;
+}
+
+.october__error p + p {
+  margin-top: 6px;
+}
+
+.october__editor > .october__error {
+  margin: 0 12px 12px;
 }
 
 /* <dialog> renders in the top layer, outside .october, so it repeats the font.
@@ -620,6 +660,11 @@
 .october__editor-results li[aria-selected="true"] {
   background: rgba(var(--oct-ink-rgb), 0.15);
   border-color: var(--oct-ink);
+}
+
+/* On the selected tint, --oct-muted would be 4.09:1; full ink is 4.72:1. */
+.october__editor-results li[aria-selected="true"] small {
+  color: var(--oct-ink);
 }
 
 .october__editor-article {

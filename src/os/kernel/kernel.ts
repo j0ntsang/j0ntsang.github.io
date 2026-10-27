@@ -9,6 +9,7 @@ import type { Compositor } from "../display/compositor";
 import { resolvePath } from "../fs/path";
 import { FsError } from "../fs/types";
 import type { Vfs } from "../fs/vfs";
+import { C } from "../lib/ansi";
 import type { Tty } from "../tty/tty";
 import { createProcess, ExitRequest, Process, ProcessControl, Signal, SIGNAL_NUMBERS } from "./process";
 import type { Program, SpawnOptions, Sys } from "./syscalls";
@@ -17,6 +18,8 @@ const binaries = import.meta.glob("../../bin/*.{ts,tsx}") as Record<string, () =
 
 const findBinary = (name: string) =>
   binaries[`../../bin/${name}.ts`] ?? binaries[`../../bin/${name}.tsx`];
+
+const hex = (n: number) => n.toString(16).padStart(8, "0");
 
 export class Kernel {
   private table = new Map<number, ProcessControl>();
@@ -74,8 +77,18 @@ export class Kernel {
 
     this.table.delete(proc.pid);
     this.display.closeAll(proc.pid);
-    if (opts.foreground) this.foreground = previousForeground;
+    // Hand the terminal back only if this process still has it. It may not:
+    // if its shell was killed, init has already given it to a new one.
+    if (opts.foreground && this.foreground === proc) this.foreground = previousForeground;
+    // With PID 1 gone nothing will start a shell again. Like Linux, report the
+    // wait status, which keeps the exit code in its second byte.
+    if (proc.pid === 1) this.panic(`Attempted to kill init! exitcode=0x${hex((code & 0xff) << 8)}`);
     return code;
+  }
+
+  /** The machine can't carry on: say why, like Linux, and leave rebooting to the user. */
+  private panic(reason: string) {
+    this.tty.write(`${C.red}Kernel panic - not syncing: ${reason}${C.reset}\nReload the page to reboot.\n`);
   }
 
   private async run(ctl: ProcessControl) {
@@ -105,6 +118,8 @@ export class Kernel {
   private syscalls(ctl: ProcessControl): Sys {
     const { proc } = ctl;
     const alive = () => proc.state === "running";
+    // A killed process that tries to block unwinds instead (see process.ts).
+    const unwind = () => Promise.reject(new ExitRequest(0));
     const abs = (p: string) => resolvePath(p, proc.cwd, proc.env.HOME);
     const { vfs, tty } = this;
 
@@ -117,7 +132,7 @@ export class Kernel {
       exit: (code = 0) => {
         throw new ExitRequest(code);
       },
-      spawn: (path, argv, opts) => this.spawn(abs(path), argv, proc, opts),
+      spawn: (path, argv, opts) => (alive() ? this.spawn(abs(path), argv, proc, opts) : unwind()),
       cwd: () => proc.cwd,
       kill: (pid, sig = "SIGTERM") => this.kill(pid, sig),
       chdir: async (path) => {
@@ -137,7 +152,7 @@ export class Kernel {
 
       write: (s) => alive() && tty.write(s),
       error: (s) => alive() && tty.write(s),
-      readLine: (prompt, complete) => tty.readLine(prompt, complete),
+      readLine: (prompt, complete) => (alive() ? tty.readLine(prompt, complete) : unwind()),
       get columns() {
         return tty.columns;
       },

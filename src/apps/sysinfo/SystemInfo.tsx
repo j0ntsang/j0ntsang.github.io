@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
+import { SidebarSection } from "./SidebarSection";
 import "./sysinfo.css";
 
 type BrowserInfo = {
@@ -7,7 +8,6 @@ type BrowserInfo = {
   platform: string;
   vendor: string;
   language: string;
-  languages: string[];
 };
 
 type HardwareInfo = {
@@ -61,7 +61,6 @@ type SidebarState = {
   system: HardwareInfo;
   display: DisplayInfo;
   viewport: ViewportInfo;
-  locale: unknown;
   network: NetworkInfo;
   page: PageInfo;
   features: FeatureInfo;
@@ -73,7 +72,7 @@ const GROUPS = [
   {
     id: "network",
     title: "Network",
-    fields: [{ key: "network.online", label: "Online" }],
+    fields: [{ key: "network.online", label: "Status" }],
   },
   {
     id: "time",
@@ -157,9 +156,6 @@ function formatValue(value: unknown) {
   if (value === null || value === undefined) {
     return "";
   }
-  if (Array.isArray(value)) {
-    return value.join(", ");
-  }
 
   const stringValue = String(value);
   if (stringValue.length > 1 && stringValue.endsWith("/")) {
@@ -185,9 +181,6 @@ function readBrowserInfo(): BrowserInfo {
     platform: navigator.platform || "",
     vendor: navigator.vendor || "",
     language: navigator.language || "",
-    languages: Array.isArray(navigator.languages)
-      ? navigator.languages
-      : [navigator.language || ""],
   };
 }
 
@@ -269,7 +262,6 @@ function getInitialState(): SidebarState {
     system: readSystemInfo(),
     display: readDisplayInfo(),
     viewport: readViewportInfo(),
-    locale: {},
     network: readNetworkInfo(),
     page: readPageInfo(),
     features: readFeatureInfo(),
@@ -284,15 +276,7 @@ function mergeState(
 ): SidebarState {
   const result: any = { ...current };
   for (const groupKey of Object.keys(partial) as Array<keyof SidebarState>) {
-    const incoming = partial[groupKey];
-    if (typeof incoming !== "object" || incoming === null) {
-      (result as any)[groupKey] = incoming;
-      continue;
-    }
-    (result as any)[groupKey] = {
-      ...(result as any)[groupKey],
-      ...incoming,
-    };
+    result[groupKey] = { ...result[groupKey], ...partial[groupKey] };
   }
   return result;
 }
@@ -351,55 +335,28 @@ export const SystemInfo: React.VFC = () => {
     };
   }, []);
 
-  const content = useMemo(() => {
-    return (
-      <div tabIndex={0}>
-        {GROUPS.map((group) => (
-          <section className="sidebar-section" key={group.id}>
-            <div className="sidebar-section__heading">{group.title}</div>
-            <div className="sidebar-section__list">
-              {group.fields.map((field) => {
-                const value = getValueFromState(state, field.key);
-                const isNetworkOnline = field.key === "network.online";
-
-                return (
-                  <SidebarFieldRow
-                    key={field.key}
-                    label={isNetworkOnline ? undefined : field.label}
-                    value={
-                      isNetworkOnline ? (
-                        <NetworkStatus online={Boolean(value)} />
-                      ) : (
-                        formatValue(value)
-                      )
-                    }
-                  />
-                );
-              })}
-            </div>
-          </section>
-        ))}
-      </div>
-    );
-  }, [state]);
-
-  return content;
-};
-
-function SidebarFieldRow({
-  label,
-  value,
-}: {
-  label?: string;
-  value: React.ReactNode;
-}) {
   return (
-    <div className="sidebar-row" tabIndex={0} role="row" aria-label={label}>
-      {label ? <div className="sidebar-row__label">{label}</div> : null}
-      <div className="sidebar-row__value">{value}</div>
-    </div>
+    <>
+      {GROUPS.map((group) => (
+        <SidebarSection
+          key={group.id}
+          title={group.title}
+          rows={group.fields.map((field) => {
+            const value = getValueFromState(state, field.key);
+            return [
+              field.label,
+              field.key === "network.online" ? (
+                <NetworkStatus online={Boolean(value)} />
+              ) : (
+                formatValue(value)
+              ),
+            ];
+          })}
+        />
+      ))}
+    </>
   );
-}
+};
 
 function NetworkStatus({ online }: { online: boolean }) {
   return (

@@ -12,7 +12,6 @@ export type FileType = "file" | "dir";
 export interface Stat {
   type: FileType;
   size: number;
-  upper?: boolean;
 }
 
 export interface FsDriver {
@@ -24,13 +23,14 @@ export interface FsDriver {
   unlink(path: string): Promise<void>;
 }
 
-export type FsErrorCode = "ENOENT" | "EISDIR" | "ENOTDIR" | "EROFS" | "ENOEXEC";
+export type FsErrorCode = "ENOENT" | "EISDIR" | "ENOTDIR" | "EROFS" | "ENOSPC" | "ENOEXEC";
 
 const MESSAGES: Record<FsErrorCode, string> = {
   ENOENT: "No such file or directory",
   EISDIR: "Is a directory",
   ENOTDIR: "Not a directory",
   EROFS: "Read-only file system",
+  ENOSPC: "No space left on device",
   ENOEXEC: "Exec format error",
 };
 

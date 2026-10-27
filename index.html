@@ -11,10 +11,6 @@
   <base href="%BASE_URL%" />
   <link rel="icon" href="%BASE_URL%favicon.ico" />
   <link rel="apple-touch-icon" href="%BASE_URL%logo192.png" />
-  <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
   <link rel="manifest" href="%BASE_URL%manifest.json" />
   <link rel="stylesheet" href="src/styles/themes.css" />
   <script>
@@ -156,10 +152,10 @@
   <div class="screen">
     <div class="page">
       <window-manager>
-        <div id="sidebar" slot="waybar-right"></div>
-        <div id="fullscreen" slot="waybar-right"></div>
-        <div id="settings" slot="waybar-right"></div>
-        <div id="display" slot="overlay" hidden></div>
+        <div id="sidebar-toggle-slot" slot="waybar-right"></div>
+        <div id="fullscreen-toggle-slot" slot="waybar-right"></div>
+        <div id="settings-menu-slot" slot="waybar-right"></div>
+        <div id="window-layer" slot="windows" hidden></div>
       </window-manager>
       <div id="react"></div>
     </div>

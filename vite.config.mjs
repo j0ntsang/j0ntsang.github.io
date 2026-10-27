@@ -52,6 +52,11 @@ export default defineConfig({
       "Cross-Origin-Resource-Policy": "same-origin",
     },
   },
+  // Preview inherits server.headers by default, which would isolate the page
+  // without the service worker. GitHub Pages sends none, so preview sends none.
+  preview: {
+    headers: {},
+  },
   build: {
     outDir: "dist",
     rollupOptions: {

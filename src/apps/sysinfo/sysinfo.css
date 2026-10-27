@@ -5,10 +5,17 @@
     monospace;
   font-size: 14px;
   color: var(--text-color);
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   position: relative;
   max-height: 100%;
   overflow: auto;
+}
+
+/* A border, not an outline: the panel would clip an outline outside, and the
+   sticky tabs would cover one inside. */
+.sidebar-system-info__wrapper:focus-visible {
+  border-color: var(--focus-ring);
+  outline: none;
 }
 
 .sidebar-tabs {
@@ -36,8 +43,9 @@
   background-color: rgba(var(--text-color-rgb), 0.08);
 }
 
-.sidebar-tab.active {
-  background-color: rgba(var(--text-color-rgb), 0.05);
+/* Text color on the background: 8.44:1 (default), 5.84:1 (october), 14.06:1 (fallout). */
+.sidebar-tab[aria-selected="true"] {
+  box-shadow: inset 0 -2px 0 currentColor;
 }
 
 .sidebar-section {
@@ -48,7 +56,7 @@
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.14em;
-  margin-bottom: 6px;
+  margin: 0 0 6px;
   color: var(--text-color);
   text-transform: uppercase;
 }
@@ -57,6 +65,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin: 0;
 }
 
 .sidebar-row {
@@ -65,12 +74,6 @@
   gap: 5px 10px;
   align-items: center;
   padding: 4px 0;
-  border-radius: 4px;
-}
-
-.sidebar-row:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
 }
 
 .sidebar-row__label {
@@ -83,6 +86,7 @@
 }
 
 .sidebar-row__value {
+  margin: 0;
   font-size: 12px;
   font-weight: 600;
   word-break: break-word;

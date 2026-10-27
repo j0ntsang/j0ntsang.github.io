@@ -1,7 +1,6 @@
 {
   "name": "j0ntsang.github.io",
   "version": "0.0.1",
-  "homepage": "https://j0ntsang.github.io/j0ntsang.github.io",
   "private": true,
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",
@@ -16,7 +15,9 @@
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "test": "playwright test"
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
   },
   "browserslist": {
     "production": [
@@ -39,13 +40,13 @@
     "@vitejs/plugin-react": "^4.0.1",
     "autoprefixer": "^10.4.7",
     "gh-pages": "^6.3.0",
-    "nanoid": "^5.1.6",
     "postcss": "^8.4.14",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "styled-components": "^5.3.5",
     "tailwindcss": "^3.1.6",
     "typescript": "^4.5.4",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^3.2.7"
   }
 }

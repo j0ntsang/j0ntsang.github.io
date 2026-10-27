@@ -32,7 +32,11 @@ export function initializeSettingsMenu() {
       const target = e.target as HTMLInputElement;
       const isEnabled = target.checked;
       applyAnimation(isEnabled);
-      localStorage.setItem("animation", String(isEnabled));
+      try {
+        localStorage.setItem("animation", String(isEnabled));
+      } catch {
+        // Storage blocked: the setting lasts for this page only.
+      }
     });
   }
 

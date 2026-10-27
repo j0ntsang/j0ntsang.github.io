@@ -10,7 +10,8 @@ import {
   firstWeekday,
   isMissed,
   isTonight,
-  MovieDay,
+  localCopyPath,
+  Movie,
   moviesOn,
   OctoberYear,
   removeMovie,
@@ -19,6 +20,7 @@ import {
   weekdayOf,
   WEEKDAYS,
   wikiTitle,
+  YearFileError,
 } from "./model";
 import type { FilmResult, WikiIndex, WikiPage } from "./wiki";
 
@@ -27,7 +29,7 @@ interface Props {
   load(year: number): Promise<OctoberYear>;
   save(data: OctoberYear): Promise<void>;
   resolve(titles: string[]): Promise<WikiIndex>;
-  remember(pages: WikiIndex): void;
+  remember(pages: WikiIndex): Promise<void>;
   search(query: string): Promise<FilmResult[]>;
   setTitle(title: string): void;
   hasLocalChanges(year: number): Promise<boolean>;
@@ -40,7 +42,10 @@ const days = Array.from({ length: DAYS_IN_OCTOBER }, (_, i) => i + 1);
 export function OctoberCalendar({ initialYear, load, save, resolve, remember, search, setTitle, hasLocalChanges, reset }: Props) {
   const [year, setYear] = useState(initialYear);
   const [data, setData] = useState<OctoberYear | null>(null);
-  const [wiki, setWiki] = useState<WikiIndex>({});
+  const [loadError, setLoadError] = useState<Error | null>(null);
+  /** Set when saving (or resetting) your copy failed. */
+  const [writeError, setWriteError] = useState<string | null>(null);
+  const [wikiPages, setWikiPages] = useState<WikiIndex>({});
   const [wikiError, setWikiError] = useState(false);
   const [brokenPosters, setBrokenPosters] = useState<Set<string>>(new Set());
   const [active, setActive] = useState(() => (isTonight(initialYear, new Date().getDate()) ? new Date().getDate() : 1));
@@ -53,8 +58,12 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
     let current = true;
     setTitle(`october — ${year}`);
     setData(null);
+    setLoadError(null);
+    setWriteError(null);
     setConfirmingReset(false);
-    load(year).then((d) => current && setData(d));
+    load(year)
+      .then((d) => current && setData(d))
+      .catch((err: Error) => current && setLoadError(err));
     hasLocalChanges(year).then((m) => current && setModified(m));
     return () => {
       current = false;
@@ -87,7 +96,7 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
     resolve(titles)
       .then((index) => {
         if (!current) return;
-        setWiki(index);
+        setWikiPages(index);
         setWikiError(false);
       })
       .catch(() => current && setWikiError(true));
@@ -97,18 +106,32 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
     // Keyed on titleKey, not `titles`, so toggling watched doesn't refetch.
   }, [titleKey, resolve]);
 
-  const update = (next: OctoberYear) => {
+  const commitEdit = (next: OctoberYear) => {
     setData(next);
     setModified(true);
-    save(next);
+    save(next).then(
+      () => setWriteError(null),
+      (err: Error) => setWriteError(`Couldn't save your changes: ${err.message}. They'll be gone after a reload.`),
+    );
   };
 
   const clickReset = async () => {
     if (!confirmingReset) return setConfirmingReset(true);
     setConfirmingReset(false);
-    await reset(year);
-    setData(await load(year));
+    try {
+      await reset(year);
+    } catch (err) {
+      return setWriteError(`Couldn't reset: ${(err as Error).message}`);
+    }
     setModified(false);
+    setWriteError(null);
+    try {
+      setData(await load(year));
+      setLoadError(null);
+    } catch (err) {
+      setData(null);
+      setLoadError(err as Error);
+    }
   };
 
   const exportYear = () => {
@@ -121,19 +144,20 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
     URL.revokeObjectURL(url);
   };
 
-  const toggle = (day: number, index: number) => data?.days[day] && update(toggleWatched(data, day, index));
+  const toggle = (day: number, index: number) => data?.days[day] && commitEdit(toggleWatched(data, day, index));
 
-  const add = (day: number, movie: MovieDay, page?: WikiPage) => {
+  const add = (day: number, movie: Movie, page?: WikiPage) => {
     if (!data) return;
     if (movie.wiki && page) {
       const known = { [movie.wiki]: { url: page.url, poster: page.poster } };
-      setWiki((prev) => ({ ...prev, ...known }));
-      remember(known);
+      setWikiPages((prev) => ({ ...prev, ...known }));
+      // Cache the page before the new title reaches resolve, or resolve reads a cache without it and asks Wikipedia again.
+      return void remember(known).then(() => commitEdit(addMovie(data, day, movie)));
     }
-    update(addMovie(data, day, movie));
+    commitEdit(addMovie(data, day, movie));
   };
 
-  const remove = (day: number, index: number) => data && update(removeMovie(data, day, index));
+  const remove = (day: number, index: number) => data && commitEdit(removeMovie(data, day, index));
 
   const closeEditor = () => {
     const day = editing;
@@ -152,8 +176,8 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
     buttons.current[next]?.focus();
   };
 
-  const entries = data ? allMovies(data) : [];
-  const watchedCount = entries.filter((d) => d.watched).length;
+  const movies = data ? allMovies(data) : [];
+  const watchedCount = movies.filter((movie) => movie.watched).length;
   const missedCount = days.filter((day) => data && isMissed(data, day)).length;
 
   return (
@@ -170,41 +194,59 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
         </button>
       </header>
 
-      <div className="october__weekdays" aria-hidden="true">
-        {WEEKDAYS.map((d) => (
-          <span key={d}>{d}</span>
-        ))}
-      </div>
+      {loadError ? (
+        <div className="october__error" role="alert">
+          <p>Couldn't load October {year}. {loadError.message}</p>
+          {loadError instanceof YearFileError && loadError.path === localCopyPath(year) && (
+            <p>That's your copy: Click to reset drops it and shows the shipped calendar.</p>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="october__weekdays" aria-hidden="true">
+            {WEEKDAYS.map((d) => (
+              <span key={d}>{d}</span>
+            ))}
+          </div>
 
-      <ol className="october__grid" aria-label={`October ${year}`} aria-busy={!data} onKeyDown={moveFocus}>
-        {Array.from({ length: firstWeekday(year) }, (_, i) => (
-          <li key={`blank-${i}`} className="october__cell october__cell--blank" aria-hidden="true" />
-        ))}
-        {days.map((day) => (
-          <DayCell
-            key={day}
-            year={year}
-            day={day}
-            movies={data ? moviesOn(data, day) : []}
-            missed={!!data && isMissed(data, day)}
-            wiki={wiki}
-            brokenPosters={brokenPosters}
-            onPosterError={(src) => setBrokenPosters((prev) => new Set(prev).add(src))}
-            isActive={day === active}
-            buttonRef={(el) => (buttons.current[day] = el)}
-            onFocus={() => setActive(day)}
-            onToggle={(index) => toggle(day, index)}
-            onEdit={() => setEditing(day)}
-          />
-        ))}
-      </ol>
+          <ol className="october__grid" aria-label={`October ${year}`} aria-busy={!data} onKeyDown={moveFocus}>
+            {Array.from({ length: firstWeekday(year) }, (_, i) => (
+              <li key={`blank-${i}`} className="october__cell october__cell--blank" aria-hidden="true" />
+            ))}
+            {days.map((day) => (
+              <DayCell
+                key={day}
+                year={year}
+                day={day}
+                movies={data ? moviesOn(data, day) : []}
+                missed={!!data && isMissed(data, day)}
+                wikiPages={wikiPages}
+                brokenPosters={brokenPosters}
+                onPosterError={(src) => setBrokenPosters((prev) => new Set(prev).add(src))}
+                isActive={day === active}
+                buttonRef={(el) => (buttons.current[day] = el)}
+                onFocus={() => setActive(day)}
+                onToggle={(index) => toggle(day, index)}
+                onEdit={() => setEditing(day)}
+              />
+            ))}
+          </ol>
+        </>
+      )}
+
+      {writeError && (
+        <div className="october__error" role="alert">
+          <p>{writeError}</p>
+        </div>
+      )}
 
       {editing !== null && data && (
         <DayEditor
           year={year}
           day={editing}
           movies={moviesOn(data, editing)}
-          wiki={wiki}
+          wikiPages={wikiPages}
+          writeError={writeError}
           search={search}
           onAdd={(movie, page) => add(editing, movie, page)}
           onRemove={(index) => remove(editing, index)}
@@ -214,7 +256,7 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
 
       <footer className="october__footer">
         <span aria-live="polite">
-          <span aria-hidden="true">🎃</span> {watchedCount} / {entries.length} watched
+          <span aria-hidden="true">🎃</span> {watchedCount} / {movies.length} watched
           {missedCount > 0 && ` · ${missedCount} missed`}
           {wikiError && " · posters unavailable (offline?)"}
         </span>
@@ -240,10 +282,10 @@ export function OctoberCalendar({ initialYear, load, save, resolve, remember, se
 interface DayCellProps {
   year: number;
   day: number;
-  movies: MovieDay[];
+  movies: Movie[];
   /** An empty `{}` day in the year file. */
   missed: boolean;
-  wiki: WikiIndex;
+  wikiPages: WikiIndex;
   brokenPosters: Set<string>;
   onPosterError(src: string): void;
   isActive: boolean;
@@ -254,7 +296,7 @@ interface DayCellProps {
   onEdit(): void;
 }
 
-function DayCell({ year, day, movies, missed, wiki, brokenPosters, onPosterError, isActive, buttonRef, onFocus, onToggle, onEdit }: DayCellProps) {
+function DayCell({ year, day, movies, missed, wikiPages, brokenPosters, onPosterError, isActive, buttonRef, onFocus, onToggle, onEdit }: DayCellProps) {
   const tonight = isTonight(year, day);
   const when = `${weekdayOf(year, day)}, October ${day}`;
   const tabIndex = isActive ? 0 : -1;
@@ -284,8 +326,8 @@ function DayCell({ year, day, movies, missed, wiki, brokenPosters, onPosterError
           style={{ "--count": movies.length } as CSSProperties}
         >
           {movies.map((movie, i) => {
-            const lookup = wikiTitle(movie);
-            const page = lookup ? wiki[lookup] : null;
+            const articleTitle = wikiTitle(movie);
+            const page = articleTitle ? wikiPages[articleTitle] : null;
             const poster = page?.poster && !brokenPosters.has(page.poster) ? page.poster : null;
             return (
               <div key={i} className={`october__movie${movie.watched ? " october__movie--watched" : ""}`}>

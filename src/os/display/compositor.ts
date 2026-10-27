@@ -23,9 +23,10 @@ export interface Surface {
   close(): void;
 }
 
-interface Entry {
+interface MappedSurface {
   surface: Surface;
-  win: HTMLElement;
+  /** The outermost element the compositor inserted: a program-window, or a panel's own surface. */
+  frame: HTMLElement;
   theme?: Theme;
 }
 
@@ -44,10 +45,10 @@ const isTyping = (t: EventTarget | null) =>
   t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
 
 export class Compositor {
-  private windows: Entry[] = [];
-  private panels: Entry[] = [];
+  private windows: MappedSurface[] = [];
+  private panels: MappedSurface[] = [];
   private nextId = 1;
-  private maximized = 0;
+  private maximizedCount = 0;
   private sidebarWasOpen = false;
 
   /** Wired by the kernel: Ctrl-C inside a window signals its process. */
@@ -55,14 +56,15 @@ export class Compositor {
   /** Wired by the kernel: focus goes back to the TTY when the last window closes. */
   onEmpty: () => void = () => {};
 
-  constructor(private host: HTMLElement, private panelHost: PanelHost) {
-    host.hidden = true;
+  constructor(private windowLayer: HTMLElement, private panelHost: PanelHost) {
+    windowLayer.hidden = true;
   }
 
   createPanel(pid: number): Surface {
     const el = document.createElement("div");
     el.className = "surface";
     el.slot = "sidebar";
+    el.setAttribute("role", "complementary");
 
     const teardown: (() => void)[] = [];
     let resolveClosed!: () => void;
@@ -79,12 +81,12 @@ export class Compositor {
         if (!el.isConnected) return;
         teardown.forEach((fn) => fn());
         el.remove();
-        this.panels = this.panels.filter((p) => p.win !== el);
+        this.panels = this.panels.filter((p) => p.frame !== el);
         resolveClosed();
       },
     };
 
-    this.panels.push({ surface, win: el });
+    this.panels.push({ surface, frame: el });
     this.panelHost.append(el);
     return surface;
   }
@@ -110,7 +112,7 @@ export class Compositor {
         if (!win.isConnected) return;
         teardown.forEach((fn) => fn());
         win.remove();
-        this.windows = this.windows.filter((w) => w.win !== win);
+        this.windows = this.windows.filter((w) => w.frame !== win);
         if (opts.maximized) this.unmaximize();
         resolveClosed();
         this.raiseTop();
@@ -131,10 +133,10 @@ export class Compositor {
       }
     });
 
-    this.windows.push({ surface, win, theme: opts.theme });
-    this.host.append(win);
+    this.windows.push({ surface, frame: win, theme: opts.theme });
+    this.windowLayer.append(win);
     this.syncTheme();
-    this.host.hidden = false;
+    this.setCovered(true);
     requestAnimationFrame(() => {
       if (!win.contains(document.activeElement)) win.focus();
     });
@@ -142,18 +144,28 @@ export class Compositor {
   }
 
   private maximize() {
-    if (this.maximized++ > 0) return;
+    if (this.maximizedCount++ > 0) return;
     this.sidebarWasOpen = !!this.panelHost.sidebarOpen;
-    this.panelHost.toggleSidebar?.(false);
+    // Hiding an empty sidebar would also hide the next panel, long after this window closes.
+    if (this.sidebarWasOpen) this.panelHost.toggleSidebar?.(false);
   }
 
   private unmaximize() {
-    if (--this.maximized > 0) return;
+    if (--this.maximizedCount > 0) return;
     if (this.sidebarWasOpen && !this.panelHost.sidebarOpen) this.panelHost.toggleSidebar?.(true);
   }
 
   closeAll(pid: number) {
-    [...this.windows, ...this.panels].filter((w) => w.surface.pid === pid).forEach((w) => w.surface.close());
+    [...this.windows, ...this.panels]
+      .filter((mapped) => mapped.surface.pid === pid)
+      .forEach((mapped) => mapped.surface.close());
+  }
+
+  // Windows fill the main area, so while one is open the terminal under it is
+  // inert: out of the tab order and the accessibility tree.
+  private setCovered(covered: boolean) {
+    this.windowLayer.hidden = !covered;
+    this.panelHost.querySelectorAll(':scope > [slot="main"]').forEach((el) => el.toggleAttribute("inert", covered));
   }
 
   private syncTheme() {
@@ -164,9 +176,10 @@ export class Compositor {
     this.syncTheme();
     const top = this.windows[this.windows.length - 1];
     if (top) {
-      top.win.focus();
+      top.frame.focus();
     } else {
-      this.host.hidden = true;
+      // Uncover first: onEmpty focuses the terminal, which can't take focus while inert.
+      this.setCovered(false);
       this.onEmpty();
     }
   }

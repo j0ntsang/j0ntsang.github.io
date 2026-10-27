@@ -32,7 +32,7 @@
 @property --focus-ring {
   syntax: "<color>";
   inherits: true;
-  initial-value: #069;
+  initial-value: #39c;
 }
 
 @property --status-online {
@@ -106,6 +106,8 @@
   --background-color: #1e1e1e;
   --text-color: #ffa500;
   --text-color-rgb: 255, 165, 0;
+  /* Dim terminal text: the lowest alpha that keeps 4.5:1 on the background. */
+  --dim-alpha: 0.75;
   /* Inset panels, e.g. calendar cells. */
   --surface-color: #141414;
   /* Highlights such as "watched" marks. */
@@ -114,7 +116,7 @@
   --on-image-color: #f2f2f2;
   --shade-rgb: 0, 0, 0;
   --text-glow: 0 0 1px rgba(255, 255, 255, 0.1);
-  --focus-ring: #069;
+  --focus-ring: #39c;
   --status-online: green;
   --status-offline: red;
 
@@ -130,6 +132,7 @@
   --background-color: #120505;
   --text-color: #ff4433;
   --text-color-rgb: 255, 68, 51;
+  --dim-alpha: 0.9;
   --surface-color: #1d0808;
   --accent-rgb: 150, 0, 0;
   --on-image-color: #ffe9e6;

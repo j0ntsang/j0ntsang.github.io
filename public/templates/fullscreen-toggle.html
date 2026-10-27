@@ -1,6 +1,6 @@
 <template id="fullscreen-toggle">
     <style>
-        #fullscreen {
+        #fullscreen-toggle-slot {
             display: inline-flex;
             align-items: center;
         }
@@ -32,7 +32,7 @@
             top: 2px;
         }
     </style>
-    <button id="fullscreenToggle" class="fullscreen-toggle">
-        <span class="fullscreen-toggle-icon">&#x26F6;</span>
+    <button id="fullscreenToggle" class="fullscreen-toggle" type="button" aria-pressed="false" aria-label="Fullscreen">
+        <span class="fullscreen-toggle-icon" aria-hidden="true">&#x26F6;</span>
     </button>
 </template>

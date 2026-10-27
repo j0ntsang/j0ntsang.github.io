@@ -17,14 +17,14 @@ import { Tty } from "./tty/tty";
 type Step = (label: string, fn: () => Promise<void>) => Promise<void>;
 
 export async function bootKernel(term: Terminal, step: Step) {
-  const display = document.getElementById("display");
-  if (!display) throw new Error("#display element not found");
+  const windowLayer = document.getElementById("window-layer");
+  if (!windowLayer) throw new Error("#window-layer element not found");
   const windowManager = document.querySelector("window-manager");
   if (!(windowManager instanceof HTMLElement)) throw new Error("<window-manager> element not found");
 
   const vfs = new Vfs();
   const tty = new Tty(term);
-  const kernel = new Kernel(vfs, tty, new Compositor(display, windowManager));
+  const kernel = new Kernel(vfs, tty, new Compositor(windowLayer, windowManager));
 
   await step("Mounting rootfs on / (read-only)", async () => {
     vfs.mount("/", rootfs);
@@ -41,7 +41,7 @@ export async function bootKernel(term: Terminal, step: Step) {
   });
 
   await step("Starting /sbin/init", async () => {
-    // PID 1 never exits, so don't await it.
+    // PID 1 never returns (the kernel panics if it does), so don't await it.
     kernel.spawn("/sbin/init", ["init"], null, { foreground: true });
   });
 

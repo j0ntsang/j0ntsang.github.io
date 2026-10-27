@@ -4,37 +4,45 @@ import { initializeSettingsMenu } from "./settingsMenu.js";
 import { initializeSidebarToggle } from "./sidebarToggle.js";
 
 export async function loadAndMountTemplates() {
-  await TemplateManager.loadTemplatesBatch([
-    "templates/fullscreen-toggle.html",
-    // Not mounted here: sidebarToggle.ts mounts it only while the sidebar has content.
-    "templates/sidebar-toggle.html",
-    "templates/terminal.html",
-    "templates/settings-menu.html",
-  ]);
-
   const windowManager = document.querySelector("window-manager");
 
-  const fullscreenNode = document.getElementById("fullscreen");
-  const sidebarToggleNode = document.getElementById("sidebar");
-  const settingsNode = document.getElementById("settings");
+  const fullscreenSlot = document.getElementById("fullscreen-toggle-slot");
+  const sidebarToggleSlot = document.getElementById("sidebar-toggle-slot");
+  const settingsSlot = document.getElementById("settings-menu-slot");
 
-  if (!windowManager || !settingsNode || !fullscreenNode || !sidebarToggleNode) {
-    throw new Error("Template Manager failed to find container nodes.");
+  if (!windowManager || !settingsSlot || !fullscreenSlot || !sidebarToggleSlot) {
+    throw new Error("index.html is missing <window-manager> or a waybar slot.");
   }
 
-  const terminalRoot = TemplateManager.createRoot("terminal");
-  if (terminalRoot) terminalRoot.setAttribute("slot", "main");
-  const fullscreenClone = TemplateManager.create("fullscreen-toggle");
-  const settingsMenuClone = TemplateManager.create("settings-menu");
+  // Each template mounts as soon as it loads. Only the terminal is essential;
+  // a waybar button that fails to load is left out.
+  await Promise.all([
+    loadOptional("fullscreen-toggle", () => {
+      TemplateManager.mount(TemplateManager.create("fullscreen-toggle"), fullscreenSlot);
+      initializeFullscreenToggle();
+    }),
+    loadOptional("settings-menu", () => {
+      TemplateManager.mount(TemplateManager.create("settings-menu"), settingsSlot);
+      initializeSettingsMenu();
+    }),
+    // Not mounted here: sidebarToggle.ts mounts it only while the sidebar has content.
+    loadOptional("sidebar-toggle", () =>
+      initializeSidebarToggle(windowManager, sidebarToggleSlot)
+    ),
+    TemplateManager.loadTemplate("templates/terminal.html").then(() => {
+      const terminalRoot = TemplateManager.createRoot("terminal");
+      terminalRoot.slot = "main";
+      TemplateManager.mount(terminalRoot, windowManager);
+    }),
+  ]);
+}
 
-  if (!terminalRoot || !settingsMenuClone || !fullscreenClone) {
-    throw new Error("Template Manager failed to create a clone");
+async function loadOptional(id, mount) {
+  try {
+    await TemplateManager.loadTemplate(`templates/${id}.html`);
+  } catch (err) {
+    console.warn(`Skipping the ${id} template:`, err);
+    return;
   }
-
-  TemplateManager.mount(fullscreenClone, fullscreenNode);
-  initializeFullscreenToggle();
-  TemplateManager.mount(settingsMenuClone, settingsNode);
-  initializeSettingsMenu();
-  TemplateManager.mount(terminalRoot, windowManager);
-  initializeSidebarToggle(windowManager, sidebarToggleNode);
+  mount();
 }

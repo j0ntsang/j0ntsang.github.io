@@ -64,19 +64,15 @@
             list-style: none;
         }
 
-        .setting-label,
-        .setting [role="radiogroup"] {
+        .setting-label {
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
         }
 
         .setting-input {
             margin: 0;
-        }
-
-        .setting-label {
-            cursor: pointer;
         }
 
         .setting-select {
@@ -95,15 +91,11 @@
             border: 1px solid currentColor;
             cursor: pointer;
         }
-
-        .setting-label:has(.setting-input:disabled) {
-            cursor: default;
-        }
     </style>
 
     <details class="settings">
-        <summary class="settings-button">
-            <span class="settings-button-icon">&#x2699;</span>
+        <summary class="settings-button" aria-label="Settings">
+            <span class="settings-button-icon" aria-hidden="true">&#x2699;</span>
         </summary>
         <nav class="settings-menu">
             <ul class="settings-list">
@@ -120,26 +112,6 @@
                             <option value="fallout">Fallout</option>
                         </select>
                     </label>
-                </li>
-                <li class="setting">
-                    <label class="setting-label">
-                        <input type="checkbox" name="performance_mode" class="setting-input" disabled />Performance Mode
-                    </label>
-                </li>
-                <li class="setting">
-                    <label class="setting-label">
-                        <input type="checkbox" name="disable_javascript" class="setting-input" disabled />Disable
-                        JavaScript
-                    </label>
-                </li>
-                <li class="setting">
-                    <div role="radiogroup" aria-label="Select layout">
-                        <span aria-hidden="true">Layout:</span>
-                        <input type="radio" id="layout-full" name="layout" value="full" checked disabled>
-                        <label for="layout-full" title="Full layout" tabindex="0">&#x26F6;</label>
-                        <input type="radio" id="layout-compact" name="layout" value="compact" disabled>
-                        <label for="layout-compact" title="Compact layout" tabindex="0">&#x229F;</label>
-                    </div>
                 </li>
             </ul>
         </nav>

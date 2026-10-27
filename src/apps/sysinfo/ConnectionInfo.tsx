@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
+
+import { SidebarSection } from "./SidebarSection";
 
 type ConnectionState = {
   supported: boolean;
@@ -27,26 +29,6 @@ type NetworkInformation = {
   ) => void;
 };
 
-function formatConnectionValue(value: number | boolean | string | "unknown") {
-  if (value === "unknown") return "unknown";
-  return String(value);
-}
-
-function SidebarFieldRow({
-  label,
-  value,
-}: {
-  label?: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="sidebar-row" tabIndex={0} role="row" aria-label={label}>
-      {label ? <div className="sidebar-row__label">{label}</div> : null}
-      <div className="sidebar-row__value">{value}</div>
-    </div>
-  );
-}
-
 export const ConnectionInfo: React.VFC = () => {
   const [connection, setConnection] = useState<ConnectionState>(() => ({
     supported: typeof (navigator as any).connection !== "undefined",
@@ -71,7 +53,7 @@ export const ConnectionInfo: React.VFC = () => {
         rtt: typeof conn.rtt === "number" ? conn.rtt : "unknown",
         saveData:
           typeof conn.saveData === "boolean" ? conn.saveData : "unknown",
-        type: (conn as any).type || "unknown",
+        type: conn.type || "unknown",
       });
     };
 
@@ -83,41 +65,17 @@ export const ConnectionInfo: React.VFC = () => {
     };
   }, []);
 
-  const content = useMemo(() => {
-    return (
-      <div tabIndex={0}>
-        <section className="sidebar-section" key="connection">
-          <div className="sidebar-section__heading">Connection</div>
-          <div className="sidebar-section__list">
-            <SidebarFieldRow
-              label="Supported"
-              value={connection.supported ? "Yes" : "No"}
-            />
-            <SidebarFieldRow
-              label="Effective Type"
-              value={formatConnectionValue(connection.effectiveType)}
-            />
-            <SidebarFieldRow
-              label="Downlink (Mbps)"
-              value={formatConnectionValue(connection.downlink)}
-            />
-            <SidebarFieldRow
-              label="RTT (ms)"
-              value={formatConnectionValue(connection.rtt)}
-            />
-            <SidebarFieldRow
-              label="Save Data"
-              value={formatConnectionValue(connection.saveData)}
-            />
-            <SidebarFieldRow
-              label="Type"
-              value={formatConnectionValue(connection.type)}
-            />
-          </div>
-        </section>
-      </div>
-    );
-  }, [connection]);
-
-  return content;
+  return (
+    <SidebarSection
+      title="Connection"
+      rows={[
+        ["Supported", connection.supported ? "Yes" : "No"],
+        ["Effective Type", connection.effectiveType],
+        ["Downlink (Mbps)", connection.downlink],
+        ["RTT (ms)", connection.rtt],
+        ["Save Data", String(connection.saveData)],
+        ["Type", connection.type],
+      ]}
+    />
+  );
 };

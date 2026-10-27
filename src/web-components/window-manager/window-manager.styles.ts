@@ -101,13 +101,13 @@ export const styles = `
   }
 
   /* Program windows from the compositor float above the terminal. */
-  .main ::slotted([slot="overlay"]) {
+  .main ::slotted([slot="windows"]) {
     position: absolute;
     inset: 0;
     z-index: 1;
   }
 
-  .main ::slotted([slot="overlay"][hidden]) {
+  .main ::slotted([slot="windows"][hidden]) {
     display: none;
   }
 
@@ -129,14 +129,20 @@ export const styles = `
     border-radius: 4px;
   }
 
-  /* Full width from the start, so the growing column reveals the panel instead of reflowing it. */
   .sidebar ::slotted(*) {
     flex: 1 1 0;
-    min-width: 280px;
     min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: auto;
+  }
+
+  /* Full width from the start, so the growing column reveals the panel instead of reflowing it.
+     Columns only: stacked, the panel already spans the page, and 280px would clip it on a 320px screen. */
+  @media (min-width: 768px) {
+    .sidebar ::slotted(*) {
+      min-width: 280px;
+    }
   }
 
   .window {

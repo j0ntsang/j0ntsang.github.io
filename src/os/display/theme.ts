@@ -22,13 +22,34 @@ function stored(): Theme {
 
 let preferred = stored();
 let windowTheme: Theme | null = null;
+const root = document.documentElement;
+const settledListeners: (() => void)[] = [];
+
+/** A theme color's computed value, e.g. token("--background-color"). */
+export const token = (name: string) =>
+  getComputedStyle(root).getPropertyValue(name).trim();
+
+/** Run cb after each theme change, once token() returns the new colors. */
+export function onThemeSettled(cb: () => void) {
+  settledListeners.push(cb);
+}
 
 function apply() {
-  const root = document.documentElement;
   root.dataset.theme = windowTheme ?? preferred;
-  const bg = getComputedStyle(root).getPropertyValue("--background-color").trim();
-  if (bg) document.querySelector('meta[name="theme-color"]')?.setAttribute("content", bg);
+  // themes.css transitions the colors when Animation is on, and reading one
+  // mid-transition gets the old theme's. getAnimations() flushes style, so it
+  // already includes the transitions this change started.
+  const transitions = root.getAnimations().filter((a) => a instanceof CSSTransition);
+  Promise.all(transitions.map((t) => t.finished)).then(
+    () => settledListeners.forEach((cb) => cb()),
+    () => {} // Cut short by a newer theme change, which settles itself.
+  );
 }
+
+onThemeSettled(() => {
+  const bg = token("--background-color");
+  if (bg) document.querySelector('meta[name="theme-color"]')?.setAttribute("content", bg);
+});
 
 export const preferredTheme = () => preferred;
 
@@ -36,7 +57,9 @@ export function setPreferredTheme(theme: Theme) {
   preferred = theme;
   try {
     localStorage.setItem(KEY, theme);
-  } catch {}
+  } catch {
+    // Storage blocked: the theme lasts for this page only.
+  }
   apply();
 }
 

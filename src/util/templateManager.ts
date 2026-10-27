@@ -1,41 +1,28 @@
 export class TemplateManager {
   static async loadTemplate(url: string): Promise<void> {
-    try {
-      const resolvedUrl = new URL(url, document.baseURI).toString();
-      const res = await fetch(resolvedUrl);
-      if (!res.ok) throw new Error(`Failed to load template: ${resolvedUrl}`);
-      const html = await res.text();
-
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = html;
-
-      const template = tempDiv.querySelector("template");
-      if (template) {
-        document.body.appendChild(template);
-      } else {
-        console.error(`No <template> found in ${url}`);
-      }
-    } catch (error) {
-      console.error("Error loading template:", error);
+    const resolvedUrl = new URL(url, document.baseURI).toString();
+    const res = await fetch(resolvedUrl).catch((cause) => {
+      throw new Error(`Failed to fetch template ${resolvedUrl}`, { cause });
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to load template ${resolvedUrl}: HTTP ${res.status}`);
     }
-  }
 
-  static async loadTemplatesBatch(urls: string[]): Promise<void> {
-    await Promise.all(
-      urls.map(async (url) => {
-        await this.loadTemplate(url);
-      })
-    );
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = await res.text();
+
+    const template = tempDiv.querySelector("template");
+    if (!template) throw new Error(`No <template> found in ${resolvedUrl}`);
+    document.body.appendChild(template);
   }
 
   static create(
     id: string,
     replacements?: Record<string, string>
-  ): DocumentFragment | null {
-    const template = document.getElementById(id) as HTMLTemplateElement | null;
-    if (!template) {
-      console.error(`Template with id "${id}" not found.`);
-      return null;
+  ): DocumentFragment {
+    const template = document.getElementById(id);
+    if (!(template instanceof HTMLTemplateElement)) {
+      throw new Error(`Template "${id}" not found; was it loaded?`);
     }
 
     const clone = document.importNode(template.content, true);
@@ -50,26 +37,15 @@ export class TemplateManager {
     return clone;
   }
 
-  static createRoot(id: string): HTMLElement | null {
-    const fragment = this.create(id);
-    if (!fragment) return null;
-    return fragment.querySelector("*") as HTMLElement | null;
+  static createRoot(id: string): HTMLElement {
+    const root = this.create(id).firstElementChild;
+    if (!(root instanceof HTMLElement)) {
+      throw new Error(`Template "${id}" has no root element`);
+    }
+    return root;
   }
 
-  static mount(
-    fragment: DocumentFragment | Element | null,
-    container: HTMLElement | null,
-    position: "start" | "end" = "end"
-  ): void {
-    if (!fragment || !container) {
-      console.error("Mount failed: missing fragment or container.");
-      return;
-    }
-
-    if (position === "start") {
-      container.prepend(fragment);
-    } else {
-      container.appendChild(fragment);
-    }
+  static mount(fragment: Node, container: ParentNode): void {
+    container.append(fragment);
   }
 }

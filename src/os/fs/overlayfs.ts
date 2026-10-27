@@ -13,61 +13,50 @@
 
 import { childrenOf, FsDriver, FsError } from "./types";
 
-/** The upper layer's backing store; falls back to memory if localStorage is unavailable. */
+/**
+ * The upper layer. The Map is the only state: it's filled from localStorage
+ * once, and every change is written through so it survives a reload.
+ */
 class Store {
-  private memory = new Map<string, string>();
-  private persistent = true;
+  private files = new Map<string, string>();
 
   constructor(private prefix: string) {
     try {
-      localStorage.getItem(prefix);
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k?.startsWith(prefix)) this.files.set(k.slice(prefix.length), localStorage.getItem(k)!);
+      }
     } catch {
-      this.persistent = false;
+      // Storage is blocked (privacy settings): start empty.
     }
   }
 
   get(key: string): string | null {
-    if (!this.persistent) return this.memory.get(key) ?? null;
-    try {
-      return localStorage.getItem(this.prefix + key);
-    } catch {
-      return this.memory.get(key) ?? null;
-    }
+    return this.files.get(key) ?? null;
   }
 
+  /** Throws ENOSPC if localStorage refused the write; the value still reads back until reload. */
   set(key: string, value: string) {
-    this.memory.set(key, value);
-    if (!this.persistent) return;
+    this.files.set(key, value);
     try {
       localStorage.setItem(this.prefix + key, value);
     } catch {
-      // Quota or privacy mode: the write lives in memory for this session.
+      // Over quota, or storage is blocked.
+      throw new FsError("ENOSPC", key);
     }
   }
 
   delete(key: string) {
-    this.memory.delete(key);
-    if (!this.persistent) return;
+    this.files.delete(key);
     try {
       localStorage.removeItem(this.prefix + key);
     } catch {
-      // Ignore; memory copy is already gone.
+      // Storage is blocked, so nothing was persisted to remove.
     }
   }
 
   keys(): string[] {
-    const keys = new Set(this.memory.keys());
-    if (this.persistent) {
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k?.startsWith(this.prefix)) keys.add(k.slice(this.prefix.length));
-        }
-      } catch {
-        // Memory keys are still valid.
-      }
-    }
-    return Array.from(keys);
+    return Array.from(this.files.keys());
   }
 }
 
@@ -84,7 +73,7 @@ export function overlayfs(lower: FsDriver, mountPoint: string): FsDriver {
     async stat(path) {
       const own = upper.get(path);
       if (own === WHITEOUT) return null;
-      if (own !== null) return { type: "file", size: own.length, upper: true };
+      if (own !== null) return { type: "file", size: own.length };
       if (path === "/" || upperFiles().some((k) => k.startsWith(path + "/"))) {
         return { type: "dir", size: 0 };
       }
