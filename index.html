@@ -11,10 +11,6 @@
   <base href="./" />
   <link rel="icon" href="./favicon.ico" />
   <link rel="apple-touch-icon" href="./logo192.png" />
-  <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
   <link rel="manifest" href="./manifest.json" />
   <script>
     // Before first paint, so the boot animation honours the setting. Settings'
@@ -265,7 +261,7 @@ if (typeof window === 'undefined') {
     }
   </style>
   <script type="module" crossorigin src="./static/js/main.js"></script>
-  <link rel="stylesheet" crossorigin href="./static/css/main-C15tfIj6.css">
+  <link rel="stylesheet" crossorigin href="./static/css/main-CZz9NRYu.css">
 </head>
 
 <body>
@@ -273,10 +269,10 @@ if (typeof window === 'undefined') {
   <div class="screen">
     <div class="page">
       <window-manager>
-        <div id="sidebar" slot="waybar-right"></div>
-        <div id="fullscreen" slot="waybar-right"></div>
-        <div id="settings" slot="waybar-right"></div>
-        <div id="display" slot="overlay" hidden></div>
+        <div id="sidebar-toggle-slot" slot="waybar-right"></div>
+        <div id="fullscreen-toggle-slot" slot="waybar-right"></div>
+        <div id="settings-menu-slot" slot="waybar-right"></div>
+        <div id="window-layer" slot="windows" hidden></div>
       </window-manager>
       <div id="react"></div>
     </div>
