@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { ToggleButton, ToggleButtonGroup, type Key } from "react-aria-components";
 import { THEME_KEY, writePreference, type ThemeChoice } from "@/lib/preferences";
+import { SavedHint } from "./SavedNote";
 
 const listeners = new Set<() => void>();
 const subscribe = (fn: () => void) => {
@@ -52,30 +53,34 @@ export function ThemeToggle() {
   const choice = useSyncExternalStore(subscribe, readThemeChoice);
 
   return (
-    <ToggleButtonGroup
-      aria-label="Colour theme"
-      selectionMode="single"
-      disallowEmptySelection
-      selectedKeys={[choice]}
-      onSelectionChange={(keys: Set<Key>) => {
-        const next = [...keys][0] as ThemeChoice | undefined;
-        if (next) saveThemeChoice(next);
-      }}
-      className="inline-flex shrink-0 rounded-lg border border-line bg-surface p-0.5"
-    >
-      {THEME_OPTIONS.map((o) => (
-        <ToggleButton
-          key={o.id}
-          id={o.id}
-          aria-label={o.id === "system" ? "Match system setting" : `${o.label} mode`}
-          className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted outline-none transition-colors hover:text-ink focus-visible:ring-2 focus-visible:ring-accent selected:bg-accent selected:text-on-accent"
-        >
-          <svg aria-hidden viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-            {o.icon}
-          </svg>
-          <span className="hidden sm:inline">{o.label}</span>
-        </ToggleButton>
-      ))}
-    </ToggleButtonGroup>
+    <div className="flex shrink-0 flex-col items-end gap-1">
+      <ToggleButtonGroup
+        aria-label="Colour theme"
+        selectionMode="single"
+        disallowEmptySelection
+        selectedKeys={[choice]}
+        onSelectionChange={(keys: Set<Key>) => {
+          const next = [...keys][0] as ThemeChoice | undefined;
+          if (next) saveThemeChoice(next);
+        }}
+        className="inline-flex rounded-lg border border-line bg-surface p-0.5"
+      >
+        {THEME_OPTIONS.map((o) => (
+          <ToggleButton
+            key={o.id}
+            id={o.id}
+            aria-label={o.id === "system" ? "Match system setting" : `${o.label} mode`}
+            className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted outline-none transition-colors hover:text-ink focus-visible:ring-2 focus-visible:ring-accent selected:bg-accent selected:text-on-accent"
+          >
+            <svg aria-hidden viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              {o.icon}
+            </svg>
+            <span className="hidden sm:inline">{o.label}</span>
+          </ToggleButton>
+        ))}
+      </ToggleButtonGroup>
+      {/* "Auto" saves nothing: it follows the system setting. */}
+      {choice !== "system" && <SavedHint>Saved on this device</SavedHint>}
+    </div>
   );
 }

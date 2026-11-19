@@ -13,7 +13,7 @@ export type Section = { id: SectionId; href: string; title: string; summary: str
 export const sections: Section[] = [
   { id: "today", href: "/", title: "Today", summary: "Conditions, anything unusual, and your saved details." },
   { id: "getting-around", href: "/getting-around", title: "Transportation", summary: "Transit, roads and closures, flights at YFC." },
-  { id: "home", href: "/home", title: "City Pulse", summary: "Collection day, water, power, fuel and home prices." },
+  { id: "home", href: "/home", title: "City Pulse", summary: "Garbage Day, water, power, fuel and home prices." },
   { id: "health-safety", href: "/health-safety", title: "City Alert", summary: "Warnings, air quality, flood watch, ER waits." },
   { id: "things-to-do", href: "/things-to-do", title: "City Life", summary: "Events, skating, swimming." },
   { id: "city-watch", href: "/city-watch", title: "City Watch", summary: "Live cameras downtown and on the river." },

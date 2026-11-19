@@ -36,7 +36,7 @@ export function SourcesTable({ rows }: { rows: SourceRow[] }) {
   }, [rows, sort]);
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-surface">
+    <div data-card className="overflow-x-auto rounded-xl border border-line bg-surface">
       <Table aria-label="Data sources" sortDescriptor={sort} onSortChange={setSort} className="w-full min-w-[720px] border-collapse text-sm">
         <TableHeader>
           <Column id="name" isRowHeader allowsSorting className={columnClass}>

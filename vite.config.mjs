@@ -27,6 +27,13 @@ function frederictonDevPlugin() {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const path = decodeURIComponent((req.url ?? "").split("?")[0]);
+        // GitHub Pages redirects a folder without its slash; without this, Vite's SPA
+        // fallback would answer /fredericton with the terminal.
+        if (path === "/fredericton") {
+          const query = (req.url ?? "").slice(path.length);
+          res.writeHead(301, { Location: `/fredericton/${query}` });
+          return res.end();
+        }
         if (!path.startsWith("/fredericton/")) return next();
         if (!existsSync(builtDir)) {
           res.statusCode = 404;

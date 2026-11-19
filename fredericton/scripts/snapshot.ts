@@ -6,18 +6,33 @@
 //
 // A failed fetch keeps the last good snapshot, so the page shows it as out of date instead of
 // losing it. With nothing to keep, the failure itself is written so the page can say why.
-// Unchanged data keeps the old file too (for up to REWRITE_UNCHANGED_MS), so the scheduled job
-// only commits when something changed.
+// Unchanged data keeps the old file too, so the scheduled job only commits when something
+// changed; a "checked" source still gets a fresh timestamp every REWRITE_UNCHANGED_MS.
+//
+// NB 511 needs NB511_KEY (a GitHub Actions secret, or fredericton/.env locally). Without it,
+// that source is skipped and nothing is written for it.
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Envelope } from "../src/lib/envelope";
 import { getCbcNb } from "../src/sources/adapters/cbc-nb";
+import { getTransit } from "../src/sources/adapters/fredericton-transit";
+import { getHighways } from "../src/sources/adapters/nb511";
 import { getFuel } from "../src/sources/adapters/nbeub-fuel";
 
-const snapshotters: Record<string, () => Promise<Envelope<unknown>>> = {
+try {
+  process.loadEnvFile(".env");
+} catch {
+  // No .env: CI passes secrets as real environment variables.
+}
+
+const nb511Key = process.env.NB511_KEY;
+
+const snapshotters: Record<string, (() => Promise<Envelope<unknown>>) | null> = {
   "cbc-nb": getCbcNb,
   "nbeub-fuel": getFuel,
+  "fredericton-transit": getTransit,
+  nb511: nb511Key ? () => getHighways(nb511Key) : null,
 };
 
 /** How long unchanged data may keep its old timestamps; "checked" sources need them fairly fresh. */
@@ -37,6 +52,10 @@ await mkdir(outDir, { recursive: true });
 
 for (const [id, load] of Object.entries(snapshotters)) {
   const path = join(outDir, `${id}.json`);
+  if (!load) {
+    console.log(`${id}: skipped (no key)`);
+    continue;
+  }
   const fresh = await load();
   const last = await previous(path);
 
@@ -50,7 +69,7 @@ for (const [id, load] of Object.entries(snapshotters)) {
   const unchanged =
     last?.ok &&
     JSON.stringify(last.data) === JSON.stringify(fresh.data) &&
-    Date.now() - Date.parse(last.fetchedAt) < REWRITE_UNCHANGED_MS;
+    (fresh.timeBasis !== "checked" || Date.now() - Date.parse(last.fetchedAt) < REWRITE_UNCHANGED_MS);
   if (!unchanged) await writeFile(path, JSON.stringify(fresh) + "\n");
   console.log(`${id}: ${unchanged ? "unchanged" : "updated"} → ${path}`);
 }

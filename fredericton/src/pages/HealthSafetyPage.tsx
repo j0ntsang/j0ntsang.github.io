@@ -15,13 +15,14 @@ export function HealthSafetyPage() {
     <>
       <PageHeader title={section.title} summary={section.summary} />
       <div className="grid gap-4 lg:grid-cols-2">
+        {/* Weather leads the page. */}
+        <div className="lg:col-span-2">
+          <WeatherCard envelope={weather} full />
+        </div>
         <RiverCard envelope={river} />
         <div className="flex flex-col gap-4">
           <AirCard envelope={aqhi} />
           <UvCard envelope={uv} />
-        </div>
-        <div className="lg:col-span-2">
-          <WeatherCard envelope={weather} full />
         </div>
         <div className="lg:col-span-2">
           <PlannedSources section="health-safety" />

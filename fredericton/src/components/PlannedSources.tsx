@@ -6,7 +6,7 @@ export function PlannedSources({ section }: { section: SectionId }) {
   const pending = sourcesInSection(section).filter((s) => s.state === "planned" || s.state === "blocked");
   if (pending.length === 0) return null;
   return (
-    <section aria-labelledby={`planned-${section}`} className="rounded-xl border border-dashed border-line p-4">
+    <section data-card aria-labelledby={`planned-${section}`} className="rounded-xl border border-dashed border-line p-4">
       <h2 id={`planned-${section}`} className="stop-heading text-sm font-semibold text-ink">
         Coming to this section
       </h2>

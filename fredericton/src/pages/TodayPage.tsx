@@ -1,12 +1,11 @@
 import { Link } from "react-aria-components";
 import { AirCard, RiverCard, UvCard, WeatherCard } from "@/components/cards";
-import { CollectionPicker } from "@/components/CollectionPicker";
+import { GarbageRecyclingCard } from "@/components/GarbageRecyclingCard";
 import { NeedsAttention } from "@/components/NeedsAttention";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { city } from "@/city/fredericton";
 import { sections } from "@/ia/sections";
-import { formatLongDate, todayInCity } from "@/lib/format";
-import { COLLECTION_LOCATION_KEY, readPreference } from "@/lib/preferences";
+import { formatLongDate } from "@/lib/format";
 import { useSource } from "@/sources/useSource";
 
 export function TodayPage() {
@@ -14,7 +13,8 @@ export function TodayPage() {
   const river = useSource("eccc-hydrometric");
   const aqhi = useSource("eccc-aqhi");
   const uv = useSource("open-meteo-uv");
-  const downCount = [weather, river, aqhi, uv].filter((e) => e && !e.ok).length;
+  const closures = useSource("city-closures");
+  const downCount = [weather, river, aqhi, uv, closures].filter((e) => e && !e.ok).length;
 
   return (
     <div className="flex flex-col gap-6">
@@ -26,7 +26,7 @@ export function TodayPage() {
         <ThemeToggle />
       </header>
 
-      <NeedsAttention weather={weather} river={river} aqhi={aqhi} downCount={downCount} />
+      <NeedsAttention weather={weather} river={river} aqhi={aqhi} closures={closures} downCount={downCount} />
 
       <section aria-labelledby="conditions" className="flex flex-col gap-3">
         <h2 id="conditions" className="stop-heading text-lg font-semibold text-ink">
@@ -40,12 +40,7 @@ export function TodayPage() {
         </div>
       </section>
 
-      <section aria-labelledby="mine" className="rounded-xl border border-line bg-surface p-4">
-        <h2 id="mine" className="stop-heading mb-3 text-lg font-semibold text-ink">
-          Garbage and recycling
-        </h2>
-        <CollectionPicker initialLocationId={readPreference(COLLECTION_LOCATION_KEY)} today={todayInCity()} />
-      </section>
+      <GarbageRecyclingCard level={2} />
 
       <nav aria-labelledby="more" className="flex flex-col gap-3">
         <h2 id="more" className="stop-heading text-lg font-semibold text-ink">

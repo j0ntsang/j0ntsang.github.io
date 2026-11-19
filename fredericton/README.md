@@ -6,9 +6,12 @@ It's a static app (Vite, React 19, React Aria Components, Tailwind 4, Zod). It l
 
 | Source | Loaded by |
 |---|---|
-| ECCC weather, river, AQHI; Open-Meteo UV | The browser, directly (they send CORS headers) |
+| ECCC weather, river, AQHI and its forecast; Open-Meteo UV | The browser, directly (they send CORS headers) |
+| City street closures and construction projects | The browser: the City's public ArcGIS layers (`src/lib/arcgis.ts`) |
 | YouTube webcams | The browser: an `<img>` probe of each `_live` still (CORP, no CORS) |
 | CBC NB news, NBEUB fuel prices | `scripts/snapshot.ts` in Node, published as `data/<id>.json` |
+| Bus timetable | Snapshot: Fredericton Transit's GTFS zip, boiled down to per-stop departures (`src/lib/gtfs.ts`) |
+| NB 511 highways | Snapshot, with a secret key; switched off until the key arrives (see below) |
 | Garbage and recycling zones | Bundled: `src/data/collection-zones.json` (`npm run zones`) |
 
 Fetched data is reused for its source's `revalidate` window, and open pages refresh on that cadence (`src/sources/useSource.ts`).
@@ -30,6 +33,14 @@ npm test
 GitHub Pages has no rewrites, so the build writes an `index.html` into every route's folder (`news/index.html`, …). The client router (`src/router.tsx`) takes over from there. Paths in code have no base (`/news`); hrefs get it added.
 
 The snapshot data goes stale between deploys. `.github/workflows/fredericton-snapshot.yml` in the portfolio runs the snapshot every 30 minutes and commits changed JSON straight to the `gh-pages` branch. Unchanged data isn't rewritten, so most runs commit nothing. If a fetch fails, the last good snapshot is kept, and the page marks it out of date once it's older than the source's `staleAfter`.
+
+## Switching on NB 511
+
+The adapter (`src/sources/adapters/nb511.ts`), snapshot entry, workflow secret and card are built; the registry keeps the source `blocked` until the key works.
+
+1. Put the key in `fredericton/.env` as `NB511_KEY=…` (gitignored) and in the repo's Actions secrets as `NB511_KEY`.
+2. `npm run snapshot` and check `public/data/nb511.json`. The field names follow other 511 v2 deployments and haven't been checked against NB's response: fix the Zod schemas if the snapshot fails or comes back empty when 511.gnb.ca shows events near Fredericton.
+3. Set `state: "connected"` for `nb511` in `src/sources/registry.ts`. The card appears on Transportation and the source is checked on `/sources`.
 
 ## Inside the terminal
 

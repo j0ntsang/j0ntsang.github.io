@@ -25,7 +25,7 @@ export function NewsPage() {
   return (
     <>
       <PageHeader title={section.title} summary={section.summary} />
-      <div className="rounded-xl border border-line bg-surface p-4" aria-busy={!cbc}>
+      <div data-card className="rounded-xl border border-line bg-surface p-4" aria-busy={!cbc}>
         <NewsTabs streams={streams} />
       </div>
     </>

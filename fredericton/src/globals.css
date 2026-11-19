@@ -130,6 +130,13 @@ body {
   color: var(--ink);
 }
 
+/* The first card on each page (App marks it) wears the sidebar's trail-sign colours: the
+   green title band on top, the blue panel as its edge. Unlayered, so it beats utilities. */
+[data-lead-card] {
+  border-color: color-mix(in oklab, var(--sign-blue) 40%, transparent);
+  border-top: 4px solid var(--sign-green);
+}
+
 /* Section heading as a trail stop: a ringed dot, then a crossing line running out to the right. */
 .stop-heading {
   display: flex;

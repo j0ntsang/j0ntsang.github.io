@@ -27,6 +27,7 @@ import {
   type Zone,
 } from "@/lib/collection";
 import { COLLECTION_LOCATION_KEY, writePreference } from "@/lib/preferences";
+import { SavedNote } from "./SavedNote";
 
 /** Fixed row height lets the virtualizer position rows without measuring them. */
 const ROW_HEIGHT = 52;
@@ -140,9 +141,12 @@ export function CollectionPicker({ initialLocationId, today }: { initialLocation
       </ComboBox>
 
       {selected ? (
-        <LocationSchedule location={selected} today={today} />
+        <>
+          <SavedNote>{selected.name} is saved on this device. Clear forgets it.</SavedNote>
+          <LocationSchedule location={selected} today={today} />
+        </>
       ) : (
-        <p className="text-sm text-muted">Pick it once and we&rsquo;ll remember it on this device.</p>
+        <SavedNote>Pick it once and we&rsquo;ll remember it on this device.</SavedNote>
       )}
     </div>
   );

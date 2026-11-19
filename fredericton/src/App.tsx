@@ -1,9 +1,10 @@
-import { useEffect, useRef, type ComponentType } from "react";
+import { useEffect, useLayoutEffect, useRef, type ComponentType } from "react";
 import { Link } from "react-aria-components";
 import { AppNav } from "@/components/AppNav";
 import { city } from "@/city/fredericton";
 import { sectionById } from "@/ia/sections";
 import { CityWatchPage } from "@/pages/CityWatchPage";
+import { GettingAroundPage } from "@/pages/GettingAroundPage";
 import { HealthSafetyPage } from "@/pages/HealthSafetyPage";
 import { HomeUtilitiesPage } from "@/pages/HomeUtilitiesPage";
 import { NewsPage } from "@/pages/NewsPage";
@@ -15,14 +16,14 @@ import { Router, usePath } from "./router";
 
 type Route = { title?: string; Page: ComponentType };
 
-const stub = (id: "getting-around" | "things-to-do" | "contacts"): Route => ({
+const stub = (id: "things-to-do" | "contacts"): Route => ({
   title: sectionById[id].title,
   Page: () => <SectionStub id={id} />,
 });
 
 const routes: Record<string, Route> = {
   "/": { Page: TodayPage },
-  "/getting-around": stub("getting-around"),
+  "/getting-around": { title: sectionById["getting-around"].title, Page: GettingAroundPage },
   "/home": { title: sectionById.home.title, Page: HomeUtilitiesPage },
   "/health-safety": { title: sectionById["health-safety"].title, Page: HealthSafetyPage },
   "/things-to-do": stub("things-to-do"),
@@ -46,6 +47,8 @@ export function App() {
     if (firstRender.current) firstRender.current = false;
     else main.current?.focus();
   }, [path, route.title]);
+
+  useLeadCard(main);
 
   return (
     <Router>
@@ -81,4 +84,26 @@ export function App() {
       </div>
     </Router>
   );
+}
+
+/**
+ * Marks the first card in the page (anything with data-card) so it wears the lead trim.
+ * Which card is first depends on the page and on what has loaded, so it's found in the DOM
+ * after each change rather than chosen by each page.
+ */
+function useLeadCard(main: React.RefObject<HTMLElement | null>) {
+  useLayoutEffect(() => {
+    const root = main.current;
+    if (!root) return;
+    const mark = () => {
+      const first = root.querySelector("[data-card]");
+      for (const el of root.querySelectorAll("[data-lead-card]")) if (el !== first) el.removeAttribute("data-lead-card");
+      if (first && !first.hasAttribute("data-lead-card")) first.setAttribute("data-lead-card", "");
+    };
+    mark();
+    // Only element changes matter; the attribute this sets doesn't re-trigger it.
+    const watch = new MutationObserver(mark);
+    watch.observe(root, { childList: true, subtree: true });
+    return () => watch.disconnect();
+  }, [main]);
 }

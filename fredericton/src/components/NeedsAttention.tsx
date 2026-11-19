@@ -1,6 +1,7 @@
 import { Link } from "react-aria-components";
 import type { Envelope } from "@/lib/envelope";
 import { formatWhen } from "@/lib/format";
+import type { StreetClosure } from "@/sources/adapters/city-closures";
 import type { Aqhi } from "@/sources/adapters/eccc-aqhi";
 import type { Weather } from "@/sources/adapters/eccc-citypage";
 import type { River } from "@/sources/adapters/eccc-hydrometric";
@@ -12,10 +13,11 @@ type Props = {
   weather: Envelope<Weather> | null;
   river: Envelope<River> | null;
   aqhi: Envelope<Aqhi> | null;
+  closures: Envelope<StreetClosure[]> | null;
   downCount: number;
 };
 
-export function NeedsAttention({ weather, river, aqhi, downCount }: Props) {
+export function NeedsAttention({ weather, river, aqhi, closures, downCount }: Props) {
   const items: Item[] = [];
 
   if (weather?.ok) {
@@ -36,42 +38,36 @@ export function NeedsAttention({ weather, river, aqhi, downCount }: Props) {
     items.push({ id: "aqhi", title: `Air quality: ${aqhi.data.risk.toLowerCase()} risk`, href: "/health-safety", severity: "high" });
   }
 
-  const cleared = [
-    weather?.ok && "no weather warnings",
-    river?.ok && "river below flood stage",
-    aqhi?.ok && "air quality below high risk",
-  ].filter(Boolean) as string[];
-  const loading = !weather || !river || !aqhi;
+  if (closures?.ok) {
+    for (const c of closures.data.filter((c) => c.status === "Closed")) {
+      items.push({ id: `street-${c.street}`, title: `${c.street} is closed`, href: "/getting-around", severity: "moderate" });
+    }
+  }
+
+  // Only there when something is: an all-clear box is noise on a page you check daily.
+  if (items.length === 0) return null;
 
   return (
     <section aria-labelledby="attention-heading" className="rounded-xl border border-line bg-surface p-4">
       <h2 id="attention-heading" className="text-base font-semibold text-ink">
         Needs attention
       </h2>
-      {items.length === 0 ? (
-        <p className="mt-2 text-sm text-muted" aria-busy={loading}>
-          {loading
-            ? "Checking warnings, river level and air quality…"
-            : cleared.length > 0 ? `Nothing unusual right now: ${cleared.join(", ")}.` : "We can't check anything right now."}
-        </p>
-      ) : (
-        <ul className="mt-3 flex flex-col gap-2">
-          {items.map((i) => (
-            <li key={i.id} className={`rounded-lg border-l-4 bg-surface-2 p-3 ${i.severity === "high" ? "border-down" : "border-stale"}`}>
-              {i.href ? (
-                <Link href={i.href} className="font-medium text-ink underline-offset-2 hover:underline">
-                  {i.title}
-                </Link>
-              ) : (
-                <p className="font-medium text-ink">{i.title}</p>
-              )}
-              {i.detail && <p className="text-sm text-muted">{i.detail}</p>}
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="mt-3 flex flex-col gap-2">
+        {items.map((i) => (
+          <li key={i.id} className={`rounded-lg border-l-4 bg-surface-2 p-3 ${i.severity === "high" ? "border-down" : "border-stale"}`}>
+            {i.href ? (
+              <Link href={i.href} className="font-medium text-ink underline-offset-2 hover:underline">
+                {i.title}
+              </Link>
+            ) : (
+              <p className="font-medium text-ink">{i.title}</p>
+            )}
+            {i.detail && <p className="text-sm text-muted">{i.detail}</p>}
+          </li>
+        ))}
+      </ul>
       <p className="mt-3 text-xs text-muted">
-        Checks weather warnings, river level and air quality. Road closures, outages, boil orders and school closures are{" "}
+        Checks weather warnings, river level, air quality and City street closures. Highways, outages, boil orders and school closures are{" "}
         <Link href="/sources" className="text-accent underline-offset-2 hover:underline">
           not connected yet
         </Link>

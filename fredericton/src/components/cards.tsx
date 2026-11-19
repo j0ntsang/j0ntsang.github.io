@@ -3,7 +3,7 @@ import { IndexMeter } from "@/components/IndexMeter";
 import { RiverSparkline } from "@/components/RiverSparkline";
 import { city } from "@/city/fredericton";
 import type { Envelope } from "@/lib/envelope";
-import { formatTime, signed } from "@/lib/format";
+import { formatTime, formatWhen, signed } from "@/lib/format";
 import type { Aqhi } from "@/sources/adapters/eccc-aqhi";
 import type { Weather } from "@/sources/adapters/eccc-citypage";
 import type { River } from "@/sources/adapters/eccc-hydrometric";
@@ -122,6 +122,12 @@ export function AirCard({ envelope }: { envelope: Envelope<Aqhi> | null }) {
                 ? "People at risk should consider reducing strenuous outdoor activity."
                 : "Reduce or reschedule strenuous outdoor activity."}
           </p>
+          {a.outlook && (
+            <p className="text-sm text-muted">
+              Next 24 h: up to <span className="font-medium text-ink">{a.outlook.value}</span>, {a.outlook.risk.toLowerCase()} risk
+              {a.outlook.risk !== "Low" && <>, around {formatWhen(a.outlook.at)}</>}. ECCC forecast.
+            </p>
+          )}
         </div>
       )}
     </Card>

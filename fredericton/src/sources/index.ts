@@ -1,8 +1,12 @@
 import type { Envelope } from "@/lib/envelope";
+import type { Timetable } from "@/lib/gtfs";
 import type { Headline } from "./adapters/cbc-nb";
+import { getClosures } from "./adapters/city-closures";
+import { getConstruction } from "./adapters/city-construction";
 import { getAqhi } from "./adapters/eccc-aqhi";
 import { getCitypage } from "./adapters/eccc-citypage";
 import { getRiver } from "./adapters/eccc-hydrometric";
+import type { Highways } from "./adapters/nb511";
 import type { Fuel } from "./adapters/nbeub-fuel";
 import { getUv } from "./adapters/open-meteo-uv";
 import { getWebcams } from "./adapters/youtube-webcams";
@@ -11,8 +15,9 @@ import { getWebcams } from "./adapters/youtube-webcams";
 export const snapshotUrl = (sourceId: string) => `${import.meta.env.BASE_URL}data/${sourceId}.json`;
 
 /**
- * CBC's RSS and NBEUB's price page send no CORS headers, so the browser can't read them.
- * A scheduled job runs their adapters in Node and publishes the envelopes as JSON.
+ * CBC's RSS, NBEUB's price page, the transit GTFS zip and NB 511 can't be read from the browser
+ * (no CORS headers, or a secret key). A scheduled job runs their adapters in Node and publishes
+ * the envelopes as JSON.
  */
 async function fromSnapshot<T>(sourceId: string): Promise<Envelope<T>> {
   try {
@@ -26,7 +31,7 @@ async function fromSnapshot<T>(sourceId: string): Promise<Envelope<T>> {
   }
 }
 
-/** Everything that loads a connected source. The ECCC, Open-Meteo and YouTube ones run in the browser. */
+/** Everything that loads a source. The ECCC, Open-Meteo, City ArcGIS and YouTube ones run in the browser. */
 export const loaders = {
   webcams: getWebcams,
   "eccc-citypage": getCitypage,
@@ -35,6 +40,10 @@ export const loaders = {
   "open-meteo-uv": getUv,
   "nbeub-fuel": () => fromSnapshot<Fuel>("nbeub-fuel"),
   "cbc-nb": () => fromSnapshot<Headline[]>("cbc-nb"),
+  "city-closures": getClosures,
+  "city-construction": () => getConstruction(),
+  "fredericton-transit": () => fromSnapshot<Timetable>("fredericton-transit"),
+  nb511: () => fromSnapshot<Highways>("nb511"),
 } as const;
 
 export type LoaderId = keyof typeof loaders;
