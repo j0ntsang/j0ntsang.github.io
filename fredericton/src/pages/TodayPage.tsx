@@ -14,7 +14,8 @@ export function TodayPage() {
   const aqhi = useSource("eccc-aqhi");
   const uv = useSource("open-meteo-uv");
   const closures = useSource("city-closures");
-  const downCount = [weather, river, aqhi, uv, closures].filter((e) => e && !e.ok).length;
+  const highways = useSource("nb511");
+  const downCount = [weather, river, aqhi, uv, closures, highways].filter((e) => e && !e.ok).length;
 
   return (
     <div className="flex flex-col gap-6">
@@ -26,7 +27,7 @@ export function TodayPage() {
         <ThemeToggle />
       </header>
 
-      <NeedsAttention weather={weather} river={river} aqhi={aqhi} closures={closures} downCount={downCount} />
+      <NeedsAttention weather={weather} river={river} aqhi={aqhi} closures={closures} highways={highways} downCount={downCount} />
 
       <section aria-labelledby="conditions" className="flex flex-col gap-3">
         <h2 id="conditions" className="stop-heading text-lg font-semibold text-ink">

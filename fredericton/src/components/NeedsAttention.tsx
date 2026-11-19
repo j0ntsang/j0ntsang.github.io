@@ -5,6 +5,7 @@ import type { StreetClosure } from "@/sources/adapters/city-closures";
 import type { Aqhi } from "@/sources/adapters/eccc-aqhi";
 import type { Weather } from "@/sources/adapters/eccc-citypage";
 import type { River } from "@/sources/adapters/eccc-hydrometric";
+import { highwayAlerts, type Highways } from "@/sources/adapters/nb511";
 
 type Item = { id: string; title: string; detail?: string; href?: string; severity: "high" | "moderate" };
 
@@ -14,10 +15,11 @@ type Props = {
   river: Envelope<River> | null;
   aqhi: Envelope<Aqhi> | null;
   closures: Envelope<StreetClosure[]> | null;
+  highways: Envelope<Highways> | null;
   downCount: number;
 };
 
-export function NeedsAttention({ weather, river, aqhi, closures, downCount }: Props) {
+export function NeedsAttention({ weather, river, aqhi, closures, highways, downCount }: Props) {
   const items: Item[] = [];
 
   if (weather?.ok) {
@@ -44,6 +46,19 @@ export function NeedsAttention({ weather, river, aqhi, closures, downCount }: Pr
     }
   }
 
+  if (highways?.ok) {
+    for (const e of highwayAlerts(highways.data.events)) {
+      const where = [e.road, e.direction].filter(Boolean).join(" ") || "A highway";
+      items.push({
+        id: `hwy-${e.id}`,
+        title: e.fullClosure ? `${where} is closed` : `${e.kind ?? "Incident"} on ${where}`,
+        detail: e.end ? `Until ${formatWhen(e.end)}` : undefined,
+        href: "/getting-around",
+        severity: "moderate",
+      });
+    }
+  }
+
   // Only there when something is: an all-clear box is noise on a page you check daily.
   if (items.length === 0) return null;
 
@@ -67,7 +82,7 @@ export function NeedsAttention({ weather, river, aqhi, closures, downCount }: Pr
         ))}
       </ul>
       <p className="mt-3 text-xs text-muted">
-        Checks weather warnings, river level, air quality and City street closures. Highways, outages, boil orders and school closures are{" "}
+        Checks weather warnings, river level, air quality, City street closures and highways within 50 km. Outages, boil orders and school closures are{" "}
         <Link href="/sources" className="text-accent underline-offset-2 hover:underline">
           not connected yet
         </Link>

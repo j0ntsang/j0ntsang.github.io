@@ -166,6 +166,32 @@ body {
 }
 
 /*
+ * Slide-out site menu (SiteMenu in AppNav.tsx). Closed, both parts are display:none, so they're
+ * out of the Tab order and the accessibility tree. The drawer slides with transform and the
+ * scrim fades with opacity, both compositor-only; @starting-style animates the open and
+ * allow-discrete keeps display alive through the close. Reduced motion: no transition.
+ */
+.site-drawer:not([data-open]),
+.site-scrim:not([data-open]) { display: none; }
+.site-drawer:not([data-open]) { transform: translateX(100%); }
+.site-scrim:not([data-open]) { opacity: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-drawer { transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), display 260ms allow-discrete; }
+  .site-scrim { transition: opacity 260ms ease-out, display 260ms allow-discrete; }
+  /* The stops follow the drawer in, one after another. */
+  .site-drawer .trail-stop {
+    transition: opacity 320ms ease-out, transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: calc(80ms + var(--i, 0) * 28ms);
+  }
+  @starting-style {
+    .site-drawer[data-open] { transform: translateX(100%); }
+    .site-scrim[data-open] { opacity: 0; }
+    .site-drawer[data-open] .trail-stop { opacity: 0; transform: translateX(24px); }
+  }
+}
+
+/*
  * Cover flow. Native horizontal scroll with snap; the 3D tilt is a scroll-driven animation
  * (animation-timeline: view(inline)), so the compositor runs it: no JS per frame. Browsers
  * without scroll timelines, and reduced-motion users, get a flat snapping carousel.

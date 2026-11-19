@@ -5,7 +5,7 @@ import type { Envelope } from "@/lib/envelope";
 import { formatDate, formatDay, formatWhen } from "@/lib/format";
 import type { StreetClosure } from "@/sources/adapters/city-closures";
 import type { ConstructionProject } from "@/sources/adapters/city-construction";
-import type { Highways } from "@/sources/adapters/nb511";
+import { isClear, type Highways } from "@/sources/adapters/nb511";
 import { sourceById } from "@/sources/registry";
 
 const STATUS = {
@@ -99,7 +99,6 @@ export function ConstructionCard({ envelope }: { envelope: Envelope<Construction
   );
 }
 
-/** Shown once NB 511 is connected; until then the source is listed as blocked. */
 export function HighwayCard({ envelope }: { envelope: Envelope<Highways> | null }) {
   return (
     <Card title="Highways near Fredericton" source={sourceById.nb511} envelope={envelope}>
@@ -108,36 +107,51 @@ export function HighwayCard({ envelope }: { envelope: Envelope<Highways> | null 
           {events.length === 0 ? (
             <p className="text-sm text-muted">No closures, incidents or roadwork reported within 50 km.</p>
           ) : (
-            <ul className="flex flex-col gap-2">
-              {events.map((e) => (
-                <li key={e.id} className={`rounded-lg border-l-4 bg-surface-2 p-3 ${e.fullClosure ? "border-down" : "border-stale"}`}>
-                  <p className="font-medium text-ink">
-                    {e.fullClosure && "Closed: "}
-                    {[e.road, e.direction].filter(Boolean).join(" ") || e.kind || "Incident"}
-                  </p>
-                  {e.description && <p className="text-sm text-ink">{e.description}</p>}
-                  <p className="text-xs text-muted">
-                    {[e.kind, e.lanes, e.end && `until ${formatWhen(e.end)}`, e.updated && `updated ${formatWhen(e.updated)}`].filter(Boolean).join(" · ")}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-          {conditions.length > 0 && (
-            <div>
-              <h4 className="text-sm font-semibold text-ink">Road conditions</h4>
-              <ul className="mt-1 grid gap-1 text-sm sm:grid-cols-2">
-                {conditions.map((c, i) => (
-                  <li key={`${c.road}-${c.where}-${i}`}>
-                    <span className="text-ink">{[c.road, c.where].filter(Boolean).join(", ") || "Unnamed section"}</span>
-                    <span className="text-muted">: {c.condition}</span>
+            <ScrollArea label="Highway events list">
+              <ul className="flex flex-col gap-2">
+                {events.map((e) => (
+                  <li key={e.id} className={`rounded-lg border-l-4 bg-surface-2 p-3 ${e.fullClosure ? "border-down" : "border-stale"}`}>
+                    <p className="font-medium text-ink">
+                      {e.fullClosure && "Closed: "}
+                      {[e.road, e.direction].filter(Boolean).join(" ") || e.kind || "Incident"}
+                    </p>
+                    {e.description && <p className="text-sm text-ink">{e.description}</p>}
+                    <p className="text-xs text-muted">
+                      {[e.kind, e.lanes, e.end && `until ${formatWhen(e.end)}`, e.updated && `updated ${formatWhen(e.updated)}`].filter(Boolean).join(" · ")}
+                    </p>
                   </li>
                 ))}
               </ul>
-            </div>
+            </ScrollArea>
           )}
+          {conditions.length > 0 && <RoadConditions conditions={conditions} />}
         </div>
       )}
     </Card>
+  );
+}
+
+function RoadConditions({ conditions }: { conditions: Highways["conditions"] }) {
+  const notClear = conditions.filter((c) => !isClear(c));
+  const clear = conditions.length - notClear.length;
+  return (
+    <div>
+      <h4 className="text-sm font-semibold text-ink">Road conditions</h4>
+      {notClear.length > 0 && (
+        <ul className="mt-1 grid gap-1 text-sm sm:grid-cols-2">
+          {notClear.map((c, i) => (
+            <li key={`${c.road}-${c.where}-${i}`}>
+              <span className="text-ink">{[c.road, c.where].filter(Boolean).join(", ") || "Unnamed section"}</span>
+              <span className="text-muted">: {c.condition}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {clear > 0 && (
+        <p className="mt-1 text-sm text-muted">
+          {notClear.length === 0 ? `All ${clear} sections` : `${clear} other section${clear > 1 ? "s" : ""}`} within 50 km {clear > 1 ? "are" : "is"} bare and dry.
+        </p>
+      )}
+    </div>
   );
 }

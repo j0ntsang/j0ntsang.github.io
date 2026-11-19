@@ -2,7 +2,6 @@ import { PageHeader, PlannedSources } from "@/components/PlannedSources";
 import { ClosuresCard, ConstructionCard, HighwayCard } from "@/components/RoadCards";
 import { TransitCard } from "@/components/TransitCard";
 import { sectionById } from "@/ia/sections";
-import { sourceById } from "@/sources/registry";
 import { useSource } from "@/sources/useSource";
 
 const section = sectionById["getting-around"];
@@ -11,6 +10,7 @@ export function GettingAroundPage() {
   const closures = useSource("city-closures");
   const construction = useSource("city-construction");
   const transit = useSource("fredericton-transit");
+  const highways = useSource("nb511");
 
   return (
     <>
@@ -22,15 +22,9 @@ export function GettingAroundPage() {
           <ClosuresCard envelope={closures} />
           <ConstructionCard envelope={construction} />
         </div>
-        {sourceById.nb511.state === "connected" && <Highways />}
+        <HighwayCard envelope={highways} />
         <PlannedSources section="getting-around" />
       </div>
     </>
   );
-}
-
-
-/** Its own component so the 511 snapshot is only requested once that source is switched on. */
-function Highways() {
-  return <HighwayCard envelope={useSource("nb511")} />;
 }

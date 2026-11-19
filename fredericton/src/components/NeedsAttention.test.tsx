@@ -17,8 +17,11 @@ const quiet = {
   weather: ok("eccc-citypage", { warnings: [] } as never),
   river: ok("eccc-hydrometric", { levelM: 1, floodStageM: 6.5 } as never),
   aqhi: ok("eccc-aqhi", { value: 2, risk: "Low" } as never),
+  highways: ok("nb511", { events: [], conditions: [] }),
   downCount: 0,
 };
+
+const event = { direction: null, description: null, lanes: null, start: null, updated: null };
 
 afterEach(cleanup);
 
@@ -29,7 +32,7 @@ describe("NeedsAttention", () => {
   });
 
   it("renders nothing while sources are still loading", () => {
-    const { container } = render(<NeedsAttention weather={null} river={null} aqhi={null} closures={null} downCount={0} />);
+    const { container } = render(<NeedsAttention weather={null} river={null} aqhi={null} closures={null} highways={null} downCount={0} />);
     expect(container.innerHTML).toBe("");
   });
 
@@ -42,5 +45,21 @@ describe("NeedsAttention", () => {
     expect(screen.getByRole("heading", { name: "Needs attention" })).toBeTruthy();
     expect(screen.getByRole("link", { name: "Queen Street is closed" })).toBeTruthy();
     expect(screen.queryByText(/Holland Street/)).toBeNull();
+  });
+
+  it("lists a highway closure ending soon, but not one lasting years", () => {
+    const soon = new Date(Date.now() + 5 * 86_400_000).toISOString();
+    const highways = ok("nb511", {
+      events: [
+        { ...event, id: "1", road: "HWY-102", kind: "closures", fullClosure: true, end: soon },
+        { ...event, id: "2", road: "Mast Rd", kind: "closures", fullClosure: true, end: "2031-01-01T14:22:00Z" },
+        { ...event, id: "3", road: "HWY-2", kind: "roadwork", fullClosure: false, end: soon },
+      ],
+      conditions: [],
+    });
+    render(<NeedsAttention {...quiet} closures={ok("city-closures", [])} highways={highways} />);
+    expect(screen.getByRole("link", { name: "HWY-102 is closed" })).toBeTruthy();
+    expect(screen.queryByText(/Mast Rd/)).toBeNull();
+    expect(screen.queryByText(/HWY-2\b/)).toBeNull();
   });
 });
