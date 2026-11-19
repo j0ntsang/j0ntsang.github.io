@@ -1,0 +1,55 @@
+# CBC's RSS feed and NBEUB's fuel price page send no CORS headers, so the static Fredericton
+# app can't fetch them from the browser. Every 30 minutes this fetches them in Node and
+# publishes the JSON straight to the gh-pages branch at fredericton/data/, with no rebuild.
+# The snapshot script leaves unchanged data alone, so most runs commit nothing.
+#
+# GitHub pauses scheduled workflows after 60 days without repo activity; re-enable it from
+# the Actions tab, or run it by hand with "Run workflow".
+name: Fredericton snapshot
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fredericton-snapshot
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: source
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: pages
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: source/fredericton/package-lock.json
+      - run: npm ci
+        working-directory: source/fredericton
+      - run: npm run snapshot -- "$GITHUB_WORKSPACE/pages/fredericton/data"
+        working-directory: source/fredericton
+      - name: Publish if anything changed
+        working-directory: pages
+        run: |
+          git add fredericton/data
+          if git diff --cached --quiet; then
+            echo "No change."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update Fredericton snapshot"
+          # A manual deploy may have pushed meanwhile.
+          git pull --rebase
+          git push

@@ -86,7 +86,7 @@ The main window is an [`@xterm/xterm`](https://xtermjs.org/) terminal running a 
 | TTY + line discipline | `src/os/tty/tty.ts` — xterm is the device, `local-echo` is canonical-mode line editing |
 | Display server | `src/os/display/compositor.ts` — hands a process a bare `HTMLElement` surface (Wayland-style): a window over the terminal, or a sidebar panel (like layer-shell). Windows float in the `windows` slot and make the terminal `inert` while one is open (focus returns to the terminal when the last closes). A window can ask to be `maximized` (`october` does): the sidebar hides while it's open and comes back when it closes |
 | Daemons + signals | `spawn(…, { daemon: true })` re-parents to init (PPID 1); `kill <pid>` sends SIGTERM/SIGINT; a killed process unwinds at its next blocking syscall (`readLine`, `spawn`) |
-| GUI toolkits | `src/os/display/toolkits/` — each program draws with React, a `<template>`, a web component or raw DOM |
+| GUI toolkits | `src/os/display/toolkits/` — each program draws with React, a `<template>`, a web component or raw DOM; `frame.ts` embeds a whole separate same-origin app in an iframe (like X11 forwarding), with the window title following the app's `<title>` |
 | init + shell | `src/bin/init.ts` (PID 1) prints `/etc/motd` and respawns `src/bin/sh.ts`; a shell that keeps dying within a second is disabled for 5 minutes ("respawning too fast"). If init itself exits, the kernel panics and asks for a reload |
 
 `src/terminal/index.js` sets up xterm (theme sync, resize, OSC title/links), waits for a keypress, then calls `bootKernel()`. Boot prints a status line per step; a failed non-fatal step (such as `SharedArrayBuffer` being unavailable) only warns.
@@ -94,6 +94,10 @@ The main window is an [`@xterm/xterm`](https://xtermjs.org/) terminal running a 
 **Adding a program:** write `src/bin/<name>.ts` exporting `default (argv, sys) => exitCode`, then add `rootfs/usr/bin/<name>` containing `#!module:<name>` plus `#summary:` / `#usage:` lines (that's what `help` prints).
 
 **`october`** — movie-a-day calendar. The shipped calendar is `rootfs/usr/share/october/<year>.json` (read-only at `/usr/share/october`). Each day has a display `title` and optional `wiki` article title; posters and links are hotlinked from Wikipedia. A day set to `{}` is one you missed: blood pools at the top of its cell and drips down (static when the Animation setting is off or under `prefers-reduced-motion`), and adding a movie to it makes it up. Wikimedia sends CORS headers, which COEP `require-corp` needs, and no API key is required. Lookups are cached in `/var/cache/october/wiki.json`; misses and posterless pages are retried after a day. A calendar that can't load, a corrupt copy, and a failed save or reset show an error message instead of failing silently. To add or remove movies, click an empty day or a day's `+` and search Wikipedia by title. Picking a result fills in the poster and link, and a day can hold more than one movie. Click a poster to cross it off (struck through under a red wash). Your changes are saved to `~/october/<year>.json` as a version 2 diff against the shipped file (`added`, `crossedOff` and `removed` movies per day) and applied over it on load, so shipped edits always show and removals persist. A copy from the older format is converted on load, and its original text is backed up to `~/october/<year>.legacy.json` before the first save or reset. **Export** downloads the merged year as JSON; to publish it, copy it over the rootfs file and deploy. **Click to reset** (asks twice) deletes your copy; it's disabled when you have none.
+
+**`fredericton`** — a civic dashboard for Fredericton, NB (weather, river level, air quality, UV, fuel prices, news, webcams, garbage day). It's a separate app in `fredericton/` with its own stack (React 19, React Aria Components, Tailwind 4, Zod), built into `public/fredericton/` and served at `/fredericton/`. `fredericton [page]` opens it in a maximized window through the `frame` toolkit; `fredericton --tab` opens it in a new tab. Escape inside the app closes the window unless you're typing. See [`fredericton/README.md`](fredericton/README.md).
+
+Isolation and the app: inside the terminal the app is an iframe, so `coi-serviceworker` gives it COEP like everything else, and YouTube's player only loads as a `credentialless` iframe (Chromium; elsewhere you get stills and a YouTube link). A direct visit to `/fredericton/` skips isolation so the players work everywhere: `scripts/copy-coi.mjs` patches the service worker to pass top-level navigations under `fredericton/` through untouched.
 
 ### 5. sysinfo (`src/bin/sysinfo.tsx`, `src/apps/sysinfo/`)
 
@@ -169,7 +173,11 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 │   │   ├── sidebar-toggle.html
 │   │   ├── settings-menu.html
 │   │   └── terminal.html
+│   ├── fredericton/                  # Built by `npm run build:fredericton` (gitignored)
 │   └── thrive/                       # Embedded sub-project (separate Vite build)
+├── fredericton/                      # The Fredericton app: its own package, Vite build and tests
+├── scripts/copy-coi.mjs              # Copies coi-serviceworker into public/, patched to skip /fredericton/
+├── .github/workflows/                # fredericton-snapshot.yml: refreshes the app's CBC + fuel data
 ├── rootfs/                           # Read-only disk image: bin/, sbin/, usr/bin/, etc/motd, home/guest/
 ├── tests/                            # Playwright end-to-end specs
 ├── vitest.config.ts                  # Unit test config (src/**/*.test.ts)
@@ -184,7 +192,7 @@ React 18 is mounted into `#react` alongside the vanilla layer.
 Two layers, both run by `npm test` (unit first, then end-to-end):
 
 ```
-npm run test:unit   # Vitest, node environment, src/**/*.test.ts
+npm run test:unit   # Vitest, node environment, src/**/*.test.ts, then fredericton's own tests
 npm run test:e2e    # Playwright, Chromium, tests/
 ```
 
@@ -200,6 +208,7 @@ npm run test:e2e    # Playwright, Chromium, tests/
 | `october.spec.ts` | The calendar window, your saved copy, Wikipedia lookups, the Animation setting |
 | `settings.spec.ts` | Settings menu, theme and animation persistence, fullscreen button |
 | `templates.spec.ts` | Template load failures |
+| `fredericton.spec.ts` | The `fredericton` window (against a stand-in page): opening at a page, title following, Escape |
 | `prod.spec.ts` | The production build and its service worker |
 
 ## Runtime Dependencies

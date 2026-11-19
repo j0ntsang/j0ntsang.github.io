@@ -4,3 +4,8 @@ public/static
 test-results
 playwright-report
 .env
+# fredericton: built into public/ by npm run build:fredericton; data comes from its snapshot job
+public/fredericton
+fredericton/node_modules
+fredericton/public/data
+fredericton/dist

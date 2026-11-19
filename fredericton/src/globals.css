@@ -1,0 +1,233 @@
+@import "tailwindcss";
+@plugin "tailwindcss-react-aria-components";
+
+/* dark: follows the theme toggle, and the system setting when the user picked nothing. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme]), :root:not([data-theme]) *) {
+      @slot;
+    }
+  }
+}
+
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-here: var(--here);
+  --color-live: var(--live);
+  --color-stale: var(--stale);
+  --color-down: var(--down);
+  --color-sign-blue: var(--sign-blue);
+  --color-sign-green: var(--sign-green);
+  --color-on-sign: var(--on-sign);
+  --color-trail: var(--trail);
+  --color-crossing: var(--crossing);
+  --color-sign-here: var(--sign-here);
+  --color-route: var(--route);
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --bg: #f5f4ef;
+  --surface: #ffffff;
+  --surface-2: #eeede6;
+  --line: #dcdad1;
+  --ink: #1b1d1a;
+  --muted: #565b54;
+  /* Accents from the City's trail signs: panel blue, trail green, "you are here" orange,
+     each darkened only as far as AA text contrast on --bg needs. */
+  --accent: #1f4fb4;
+  --on-accent: #ffffff;
+  --here: #c2410c;
+  --live: #2a7a30;
+  --stale: #8a5a00;
+  --down: #b42318;
+  /* Trail sign surfaces: the sign's blue panel and green bands, its trail line and crossings. */
+  --sign-blue: #1f4fb4;
+  --sign-green: #2b8034;
+  --on-sign: #ffffff;
+  --trail: #7fd67a;
+  --crossing: #c9d2f7;
+  --sign-here: #ef5a24;
+  --stop-ring: var(--sign-green);
+  --stop-glow: transparent;
+  --stop-line: var(--sign-blue);
+  --route: var(--live);
+  --bg-glow: none;
+  color-scheme: light;
+}
+
+/* Dark tokens apply when the user picked dark, or picked nothing and the system is dark. */
+:root[data-theme="dark"] {
+  /* Night palette from the Harvest Music Festival projection: violet uplight on brick, amber projected logo. */
+  --bg: #0c0a12;
+  --surface: #15111d;
+  --surface-2: #1f1929;
+  --line: #2e2540;
+  --ink: #f3eff8;
+  --muted: #a89fb6;
+  --accent: #b693ff;
+  --on-accent: #160a2b;
+  --here: #ffb547;
+  --live: #6cc58f;
+  --stale: #e3b25c;
+  --down: #ff7a8a;
+  --sign-blue: #17306a;
+  --sign-green: #1f5a27;
+  --on-sign: #f2f5ff;
+  --trail: #6cc58f;
+  --crossing: #b8c3ee;
+  --sign-here: #ef5a24;
+  --stop-ring: var(--here);
+  --stop-glow: rgb(255 181 71 / 0.55);
+  --stop-line: var(--accent);
+  --route: var(--accent);
+  --bg-glow: radial-gradient(ellipse 80% 50% at 50% -10%, rgb(123 63 228 / 0.28), transparent 70%);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    /* Night palette from the Harvest Music Festival projection: violet uplight on brick, amber projected logo. */
+    --bg: #0c0a12;
+    --surface: #15111d;
+    --surface-2: #1f1929;
+    --line: #2e2540;
+    --ink: #f3eff8;
+    --muted: #a89fb6;
+    --accent: #b693ff;
+    --on-accent: #160a2b;
+    --here: #ffb547;
+    --live: #6cc58f;
+    --stale: #e3b25c;
+    --down: #ff7a8a;
+    --sign-blue: #17306a;
+    --sign-green: #1f5a27;
+    --on-sign: #f2f5ff;
+    --trail: #6cc58f;
+    --crossing: #b8c3ee;
+    --sign-here: #ef5a24;
+    --stop-ring: var(--here);
+    --stop-glow: rgb(255 181 71 / 0.55);
+    --stop-line: var(--accent);
+    --route: var(--accent);
+    --bg-glow: radial-gradient(ellipse 80% 50% at 50% -10%, rgb(123 63 228 / 0.28), transparent 70%);
+    color-scheme: dark;
+  }
+}
+
+body {
+  background: var(--bg-glow) fixed, var(--bg);
+  color: var(--ink);
+}
+
+/* Section heading as a trail stop: a ringed dot, then a crossing line running out to the right. */
+.stop-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.stop-heading::before {
+  content: "";
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 9999px;
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--stop-ring), 0 0 12px 2px var(--stop-glow);
+}
+.stop-heading::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(to right, var(--stop-line), transparent);
+  opacity: 0.35;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+/*
+ * Cover flow. Native horizontal scroll with snap; the 3D tilt is a scroll-driven animation
+ * (animation-timeline: view(inline)), so the compositor runs it: no JS per frame. Browsers
+ * without scroll timelines, and reduced-motion users, get a flat snapping carousel.
+ */
+.coverflow {
+  --card: min(70vw, 560px);
+  /* Positioned so cards' offsetLeft is measured in the scroller's own coordinates. */
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-block: 1.5rem;
+  padding-inline: calc(50% - var(--card) / 2);
+  gap: 1rem;
+}
+.coverflow::-webkit-scrollbar {
+  display: none;
+}
+.coverflow > li {
+  flex: 0 0 var(--card);
+  scroll-snap-align: center;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .coverflow {
+      gap: 0;
+    }
+    /* The <li> is the snap target and must stay untransformed, or snapping uses the tilted box.
+       It only provides the timeline; its child carries the animation. */
+    .coverflow > li {
+      view-timeline: --card inline;
+    }
+    .coverflow > li > * {
+      position: relative;
+      animation: coverflow linear both;
+      animation-timeline: --card;
+      will-change: transform;
+    }
+  }
+}
+
+/* 0% = entering on the right, 50% = centred, 100% = leaving on the left. */
+@keyframes coverflow {
+  0% {
+    transform: perspective(1100px) translateX(-38%) rotateY(-62deg) scale(0.82);
+    opacity: 0.55;
+    z-index: 1;
+  }
+  38% {
+    transform: perspective(1100px) translateX(-14%) rotateY(-52deg) scale(0.86);
+    opacity: 0.85;
+    z-index: 5;
+  }
+  50% {
+    transform: perspective(1100px) translateX(0) rotateY(0) scale(1);
+    opacity: 1;
+    z-index: 10;
+  }
+  62% {
+    transform: perspective(1100px) translateX(14%) rotateY(52deg) scale(0.86);
+    opacity: 0.85;
+    z-index: 5;
+  }
+  100% {
+    transform: perspective(1100px) translateX(38%) rotateY(62deg) scale(0.82);
+    opacity: 0.55;
+    z-index: 1;
+  }
+}

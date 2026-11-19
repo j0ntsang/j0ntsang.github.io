@@ -9,14 +9,15 @@
     "local-echo": "^0.2.0"
   },
   "scripts": {
-    "copy:coi": "cp node_modules/coi-serviceworker/coi-serviceworker.js public/coi-serviceworker.js",
+    "copy:coi": "node scripts/copy-coi.mjs",
+    "build:fredericton": "npm --prefix fredericton run build",
     "dev": "npm run copy:coi && vite",
-    "build": "npm run copy:coi && vite build",
+    "build": "npm run copy:coi && npm run build:fredericton && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "vitest run",
+    "test:unit": "vitest run && npm --prefix fredericton test",
     "test:e2e": "playwright test"
   },
   "browserslist": {

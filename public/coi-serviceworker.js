@@ -23,6 +23,11 @@ if (typeof window === 'undefined') {
 
     self.addEventListener("fetch", function (event) {
         const r = event.request;
+        // Patched by scripts/copy-coi.mjs: a top-level visit to an app that embeds third-party players.
+        if (r.mode === "navigate" && r.destination === "document" &&
+            new URL(r.url).pathname.startsWith(new URL("fredericton/", self.registration.scope).pathname)) {
+            return;
+        }
         if (r.cache === "only-if-cached" && r.mode !== "same-origin") {
             return;
         }

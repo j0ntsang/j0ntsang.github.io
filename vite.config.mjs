@@ -1,10 +1,51 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { resolve } from "path";
-import { readFileSync } from "fs";
+import { extname, resolve, sep } from "path";
+import { existsSync, readFileSync, statSync } from "fs";
 import { fileURLToPath } from "url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
+
+const MIME = {
+  ".html": "text/html",
+  ".js": "text/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".woff2": "font/woff2",
+  ".ico": "image/x-icon",
+};
+
+// In dev, /fredericton/ would otherwise resolve to the app's *source* index.html
+// (fredericton/index.html sits under this project's root), whose /src/main.tsx is
+// this site's src. Serve the built copy in public/fredericton/ instead, the way
+// GitHub Pages does: real files as-is, any other path its route's index.html.
+function frederictonDevPlugin() {
+  const builtDir = resolve(__dirname, "public/fredericton");
+  return {
+    name: "fredericton-dev",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const path = decodeURIComponent((req.url ?? "").split("?")[0]);
+        if (!path.startsWith("/fredericton/")) return next();
+        if (!existsSync(builtDir)) {
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "text/plain");
+          return res.end("Fredericton isn't built yet: run npm run build:fredericton");
+        }
+        const file = resolve(builtDir, `.${path.slice("/fredericton".length)}`);
+        if (file !== builtDir && !file.startsWith(builtDir + sep)) return next();
+        const target =
+          existsSync(file) && statSync(file).isFile()
+            ? file
+            : [resolve(file, "index.html"), resolve(builtDir, "index.html")].find(existsSync);
+        for (const [name, value] of Object.entries(server.config.server.headers ?? {})) res.setHeader(name, value);
+        res.setHeader("Content-Type", MIME[extname(target)] ?? "application/octet-stream");
+        res.end(readFileSync(target));
+      });
+    },
+  };
+}
 
 // In dev mode the Vite server sets COOP/COEP headers directly, so
 // coi-serviceworker is unnecessary and can interfere with HMR. Strip it.
@@ -44,7 +85,7 @@ function coiDevPlugin() {
 
 export default defineConfig({
   base: "./",
-  plugins: [react(), coiDevPlugin()],
+  plugins: [react(), coiDevPlugin(), frederictonDevPlugin()],
   server: {
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin",
