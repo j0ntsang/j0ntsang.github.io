@@ -8,7 +8,7 @@ export type WebcamDef = { id: string; name: string; place: string; youtubeId: st
 export const WEBCAM_CHANNEL = "https://www.youtube.com/@frederictonwebcams";
 
 export const webcams: WebcamDef[] = [
-  { id: "river", name: "Wolastoq River", place: "Saint John River, downtown", youtubeId: "7TWcVHjxLUo" },
+  { id: "river", name: "Wolastoq River", place: "Downtown", youtubeId: "7TWcVHjxLUo" },
   { id: "officers-square", name: "Officers' Square", place: "Queen Street", youtubeId: "nfgjdKhacxU" },
   { id: "city-hall", name: "City Hall", place: "Queen & York", youtubeId: "jdAQEyWn4xs" },
   { id: "bridge-south", name: "Westmorland Street Bridge", place: "Facing south", youtubeId: "5yPimLNdWvg" },

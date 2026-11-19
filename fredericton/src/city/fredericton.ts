@@ -10,7 +10,7 @@ export const city = {
     aqhiLocationId: "DAFMJ",
   },
   river: {
-    name: "Wolastoq (Saint John River)",
+    name: "Wolastoq",
     // GNB River Watch flood stage for Fredericton. Verify against GNB before launch.
     floodStageMetres: 6.5,
   },
